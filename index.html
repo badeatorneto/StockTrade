@@ -52,7 +52,12 @@
         .sidebar-scroll { height: calc(100vh - 200px); overflow-y: auto; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 4px; }
-        /* Data freshness badge */
+        /* Price update flash */
+        @keyframes flash-green { 0%{background:#e6f4ea} 100%{background:transparent} }
+        @keyframes flash-red   { 0%{background:#fce8e6} 100%{background:transparent} }
+        .flash-up   { animation: flash-green 0.8s ease-out; }
+        .flash-down { animation: flash-red   0.8s ease-out; }
+        .stock-price, .change-pill { transition: color 0.3s; }
         .badge-live { background: #e6f4ea; color: #137333; }
         .badge-sim  { background: #f1f3f4; color: #5f6368; }
         .badge-stale { background: #fef7e0; color: #b06000; }
@@ -618,38 +623,71 @@ function startNewsEngine() {
     // --- Rendering ---
     function renderGrid() {
         const query = document.getElementById('search').value.toUpperCase();
-        const grid = document.getElementById('grid');
-        grid.innerHTML = '';
+        const grid  = document.getElementById('grid');
 
-        // Logic: If search is empty, show top 50. If search has text, search all 500.
-        let displayList = [];
-        if(!query) {
-            displayList = stocks.slice(0, 50);
-        } else {
-            displayList = stocks.filter(s => s.symbol.includes(query) || s.name.toUpperCase().includes(query)).slice(0, 50);
-        }
+        let displayList = query
+            ? stocks.filter(s => s.symbol.includes(query) || s.name.toUpperCase().includes(query)).slice(0, 50)
+            : stocks.slice(0, 50);
 
-        displayList.forEach(stock => {
+        // Build a map of existing cards by symbol so we can update in-place
+        const existingCards = {};
+        grid.querySelectorAll('[data-symbol]').forEach(el => {
+            existingCards[el.dataset.symbol] = el;
+        });
+
+        const symbolsInDisplay = new Set(displayList.map(s => s.symbol));
+
+        // Remove cards no longer in the list
+        Object.keys(existingCards).forEach(sym => {
+            if (!symbolsInDisplay.has(sym)) existingCards[sym].remove();
+        });
+
+        displayList.forEach((stock, idx) => {
             const isPos = stock.change >= 0;
-            const card = document.createElement('div');
-            card.className = 'g-card p-4 cursor-pointer flex flex-col justify-between h-32';
-            card.onclick = () => openModal(stock);
-            
-            card.innerHTML = `
-                <div class="flex justify-between items-start">
+            const pillClass = isPos ? 'pill-up' : 'pill-down';
+            const changeStr = (isPos ? '+' : '') + stock.change.toFixed(2) + '%';
+            const priceStr  = '$' + stock.price.toFixed(2);
+            const freshLabel = getCardFreshnessLabel(stock.symbol);
+
+            if (existingCards[stock.symbol]) {
+                // Card exists — update only changed text nodes (no full rebuild)
+                const card = existingCards[stock.symbol];
+                const pill  = card.querySelector('.change-pill');
+                const price = card.querySelector('.stock-price');
+                const sym   = card.querySelector('.stock-sym');
+                const oldPrice = price ? parseFloat(price.textContent.replace('$','')) : null;
+                if (pill)  { pill.className  = 'change-pill ' + pillClass; pill.textContent = changeStr; }
+                if (price && price.textContent !== priceStr) {
+                    price.textContent = priceStr;
+                    // Flash card background green/red on price change
+                    if (oldPrice !== null) {
+                        card.classList.remove('flash-up','flash-down');
+                        void card.offsetWidth; // force reflow to restart animation
+                        card.classList.add(stock.price >= oldPrice ? 'flash-up' : 'flash-down');
+                    }
+                }
+                if (sym)   sym.innerHTML = stock.symbol + freshLabel;
+                // Ensure position in grid matches sorted order
+                if (grid.children[idx] !== card) grid.insertBefore(card, grid.children[idx] || null);
+            } else {
+                // New card — create it
+                const card = document.createElement('div');
+                card.className    = 'g-card p-4 cursor-pointer flex flex-col justify-between h-32';
+                card.dataset.symbol = stock.symbol;
+                card.onclick = () => openModal(stock);
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="font-bold text-gray-800 stock-sym">${stock.symbol}${freshLabel}</div>
+                            <div class="text-xs text-gray-500 truncate w-24">${stock.name}</div>
+                        </div>
+                        <div class="change-pill ${pillClass}">${changeStr}</div>
+                    </div>
                     <div>
-                        <div class="font-bold text-gray-800">${stock.symbol}${getCardFreshnessLabel(stock.symbol)}</div>
-                        <div class="text-xs text-gray-500 truncate w-24">${stock.name}</div>
-                    </div>
-                    <div class="change-pill ${isPos ? 'pill-up' : 'pill-down'}">
-                        ${isPos ? '+' : ''}${stock.change.toFixed(2)}%
-                    </div>
-                </div>
-                <div>
-                    <div class="text-2xl font-normal text-gray-900">$${stock.price.toFixed(2)}</div>
-                </div>
-            `;
-            grid.appendChild(card);
+                        <div class="text-2xl font-normal text-gray-900 stock-price">${priceStr}</div>
+                    </div>`;
+                grid.insertBefore(card, grid.children[idx] || null);
+            }
         });
     }
 
@@ -660,12 +698,26 @@ function startNewsEngine() {
 
     function openStockDetail(stock) {
         detailStock = stock;
-        // If we have live data enabled, fetch this stock immediately for fresh data
+        // Fetch fresh quote on open, then just update the price fields in place (no recursive re-open)
         if (RT.key) {
             fetchQuote(stock.symbol).then(data => {
-                if (data) {
+                if (data && detailStock && detailStock.symbol === stock.symbol) {
                     applyRealQuote(stock.symbol, data);
-                    openStockDetail(getStockBySymbol(stock.symbol)); // re-render with fresh data
+                    const s = getStockBySymbol(stock.symbol);
+                    if (!s) return;
+                    const isPos2 = s.change >= 0;
+                    const changeAmt2 = s.price * Math.abs(s.change) / 100;
+                    const color2 = isPos2 ? '#81c995' : '#f28b82';
+                    document.getElementById('detailPrice').innerText = s.price.toFixed(2);
+                    document.getElementById('detailChangeAmt').style.color = color2;
+                    document.getElementById('detailChangeAmt').innerText = (isPos2?'+':'-') + changeAmt2.toFixed(2);
+                    document.getElementById('detailChangePct').style.color = color2;
+                    document.getElementById('detailChangePct').innerText = '(' + Math.abs(s.change).toFixed(2) + '%)';
+                    document.getElementById('detailArrow').style.color = color2;
+                    document.getElementById('detailArrow').innerText = isPos2 ? '↑' : '↓';
+                    if (s.dayHigh) document.getElementById('sHigh').innerText = '$' + s.dayHigh.toFixed(2);
+                    if (s.dayLow)  document.getElementById('sLow').innerText  = '$' + s.dayLow.toFixed(2);
+                    if (s.dayOpen) document.getElementById('sOpen').innerText = '$' + s.dayOpen.toFixed(2);
                 }
             });
         }
