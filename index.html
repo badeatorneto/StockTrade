@@ -51,6 +51,14 @@
         .sidebar-scroll { height: calc(100vh - 200px); overflow-y: auto; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 4px; }
+        /* Data freshness badge */
+        .badge-live { background: #e6f4ea; color: #137333; }
+        .badge-sim  { background: #f1f3f4; color: #5f6368; }
+        .badge-stale { background: #fef7e0; color: #b06000; }
+        .dot-live { background: #34a853; animation: pulse-green 2s infinite; }
+        .dot-closed { background: #ea4335; }
+        .dot-unknown { background: #9aa0a6; }
+        @keyframes pulse-green { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
     </style>
 </head>
 <body class="overflow-x-hidden">
@@ -126,6 +134,12 @@
         </div>
 
         <div class="flex items-center gap-6">
+            <!-- Market Status & API Config -->
+            <div class="flex items-center gap-2">
+                <div id="marketStatusDot" class="w-2 h-2 rounded-full bg-gray-400"></div>
+                <span id="marketStatusText" class="text-xs text-gray-500 font-medium">Market Closed</span>
+                <button onclick="openApiConfig()" title="Configure real-time data" class="text-xs bg-green-50 hover:bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded font-bold transition" id="liveDataBtn">⚡ Live Data</button>
+            </div>
             <button onclick="openLeaderboard()" class="flex items-center gap-2 bg-yellow-50 hover:bg-yellow-100 border border-yellow-300 text-yellow-800 px-3 py-2 rounded-lg text-sm font-bold transition">
                 🏆 Leaderboard
             </button>
@@ -168,7 +182,7 @@
         <div class="g-card p-6">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-lg font-normal text-gray-800">Your Portfolio</h3>
-                <span class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded">LIVE</span>
+                <span id="dataSourceBadge" class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded">SIM</span>
             </div>
             
             <div class="mb-6">
@@ -321,6 +335,44 @@
     <div class="flex gap-2">
         <button onclick="nextTutorialStep()" class="flex-1 bg-blue-600 text-white text-xs font-semibold py-2 rounded">Next</button>
         <button onclick="skipTutorial()" class="flex-1 bg-gray-100 text-gray-700 text-xs font-semibold py-2 rounded">Skip</button>
+    </div>
+</div>
+
+<!-- ═══ API CONFIG MODAL ═══ -->
+<div id="apiConfigModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 class="text-xl font-bold text-gray-900">⚡ Real-Time Market Data</h2>
+                <p class="text-sm text-gray-500 mt-1">Connect Finnhub API for live stock prices</p>
+            </div>
+            <button onclick="closeApiConfig()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+        </div>
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-5 text-sm text-blue-800">
+            <strong>Free Finnhub API</strong> — Get your key at 
+            <a href="https://finnhub.io/register" target="_blank" class="underline font-semibold">finnhub.io/register</a>
+            &nbsp;(60 calls/min free tier, no credit card needed)
+        </div>
+        <div id="apiConfigError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4"></div>
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Finnhub API Key</label>
+            <input id="finnhubKeyInput" type="text" placeholder="e.g. d0abc123..." class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <p class="text-xs text-gray-400 mt-1">Stored locally in your browser — never sent to any server.</p>
+        </div>
+        <div class="mb-5">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Update Interval</label>
+            <select id="updateIntervalInput" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="10000">Every 10 seconds (recommended)</option>
+                <option value="15000">Every 15 seconds</option>
+                <option value="30000">Every 30 seconds</option>
+                <option value="60000">Every 60 seconds</option>
+            </select>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="saveApiConfig()" class="flex-1 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-semibold py-3 rounded-lg transition text-sm">Save & Activate</button>
+            <button onclick="clearApiConfig()" class="bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm font-semibold transition">Clear</button>
+        </div>
+        <div id="apiTestResult" class="mt-3 text-sm text-center text-gray-500 hidden"></div>
     </div>
 </div>
 
@@ -551,6 +603,12 @@ function startNewsEngine() {
             marketLoopStarted = true;
             setInterval(simulateMarketTick, 6000);
         }
+        // Start live data if API key is already stored
+        updateMarketStatus();
+        updateDataSourceUI();
+        if (RT.key) {
+            startLiveData();
+        }
     }
 
     // --- Rendering ---
@@ -576,7 +634,7 @@ function startNewsEngine() {
             card.innerHTML = `
                 <div class="flex justify-between items-start">
                     <div>
-                        <div class="font-bold text-gray-800">${stock.symbol}</div>
+                        <div class="font-bold text-gray-800">${stock.symbol}${getCardFreshnessLabel(stock.symbol)}</div>
                         <div class="text-xs text-gray-500 truncate w-24">${stock.name}</div>
                     </div>
                     <div class="change-pill ${isPos ? 'pill-up' : 'pill-down'}">
@@ -598,6 +656,15 @@ function startNewsEngine() {
 
     function openStockDetail(stock) {
         detailStock = stock;
+        // If we have live data enabled, fetch this stock immediately for fresh data
+        if (RT.key) {
+            fetchQuote(stock.symbol).then(data => {
+                if (data) {
+                    applyRealQuote(stock.symbol, data);
+                    openStockDetail(getStockBySymbol(stock.symbol)); // re-render with fresh data
+                }
+            });
+        }
         document.getElementById('stockDetailPage').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         const isPos = stock.change >= 0;
@@ -614,9 +681,9 @@ function startNewsEngine() {
         document.getElementById('detailArrow').innerText = isPos ? '↑' : '↓';
         document.getElementById('detailPremarket').innerText = 'Pre-market ' + (stock.price*0.997).toFixed(2) + ' -' + (stock.price*0.003).toFixed(2) + ' (0.35%)';
         document.getElementById('prevCloseVal').innerText = (stock.price - changeAmt*(isPos?1:-1)).toFixed(2);
-        document.getElementById('sOpen').innerText = '$' + (stock.price * (1 + (Math.random()*0.005 - 0.002))).toFixed(2);
-        document.getElementById('sHigh').innerText = '$' + (stock.price * 1.008).toFixed(2);
-        document.getElementById('sLow').innerText = '$' + (stock.price * 0.992).toFixed(2);
+        document.getElementById('sOpen').innerText = '$' + (stock.dayOpen || (stock.price * (1 + (Math.random()*0.005 - 0.002)))).toFixed(2);
+        document.getElementById('sHigh').innerText = '$' + (stock.dayHigh || (stock.price * 1.008)).toFixed(2);
+        document.getElementById('sLow').innerText  = '$' + (stock.dayLow  || (stock.price * 0.992)).toFixed(2);
         document.getElementById('sMktCap').innerText = stock.mktCap || '—';
         document.getElementById('sPE').innerText = stock.pe > 0 ? stock.pe.toFixed(2) : 'N/A';
         document.getElementById('s52H').innerText = '$' + (stock.wkHigh || (stock.price * 1.3)).toFixed(2);
@@ -1469,6 +1536,10 @@ function startNewsEngine() {
 
     function simulateMarketTick() {
         stocks.forEach(s => {
+            // Skip simulation for stocks that have fresh live data (< 30 sec old)
+            const cached = RT.cache[s.symbol];
+            if (cached && RT.key && (Date.now() - cached.ts) < 30000) return;
+
             const drift = (Math.random() - 0.5) * 0.018;
             s.price = Math.max(1, s.price * (1 + drift));
             s.change = Math.max(-30, Math.min(30, s.change + drift * 100));
@@ -1576,6 +1647,240 @@ function startNewsEngine() {
             saveUserData(false);
         }
     }
+
+    // ═══════════════════════════════════════════════════════
+    //   REAL-TIME DATA ENGINE — Finnhub Integration
+    // ═══════════════════════════════════════════════════════
+
+    // --- Config ---
+    const RT = {
+        key: localStorage.getItem('finnhub_api_key') || '',
+        interval: Number(localStorage.getItem('finnhub_interval') || 10000),
+        timer: null,
+        cache: {},          // { SYMBOL: { price, change, ts } }
+        queue: [],          // symbols to fetch
+        queueIdx: 0,
+        liveCount: 0,       // how many symbols have real data
+        lastBatch: 0,       // timestamp of last batch fetch
+        batchSize: 10,      // symbols per 10-sec cycle (stays under 60/min)
+        sanityMax: 0.30,    // max 30% price change before rejecting
+    };
+
+    // Priority symbols: watchlist + portfolio + top 20
+    function buildQueue() {
+        const priority = new Set([
+            ...watchlist,
+            ...Object.keys(portfolio),
+            ...stocks.slice(0, 20).map(s => s.symbol)
+        ]);
+        const rest = stocks
+            .filter(s => !priority.has(s.symbol))
+            .map(s => s.symbol);
+        RT.queue = [...priority, ...rest];
+        RT.queueIdx = 0;
+    }
+
+    // Fetch a single quote from Finnhub
+    async function fetchQuote(symbol) {
+        if (!RT.key) return null;
+        // Finnhub doesn't support BRK.B directly — skip problematic symbols
+        const safeSymbol = symbol.replace('.', '-'); // some need remapping
+        try {
+            const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${RT.key}`;
+            const res = await fetch(url);
+            if (!res.ok) return null;
+            const data = await res.json();
+            // Finnhub returns { c: current, d: change, dp: changePct, h, l, o, pc }
+            if (!data.c || data.c === 0) return null;
+            return data;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // Apply a real quote to our stock object with sanity checks
+    function applyRealQuote(symbol, data) {
+        const stock = getStockBySymbol(symbol);
+        if (!stock) return;
+        const prev = RT.cache[symbol];
+        const newPrice = data.c;
+        // Sanity check: reject if >30% swing from last known price
+        if (Math.abs(newPrice - stock.price) / stock.price > RT.sanityMax) {
+            console.warn(`[RT] Sanity check failed for ${symbol}: ${stock.price} → ${newPrice}`);
+            return;
+        }
+        stock.price  = newPrice;
+        stock.change = data.dp ?? stock.change;  // % change
+        // Extra detail if available
+        if (data.h) stock.dayHigh = data.h;
+        if (data.l) stock.dayLow  = data.l;
+        if (data.o) stock.dayOpen = data.o;
+        if (data.pc) stock.prevClose = data.pc;
+
+        RT.cache[symbol] = { price: newPrice, change: stock.change, ts: Date.now() };
+        RT.liveCount++;
+    }
+
+    // Batch-fetch the next N symbols in queue
+    async function fetchNextBatch() {
+        if (!RT.key) return;
+        buildQueue();
+        const batch = [];
+        for (let i = 0; i < RT.batchSize && RT.queueIdx < RT.queue.length; i++, RT.queueIdx++) {
+            batch.push(RT.queue[RT.queueIdx]);
+        }
+        if (RT.queueIdx >= RT.queue.length) RT.queueIdx = 0; // wrap around
+
+        RT.liveCount = 0;
+        const results = await Promise.all(batch.map(async sym => {
+            const data = await fetchQuote(sym);
+            if (data) applyRealQuote(sym, data);
+        }));
+        updateDataSourceUI();
+    }
+
+    // Start/stop the live data loop
+    function startLiveData() {
+        if (RT.timer) clearInterval(RT.timer);
+        fetchNextBatch(); // immediate first fetch
+        RT.timer = setInterval(fetchNextBatch, RT.interval);
+        updateMarketStatus();
+    }
+
+    function stopLiveData() {
+        if (RT.timer) clearInterval(RT.timer);
+        RT.timer = null;
+        RT.liveCount = 0;
+        updateDataSourceUI();
+    }
+
+    // --- Market Hours (NYSE) ---
+    function isMarketOpen() {
+        const now = new Date();
+        // Convert to Eastern Time
+        const et = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+        const day = et.getDay(); // 0=Sun, 6=Sat
+        if (day === 0 || day === 6) return false;
+        const h = et.getHours(), m = et.getMinutes();
+        const mins = h * 60 + m;
+        return mins >= 9 * 60 + 30 && mins < 16 * 60;
+    }
+
+    function updateMarketStatus() {
+        const dot  = document.getElementById('marketStatusDot');
+        const text = document.getElementById('marketStatusText');
+        if (!dot || !text) return;
+        if (isMarketOpen()) {
+            dot.className  = 'w-2 h-2 rounded-full dot-live';
+            text.textContent = 'Market Open';
+            text.className   = 'text-xs text-green-600 font-semibold';
+        } else {
+            dot.className  = 'w-2 h-2 rounded-full dot-closed';
+            text.textContent = 'Market Closed';
+            text.className   = 'text-xs text-gray-500 font-medium';
+        }
+    }
+
+    function updateDataSourceUI() {
+        const badge = document.getElementById('dataSourceBadge');
+        const btn   = document.getElementById('liveDataBtn');
+        if (!badge) return;
+        if (RT.key && RT.liveCount > 0) {
+            badge.textContent = '⚡ LIVE';
+            badge.className = 'text-xs font-bold px-2 py-1 rounded badge-live';
+            if (btn) { btn.textContent = '⚡ Live: ON'; btn.className = 'text-xs bg-green-100 border border-green-400 text-green-800 px-2 py-1 rounded font-bold transition'; }
+        } else if (RT.key) {
+            badge.textContent = '↻ Fetching…';
+            badge.className = 'text-xs font-bold px-2 py-1 rounded badge-stale';
+        } else {
+            badge.textContent = 'SIM';
+            badge.className = 'text-xs font-bold px-2 py-1 rounded badge-sim';
+            if (btn) { btn.textContent = '⚡ Live Data'; btn.className = 'text-xs bg-green-50 hover:bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded font-bold transition'; }
+        }
+    }
+
+    // Data freshness per card
+    function getCardFreshnessLabel(symbol) {
+        const cached = RT.cache[symbol];
+        if (!cached || !RT.key) return '';
+        const ageSec = Math.round((Date.now() - cached.ts) / 1000);
+        return `<span class="text-[9px] font-semibold badge-live rounded px-1 ml-1">live·${ageSec}s</span>`;
+    }
+
+    // --- API Config Modal ---
+    function openApiConfig() {
+        const modal = document.getElementById('apiConfigModal');
+        document.getElementById('finnhubKeyInput').value  = RT.key;
+        document.getElementById('updateIntervalInput').value = RT.interval;
+        document.getElementById('apiConfigError').classList.add('hidden');
+        document.getElementById('apiTestResult').classList.add('hidden');
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+    }
+
+    function closeApiConfig() {
+        const modal = document.getElementById('apiConfigModal');
+        modal.classList.add('hidden');
+        modal.style.display = '';
+    }
+
+    async function saveApiConfig() {
+        const key      = document.getElementById('finnhubKeyInput').value.trim();
+        const interval = Number(document.getElementById('updateIntervalInput').value);
+        const errEl    = document.getElementById('apiConfigError');
+        const resultEl = document.getElementById('apiTestResult');
+
+        errEl.classList.add('hidden');
+        resultEl.classList.remove('hidden');
+        resultEl.textContent = '🔄 Testing API key with AAPL…';
+
+        // Quick test call
+        try {
+            const testUrl = `https://finnhub.io/api/v1/quote?symbol=AAPL&token=${key}`;
+            const res = await fetch(testUrl);
+            const data = await res.json();
+            if (!data.c || data.c === 0) throw new Error('Invalid response');
+
+            RT.key      = key;
+            RT.interval = interval;
+            localStorage.setItem('finnhub_api_key', key);
+            localStorage.setItem('finnhub_interval', interval);
+
+            resultEl.className  = 'mt-3 text-sm text-center text-green-700 font-semibold';
+            resultEl.textContent = `✅ Connected! AAPL = $${data.c.toFixed(2)}`;
+            startLiveData();
+            setTimeout(closeApiConfig, 1800);
+        } catch(e) {
+            resultEl.classList.add('hidden');
+            errEl.textContent = '❌ API key test failed. Check your key and try again.';
+            errEl.classList.remove('hidden');
+        }
+    }
+
+    function clearApiConfig() {
+        RT.key = '';
+        localStorage.removeItem('finnhub_api_key');
+        localStorage.removeItem('finnhub_interval');
+        stopLiveData();
+        document.getElementById('finnhubKeyInput').value = '';
+        document.getElementById('apiTestResult').classList.add('hidden');
+        const resultEl = document.getElementById('apiTestResult');
+        resultEl.className = 'mt-3 text-sm text-center text-gray-500';
+        resultEl.textContent = 'Live data cleared. Using simulated mode.';
+        resultEl.classList.remove('hidden');
+        updateDataSourceUI();
+        setTimeout(closeApiConfig, 1500);
+    }
+
+    // Click outside modal to close
+    document.getElementById('apiConfigModal').addEventListener('click', function(e) {
+        if (e.target === this) closeApiConfig();
+    });
+
+    // Update market status every minute
+    setInterval(updateMarketStatus, 60000);
+
+    // ═══ END REAL-TIME DATA ENGINE ═══
 
     // Show auth on load
     initMarket();
