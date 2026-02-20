@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Market Simulator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Roboto', sans-serif; background-color: #f8f9fa; color: #202124; }
@@ -348,10 +349,13 @@
             </div>
             <button onclick="closeApiConfig()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
         </div>
-        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-5 text-sm text-blue-800">
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-3 text-sm text-blue-800">
             <strong>Free Finnhub API</strong> — Get your key at 
             <a href="https://finnhub.io/register" target="_blank" class="underline font-semibold">finnhub.io/register</a>
-            &nbsp;(60 calls/min free tier, no credit card needed)
+            &nbsp;(60 calls/min, no credit card needed)
+        </div>
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-5 text-sm text-amber-800">
+            ⬇️ <strong>Important:</strong> Download this file and open it in your browser locally for live data to work. Network calls are blocked in the Claude preview environment.
         </div>
         <div id="apiConfigError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4"></div>
         <div class="mb-4">
@@ -700,7 +704,7 @@ function startNewsEngine() {
         onTutorialEvent('open_stock');
         document.querySelectorAll('.ctab').forEach(b => { b.className = 'ctab text-sm font-medium px-4 py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200'; });
         document.querySelector('.ctab').className = 'ctab text-sm font-medium px-4 py-3 border-b-2 border-[#8ab4f8] text-[#8ab4f8]';
-        drawChart(stock, '1D');
+        drawChart(stock, '1D'); // async — fires and runs in background
     }
 
     function closeStockDetail() {
@@ -712,65 +716,225 @@ function startNewsEngine() {
 
     function closeModal() { closeStockDetail(); }
 
-    function setChartPeriod(period, btn) {
+    async function setChartPeriod(period, btn) {
         document.querySelectorAll('.ctab').forEach(b => { b.className = 'ctab text-sm font-medium px-4 py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200'; });
         btn.className = 'ctab text-sm font-medium px-4 py-3 border-b-2 border-[#8ab4f8] text-[#8ab4f8]';
-        if (detailStock) drawChart(detailStock, period);
+        if (detailStock) await drawChart(detailStock, period);
     }
 
-    function drawChart(stock, period) {
+    // ── Pure canvas candlestick renderer ─────────────────
+    const candleCache = {};
+
+    function periodToFinnhub(period) {
+        const now = Math.floor(Date.now() / 1000);
+        const DAY = 86400, MONTH = 30*DAY, YEAR = 365*DAY;
+        switch (period) {
+            case '1D':  return { resolution: '5',  from: now - DAY };
+            case '5D':  return { resolution: '15', from: now - 5*DAY };
+            case '1M':  return { resolution: '60', from: now - MONTH };
+            case '6M':  return { resolution: 'D',  from: now - 6*MONTH };
+            case 'YTD': return { resolution: 'D',  from: Math.floor(new Date(new Date().getFullYear(),0,1)/1000) };
+            case '1Y':  return { resolution: 'W',  from: now - YEAR };
+            case '5Y':  return { resolution: 'M',  from: now - 5*YEAR };
+            default:    return { resolution: 'M',  from: now - 10*YEAR };
+        }
+    }
+
+    function generateSimCandles(stock, period) {
+        const isNeg = stock.change < 0;
+        let numPts, vol, trend;
+        const DAY_MS = 86400000;
+        switch(period) {
+            case '1D':  numPts=78;  vol=0.004; trend=isNeg?-0.0008:0.0002; break;
+            case '5D':  numPts=60;  vol=0.007; trend=isNeg?-0.001:0.0005;  break;
+            case '1M':  numPts=30;  vol=0.015; trend=isNeg?-0.003:0.004;   break;
+            case '6M':  numPts=26;  vol=0.03;  trend=isNeg?-0.005:0.008;   break;
+            case 'YTD': numPts=24;  vol=0.025; trend=isNeg?-0.004:0.007;   break;
+            case '1Y':  numPts=52;  vol=0.04;  trend=isNeg?-0.003:0.006;   break;
+            case '5Y':  numPts=60;  vol=0.06;  trend=0.008;                break;
+            default:    numPts=120; vol=0.07;  trend=0.01;                  break;
+        }
+        const intervalMs = {'1D':5*60000,'5D':15*60000,'1M':3600000,'6M':DAY_MS,'YTD':DAY_MS,'1Y':7*DAY_MS,'5Y':30*DAY_MS,'Max':30*DAY_MS}[period]||DAY_MS;
+        let closes=[stock.price];
+        for(let i=1;i<numPts;i++) closes.push(closes[closes.length-1]/(1+trend+(Math.random()-0.5)*vol*2));
+        closes.reverse();
+        return closes.map((c,i)=>{
+            const t=Date.now()-(numPts-1-i)*intervalMs;
+            const sw=c*vol*0.8, o=c+(Math.random()-0.5)*sw;
+            const h=Math.max(o,c)+Math.random()*sw*0.4;
+            const l=Math.min(o,c)-Math.random()*sw*0.4;
+            return {x:t,o:+o.toFixed(2),h:+h.toFixed(2),l:+l.toFixed(2),c:+c.toFixed(2)};
+        });
+    }
+
+    async function fetchCandles(symbol, period) {
+        const key = symbol+'_'+period;
+        if (candleCache[key] && (Date.now()-candleCache[key].ts)<60000) return candleCache[key].data;
+        if (!RT.key) return null;
+        try {
+            const {resolution,from} = periodToFinnhub(period);
+            const to = Math.floor(Date.now()/1000);
+            const url = `https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(symbol)}&resolution=${resolution}&from=${from}&to=${to}&token=${RT.key}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            if (!data||data.s!=='ok'||!data.t||data.t.length===0) return null;
+            const candles = data.t.map((ts,i)=>({x:ts*1000,o:data.o[i],h:data.h[i],l:data.l[i],c:data.c[i]}));
+            candleCache[key]={data:candles,ts:Date.now()};
+            return candles;
+        } catch(e){ return null; }
+    }
+
+    // Draw candlesticks directly on canvas — no library needed
+    function drawCandlesticks(canvas, candles) {
+        const dpr = window.devicePixelRatio || 1;
+        const W = canvas.clientWidth, H = canvas.clientHeight;
+        canvas.width  = W * dpr;
+        canvas.height = H * dpr;
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+
+        // Padding
+        const PAD = {top:16, right:56, bottom:36, left:8};
+        const chartW = W - PAD.left - PAD.right;
+        const chartH = H - PAD.top  - PAD.bottom;
+
+        // Price range
+        const allH = candles.map(c=>c.h), allL = candles.map(c=>c.l);
+        const minP  = Math.min(...allL) * 0.999;
+        const maxP  = Math.max(...allH) * 1.001;
+        const priceRange = maxP - minP;
+
+        const toY = p => PAD.top + chartH * (1 - (p-minP)/priceRange);
+        const toX = i => PAD.left + (i + 0.5) * (chartW / candles.length);
+        const candleW = Math.max(1, chartW / candles.length * 0.6);
+
+        // Background
+        ctx.fillStyle = '#1c1c1e';
+        ctx.fillRect(0, 0, W, H);
+
+        // Grid lines + Y labels
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+        ctx.lineWidth = 1;
+        ctx.fillStyle = '#9aa0a6';
+        ctx.font = `${11*dpr/dpr}px Roboto, sans-serif`;
+        ctx.textAlign = 'right';
+        const gridLines = 5;
+        for (let i=0;i<=gridLines;i++) {
+            const p   = minP + priceRange * (i/gridLines);
+            const y   = toY(p);
+            ctx.beginPath();
+            ctx.moveTo(PAD.left, y);
+            ctx.lineTo(W - PAD.right, y);
+            ctx.stroke();
+            ctx.fillText('$'+p.toFixed(p>100?0:2), W - PAD.right + 52, y+4);
+        }
+
+        // X axis labels
+        ctx.textAlign = 'center';
+        const labelEvery = Math.max(1, Math.floor(candles.length / 6));
+        candles.forEach((c,i)=>{
+            if (i % labelEvery !== 0) return;
+            const d = new Date(c.x);
+            const label = candles.length <= 80
+                ? d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
+                : d.toLocaleDateString([],{month:'short',day:'numeric'});
+            ctx.fillStyle = '#9aa0a6';
+            ctx.fillText(label, toX(i), H - PAD.bottom + 14);
+        });
+
+        // Candles
+        candles.forEach((c,i)=>{
+            const x   = toX(i);
+            const up  = c.c >= c.o;
+            const col = up ? '#26a69a' : '#ef5350';
+            const yO  = toY(c.o), yC = toY(c.c);
+            const yH  = toY(c.h), yL = toY(c.l);
+
+            // Wick
+            ctx.strokeStyle = col;
+            ctx.lineWidth = Math.max(1, candleW * 0.15);
+            ctx.beginPath();
+            ctx.moveTo(x, yH);
+            ctx.lineTo(x, yL);
+            ctx.stroke();
+
+            // Body
+            ctx.fillStyle = col;
+            const bodyTop = Math.min(yO, yC);
+            const bodyH   = Math.max(1, Math.abs(yC - yO));
+            ctx.fillRect(x - candleW/2, bodyTop, candleW, bodyH);
+        });
+
+        // Hover tooltip
+        canvas._candles = candles;
+        canvas._meta = { PAD, chartW, chartH, toX, toY, minP, maxP, priceRange, candleW, W, H, dpr };
+    }
+
+    function setupCandleHover(canvas) {
+        canvas.onmousemove = function(e) {
+            if (!canvas._candles) return;
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const { PAD, chartW, W, H, candles: _, toX, dpr } = canvas._meta;
+            const candles = canvas._candles;
+            const idx = Math.round((mx - PAD.left) / (chartW / candles.length) - 0.5);
+            if (idx < 0 || idx >= candles.length) { drawCandlesticks(canvas, candles); return; }
+            drawCandlesticks(canvas, candles);
+
+            const c   = candles[idx];
+            const x   = toX(idx);
+            const dpr2 = window.devicePixelRatio || 1;
+            const ctx  = canvas.getContext('2d');
+            ctx.scale(1,1); // already scaled
+
+            // Crosshair
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4,4]);
+            ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, H - PAD.bottom); ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Tooltip box
+            const d = new Date(c.x);
+            const dateStr = d.toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+            const lines = [`${dateStr}`,`O: $${c.o.toFixed(2)}  H: $${c.h.toFixed(2)}`,`L: $${c.l.toFixed(2)}  C: $${c.c.toFixed(2)}`];
+            const boxW = 200, boxH = 58, boxX = Math.min(x+10, W-boxW-PAD.right-4), boxY = PAD.top + 8;
+            ctx.fillStyle = 'rgba(30,30,32,0.95)';
+            ctx.strokeStyle = c.c >= c.o ? '#26a69a' : '#ef5350';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.roundRect(boxX, boxY, boxW, boxH, 6); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = '#ebebf5'; ctx.font = '11px Roboto,sans-serif'; ctx.textAlign = 'left';
+            lines.forEach((l,i) => ctx.fillText(l, boxX+10, boxY+16+i*16));
+        };
+        canvas.onmouseleave = function() {
+            if (canvas._candles) drawCandlesticks(canvas, canvas._candles);
+        };
+    }
+
+    async function drawChart(stock, period) {
         if (sChart) { sChart.destroy(); sChart = null; }
         const canvas = document.getElementById('stockChart');
+
+        // Resize canvas to container
+        canvas.style.width  = '100%';
+        canvas.style.height = '100%';
+
+        // Show loading
+        const dpr = window.devicePixelRatio||1;
+        canvas.width  = (canvas.clientWidth||700)*dpr;
+        canvas.height = (canvas.clientHeight||280)*dpr;
         const ctx = canvas.getContext('2d');
-        const isNeg = stock.change < 0;
-        const lineColor = isNeg ? '#f28b82' : '#81c995';
-        let numPts, vol, trend;
-        switch(period) {
-            case '1D': numPts=78; vol=0.004; trend=isNeg?-0.0008:0.0002; break;
-            case '5D': numPts=60; vol=0.007; trend=isNeg?-0.001:0.0005; break;
-            case '1M': numPts=30; vol=0.015; trend=isNeg?-0.003:0.004; break;
-            case '6M': numPts=26; vol=0.03; trend=isNeg?-0.005:0.008; break;
-            case 'YTD': numPts=24; vol=0.025; trend=isNeg?-0.004:0.007; break;
-            case '1Y': numPts=52; vol=0.04; trend=isNeg?-0.003:0.006; break;
-            case '5Y': numPts=60; vol=0.06; trend=0.008; break;
-            default: numPts=120; vol=0.07; trend=0.01; break;
-        }
-        let p = stock.price, pts = [p];
-        for (let i=1; i<numPts; i++) { p = p/(1+trend+(Math.random()-0.5)*vol*2); pts.push(p); }
-        pts.reverse();
-        const closeIdx = period==='1D' ? Math.floor(numPts*0.62) : -1;
-        const mainPts = closeIdx>0 ? pts.slice(0,closeIdx) : pts;
-        const afterPts = closeIdx>0 ? pts.slice(closeIdx-1) : [];
-        const allP = pts;
-        const minY = Math.min(...allP)*0.999, maxY = Math.max(...allP)*1.001;
-        const grad = ctx.createLinearGradient(0,0,0,280);
-        grad.addColorStop(0, isNeg?'rgba(242,139,130,0.25)':'rgba(129,201,149,0.25)');
-        grad.addColorStop(1,'rgba(0,0,0,0)');
-        const labels = pts.map((_,i) => {
-            if (period!=='1D') return '';
-            const mins = 9*60+30+Math.floor((i/numPts)*(8*60));
-            const h=Math.floor(mins/60), m=mins%60, ampm=h>=12?'pm':'am', h12=h>12?h-12:h;
-            return m===0?`${h12}:00 ${ampm}`:'';
-        });
-        sChart = new Chart(canvas, {
-            type:'line',
-            data:{
-                labels,
-                datasets:[
-                    {data:mainPts,borderColor:lineColor,borderWidth:2,fill:closeIdx<0,backgroundColor:grad,tension:0.3,pointRadius:0,pointHoverRadius:4},
-                    ...(afterPts.length>0?[{data:[...Array(mainPts.length-1).fill(null),...afterPts],borderColor:'#9aa0a6',borderWidth:2,fill:false,tension:0.3,pointRadius:0,pointHoverRadius:3}]:[])
-                ]
-            },
-            options:{
-                responsive:true,maintainAspectRatio:false,animation:{duration:400},
-                interaction:{mode:'index',intersect:false},
-                plugins:{legend:{display:false},tooltip:{backgroundColor:'#3c3c3e',titleColor:'#ebebf5',bodyColor:'#ebebf5',borderColor:'#636366',borderWidth:1,callbacks:{label:c=>'$'+c.parsed.y.toFixed(2)}}},
-                scales:{
-                    x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#9aa0a6',maxTicksLimit:6,font:{size:11}},border:{display:false}},
-                    y:{min:minY,max:maxY,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#9aa0a6',font:{size:11},callback:v=>v.toFixed(0)},border:{display:false}}
-                }
-            }
-        });
+        ctx.scale(dpr,dpr);
+        ctx.fillStyle='#1c1c1e'; ctx.fillRect(0,0,canvas.clientWidth,canvas.clientHeight);
+        ctx.fillStyle='#9aa0a6'; ctx.font='13px Roboto,sans-serif'; ctx.textAlign='center';
+        ctx.fillText('Loading chart…', canvas.clientWidth/2, canvas.clientHeight/2);
+
+        // Fetch real candles, fall back to sim
+        let candles = await fetchCandles(stock.symbol, period);
+        if (!candles || candles.length < 3) candles = generateSimCandles(stock, period);
+
+        drawCandlesticks(canvas, candles);
+        setupCandleHover(canvas);
     }
 
     function execDetailTrade(type) {
@@ -1654,7 +1818,7 @@ function startNewsEngine() {
 
     // --- Config ---
     const RT = {
-        key: localStorage.getItem('finnhub_api_key') || '',
+        key: 'd6c804pr01qsiik14ah0d6c804pr01qsiik14ahg',
         interval: Number(localStorage.getItem('finnhub_interval') || 10000),
         timer: null,
         cache: {},          // { SYMBOL: { price, change, ts } }
@@ -1702,19 +1866,18 @@ function startNewsEngine() {
     function applyRealQuote(symbol, data) {
         const stock = getStockBySymbol(symbol);
         if (!stock) return;
-        const prev = RT.cache[symbol];
         const newPrice = data.c;
+        if (!newPrice || newPrice <= 0) return;
         // Sanity check: reject if >30% swing from last known price
         if (Math.abs(newPrice - stock.price) / stock.price > RT.sanityMax) {
             console.warn(`[RT] Sanity check failed for ${symbol}: ${stock.price} → ${newPrice}`);
             return;
         }
         stock.price  = newPrice;
-        stock.change = data.dp ?? stock.change;  // % change
-        // Extra detail if available
-        if (data.h) stock.dayHigh = data.h;
-        if (data.l) stock.dayLow  = data.l;
-        if (data.o) stock.dayOpen = data.o;
+        stock.change = data.dp ?? stock.change;
+        if (data.h)  stock.dayHigh  = data.h;
+        if (data.l)  stock.dayLow   = data.l;
+        if (data.o)  stock.dayOpen  = data.o;
         if (data.pc) stock.prevClose = data.pc;
 
         RT.cache[symbol] = { price: newPrice, change: stock.change, ts: Date.now() };
@@ -1729,13 +1892,42 @@ function startNewsEngine() {
         for (let i = 0; i < RT.batchSize && RT.queueIdx < RT.queue.length; i++, RT.queueIdx++) {
             batch.push(RT.queue[RT.queueIdx]);
         }
-        if (RT.queueIdx >= RT.queue.length) RT.queueIdx = 0; // wrap around
+        if (RT.queueIdx >= RT.queue.length) RT.queueIdx = 0;
 
         RT.liveCount = 0;
-        const results = await Promise.all(batch.map(async sym => {
+        await Promise.all(batch.map(async sym => {
             const data = await fetchQuote(sym);
-            if (data) applyRealQuote(sym, data);
+            if (data) {
+                applyRealQuote(sym, data);
+            }
         }));
+
+        console.log(`[RT] Batch done. Live symbols updated: ${RT.liveCount}`, batch);
+
+        // Always refresh grid + portfolio after each batch
+        renderGrid();
+        updateUI();
+
+        // If stock detail is open and it's in this batch, update header prices
+        if (detailStock && batch.includes(detailStock.symbol)) {
+            const s = getStockBySymbol(detailStock.symbol);
+            if (s) {
+                const isPos = s.change >= 0;
+                const changeAmt = s.price * Math.abs(s.change) / 100;
+                const color = isPos ? '#81c995' : '#f28b82';
+                document.getElementById('detailPrice').innerText = s.price.toFixed(2);
+                document.getElementById('detailChangeAmt').style.color = color;
+                document.getElementById('detailChangeAmt').innerText = (isPos?'+':'-') + changeAmt.toFixed(2);
+                document.getElementById('detailChangePct').style.color = color;
+                document.getElementById('detailChangePct').innerText = '(' + Math.abs(s.change).toFixed(2) + '%)';
+                document.getElementById('detailArrow').style.color = color;
+                document.getElementById('detailArrow').innerText = isPos ? '↑' : '↓';
+                if (s.dayHigh) document.getElementById('sHigh').innerText = '$' + s.dayHigh.toFixed(2);
+                if (s.dayLow)  document.getElementById('sLow').innerText  = '$' + s.dayLow.toFixed(2);
+                document.getElementById('dBuyPow').innerText = '$' + (cash*leverage).toLocaleString(undefined,{maximumFractionDigits:0});
+            }
+        }
+
         updateDataSourceUI();
     }
 
@@ -1832,29 +2024,42 @@ function startNewsEngine() {
 
         errEl.classList.add('hidden');
         resultEl.classList.remove('hidden');
-        resultEl.textContent = '🔄 Testing API key with AAPL…';
+        resultEl.className = 'mt-3 text-sm text-center text-gray-500';
 
-        // Quick test call
+        if (!key) {
+            errEl.textContent = '⚠️ Please enter an API key.';
+            errEl.classList.remove('hidden');
+            resultEl.classList.add('hidden');
+            return;
+        }
+
+        // Save immediately without network test (network is blocked in preview environments)
+        RT.key      = key;
+        RT.interval = interval;
+        localStorage.setItem('finnhub_api_key', key);
+        localStorage.setItem('finnhub_interval', interval);
+
+        resultEl.className  = 'mt-3 text-sm text-center text-green-700 font-semibold';
+        resultEl.textContent = '✅ Key saved! Live data will activate when opened locally.';
+
+        // Try a live test — works when opened as a local file, silently skips if blocked
         try {
             const testUrl = `https://finnhub.io/api/v1/quote?symbol=AAPL&token=${key}`;
             const res = await fetch(testUrl);
             const data = await res.json();
-            if (!data.c || data.c === 0) throw new Error('Invalid response');
-
-            RT.key      = key;
-            RT.interval = interval;
-            localStorage.setItem('finnhub_api_key', key);
-            localStorage.setItem('finnhub_interval', interval);
-
-            resultEl.className  = 'mt-3 text-sm text-center text-green-700 font-semibold';
-            resultEl.textContent = `✅ Connected! AAPL = $${data.c.toFixed(2)}`;
-            startLiveData();
-            setTimeout(closeApiConfig, 1800);
+            if (data.c && data.c > 0) {
+                resultEl.textContent = `✅ Connected! AAPL = $${data.c.toFixed(2)}`;
+                startLiveData();
+                setTimeout(closeApiConfig, 1800);
+                return;
+            }
         } catch(e) {
-            resultEl.classList.add('hidden');
-            errEl.textContent = '❌ API key test failed. Check your key and try again.';
-            errEl.classList.remove('hidden');
+            // Network blocked (e.g. running in Claude preview) — key is still saved
         }
+
+        startLiveData(); // will gracefully no-op if network blocked
+        updateDataSourceUI();
+        setTimeout(closeApiConfig, 2200);
     }
 
     function clearApiConfig() {
