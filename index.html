@@ -610,7 +610,7 @@ function startNewsEngine() {
         renderNews();
         if (!marketLoopStarted) {
             marketLoopStarted = true;
-            setInterval(simulateMarketTick, 6000);
+            setInterval(simulateMarketTick, 30000);
         }
         // Start live data if API key is already stored
         updateMarketStatus();
@@ -1765,10 +1765,28 @@ function startNewsEngine() {
         processPendingOrders();
         processAlerts();
         renderNews();
+        // If detail page is open, update just the price fields — never re-open it
         if (detailStock) {
-            const u = getStockBySymbol(detailStock.symbol);
-            if (u) openStockDetail(u);
+            const s = getStockBySymbol(detailStock.symbol);
+            if (s) updateDetailPriceFields(s);
         }
+    }
+
+    // Update price/change fields on the detail page without touching anything else
+    function updateDetailPriceFields(s) {
+        const isPos = s.change >= 0;
+        const changeAmt = s.price * Math.abs(s.change) / 100;
+        const color = isPos ? '#81c995' : '#f28b82';
+        const priceEl = document.getElementById('detailPrice');
+        if (priceEl) priceEl.innerText = s.price.toFixed(2);
+        const caEl = document.getElementById('detailChangeAmt');
+        if (caEl) { caEl.style.color = color; caEl.innerText = (isPos?'+':'-') + changeAmt.toFixed(2); }
+        const cpEl = document.getElementById('detailChangePct');
+        if (cpEl) { cpEl.style.color = color; cpEl.innerText = '(' + Math.abs(s.change).toFixed(2) + '%)'; }
+        const arEl = document.getElementById('detailArrow');
+        if (arEl) { arEl.style.color = color; arEl.innerText = isPos ? '↑' : '↓'; }
+        const bpEl = document.getElementById('dBuyPow');
+        if (bpEl) bpEl.innerText = '$' + (cash*leverage).toLocaleString(undefined,{maximumFractionDigits:0});
     }
 
     function exportPortfolioData() {
@@ -1960,24 +1978,10 @@ function startNewsEngine() {
         renderGrid();
         updateUI();
 
-        // If stock detail is open and it's in this batch, update header prices
+        // If stock detail is open and it's in this batch, update header prices only
         if (detailStock && batch.includes(detailStock.symbol)) {
             const s = getStockBySymbol(detailStock.symbol);
-            if (s) {
-                const isPos = s.change >= 0;
-                const changeAmt = s.price * Math.abs(s.change) / 100;
-                const color = isPos ? '#81c995' : '#f28b82';
-                document.getElementById('detailPrice').innerText = s.price.toFixed(2);
-                document.getElementById('detailChangeAmt').style.color = color;
-                document.getElementById('detailChangeAmt').innerText = (isPos?'+':'-') + changeAmt.toFixed(2);
-                document.getElementById('detailChangePct').style.color = color;
-                document.getElementById('detailChangePct').innerText = '(' + Math.abs(s.change).toFixed(2) + '%)';
-                document.getElementById('detailArrow').style.color = color;
-                document.getElementById('detailArrow').innerText = isPos ? '↑' : '↓';
-                if (s.dayHigh) document.getElementById('sHigh').innerText = '$' + s.dayHigh.toFixed(2);
-                if (s.dayLow)  document.getElementById('sLow').innerText  = '$' + s.dayLow.toFixed(2);
-                document.getElementById('dBuyPow').innerText = '$' + (cash*leverage).toLocaleString(undefined,{maximumFractionDigits:0});
-            }
+            if (s) updateDetailPriceFields(s);
         }
 
         updateDataSourceUI();
