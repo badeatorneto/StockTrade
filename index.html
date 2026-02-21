@@ -518,8 +518,8 @@
     <div class="lg:col-span-3">
         <div class="flex justify-between items-end mb-6">
             <div>
-                <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Market Trends</div>
-                <h2 class="text-2xl font-normal text-gray-800">Most active</h2>
+                <div style="font-size:11px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Market Trends</div>
+                <h2 style="font-size:1.5rem;font-weight:300;color:#f0f0fa;">Most active</h2>
             </div>
 
         <div id="grid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
@@ -530,70 +530,68 @@
         
         <div class="g-card p-6">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-normal text-gray-800">Your Portfolio</h3>
-                <span id="dataSourceBadge" class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded">SIM</span>
+                <h3 style="font-size:1rem;font-weight:600;color:#e0e0f5;">Your Portfolio</h3>
+                <span id="dataSourceBadge" style="font-size:11px;font-weight:700;color:#8888a8;background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);">SIM</span>
             </div>
-            
             <div class="mb-6">
-                <div class="text-sm text-gray-500 mb-1">Total Equity</div>
-                <div class="text-3xl font-normal text-gray-900">$<span id="netWorth">100,000.00</span></div>
-                <div id="plDisplay" class="text-sm font-medium text-[#137333] mt-1">+$0.00 (0.00%)</div>
+                <div style="font-size:12px;color:#8888a8;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em;">Total Equity</div>
+                <div style="font-size:1.9rem;font-weight:300;color:#f5f5fa;font-family:var(--v-mono);">$<span id="netWorth">100,000.00</span></div>
+                <div id="plDisplay" style="font-size:0.875rem;font-weight:600;color:#4ade80;margin-top:4px;">+$0.00 (0.00%)</div>
             </div>
-
-            <div id="portfolioList" class="space-y-0 divide-y divide-gray-100 mb-6 max-h-60 overflow-y-auto">
-                <div class="text-sm text-gray-500 py-4 text-center italic">Your portfolio is empty.</div>
+            <div id="portfolioList" class="space-y-0 mb-6 max-h-60 overflow-y-auto" style="border-top:1px solid rgba(255,255,255,0.06);">
+                <div style="font-size:13px;color:#8888a8;padding:16px 0;text-align:center;font-style:italic;">Your portfolio is empty.</div>
             </div>
         </div>
 
         <div class="g-card p-6">
             <div class="flex justify-between items-center mb-3">
-                <h3 class="text-lg font-normal text-gray-800">Portfolio Analytics</h3>
-                <span class="text-xs text-gray-500">Live</span>
+                <h3 style="font-size:1rem;font-weight:600;color:#e0e0f5;">Portfolio Analytics</h3>
+                <span style="font-size:11px;color:#4ade80;font-weight:600;">Live</span>
             </div>
             <div class="h-44 mb-3"><canvas id="allocationChart"></canvas></div>
-            <div id="sectorExposure" class="text-xs text-gray-600 space-y-1 mb-3"></div>
-            <div class="text-xs text-gray-600">Realized P/L: <span id="realizedPL" class="font-semibold">$0.00</span></div>
-            <div class="text-xs text-gray-600">Unrealized P/L: <span id="unrealizedPL" class="font-semibold">$0.00</span></div>
+            <div id="sectorExposure" class="space-y-1 mb-3" style="font-size:12px;color:#b0b0c8;"></div>
+            <div style="font-size:12px;color:#a0a0b8;margin-bottom:2px;">Realized P/L: <span id="realizedPL" style="font-weight:700;">$0.00</span></div>
+            <div style="font-size:12px;color:#a0a0b8;">Unrealized P/L: <span id="unrealizedPL" style="font-weight:700;">$0.00</span></div>
         </div>
 
         <div class="g-card p-6">
             <div class="flex justify-between items-center mb-3">
-                <h3 class="text-lg font-normal text-gray-800">Watchlist & Alerts</h3>
-                <button onclick="addCurrentToWatchlist()" class="text-xs text-blue-600 font-semibold">+ Current</button>
+                <h3 style="font-size:1rem;font-weight:600;color:#e0e0f5;">Watchlist & Alerts</h3>
+                <button onclick="addCurrentToWatchlist()" style="font-size:12px;font-weight:600;color:var(--v-gold);background:none;border:none;cursor:pointer;">+ Current</button>
             </div>
-            <div id="watchlistItems" class="text-sm space-y-2 mb-3"></div>
+            <div id="watchlistItems" class="space-y-2 mb-3" style="font-size:13px;color:#c0c0d8;"></div>
             <div class="grid grid-cols-3 gap-2 mb-2">
-                <input id="alertSymbol" placeholder="SYM" class="border border-gray-300 rounded px-2 py-1 text-xs">
-                <select id="alertType" class="border border-gray-300 rounded px-2 py-1 text-xs">
+                <input id="alertSymbol" placeholder="SYM" style="background:#0f0f18;border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:6px 8px;font-size:12px;color:#e0e0f5;outline:none;">
+                <select id="alertType" style="background:#0f0f18;border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:6px 8px;font-size:12px;color:#e0e0f5;outline:none;">
                     <option value="above">Above</option>
                     <option value="below">Below</option>
                     <option value="move">% Move</option>
                 </select>
-                <input id="alertValue" placeholder="Value" type="number" step="0.01" class="border border-gray-300 rounded px-2 py-1 text-xs">
+                <input id="alertValue" placeholder="Value" type="number" step="0.01" style="background:#0f0f18;border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:6px 8px;font-size:12px;color:#e0e0f5;outline:none;">
             </div>
-            <button onclick="createPriceAlert()" class="w-full bg-blue-50 text-blue-700 border border-blue-200 rounded py-1.5 text-xs font-semibold">Create Alert</button>
-            <div id="alertsList" class="mt-3 text-xs text-gray-600 space-y-1"></div>
-            <div id="alertFeed" class="mt-3 text-xs space-y-1"></div>
+            <button onclick="createPriceAlert()" style="width:100%;background:rgba(212,168,75,0.1);color:var(--v-gold);border:1px solid rgba(212,168,75,0.25);border-radius:8px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='rgba(212,168,75,0.18)'" onmouseout="this.style.background='rgba(212,168,75,0.1)'">Create Alert</button>
+            <div id="alertsList" class="mt-3 space-y-1" style="font-size:12px;color:#a0a0b8;"></div>
+            <div id="alertFeed" class="mt-3 space-y-1" style="font-size:12px;"></div>
         </div>
 
         <div class="g-card p-6">
-            <h3 class="text-lg font-normal text-gray-800 mb-3">Daily Quests & Achievements</h3>
-            <div id="questList" class="text-sm text-gray-700 space-y-1 mb-3"></div>
-            <div class="text-xs text-gray-500 mb-2">Streak: <span id="tradeStreak" class="font-semibold">0 days</span></div>
+            <h3 style="font-size:1rem;font-weight:600;color:#e0e0f5;margin-bottom:12px;">Daily Quests & Achievements</h3>
+            <div id="questList" class="space-y-1 mb-3" style="font-size:13px;color:#c0c0d8;"></div>
+            <div style="font-size:12px;color:#8888a8;margin-bottom:8px;">Streak: <span id="tradeStreak" style="font-weight:700;color:#d4a84b;">0 days</span></div>
             <div id="achievementList" class="flex flex-wrap gap-2"></div>
         </div>
 
         <div class="g-card p-6">
-            <h3 class="text-lg font-normal text-gray-800 mb-3">Transaction History</h3>
-            <div id="historyList" class="text-xs text-gray-700 space-y-2 max-h-44 overflow-y-auto"></div>
+            <h3 style="font-size:1rem;font-weight:600;color:#e0e0f5;margin-bottom:12px;">Transaction History</h3>
+            <div id="historyList" class="space-y-2 max-h-44 overflow-y-auto" style="font-size:12px;color:#c0c0d8;"></div>
         </div>
 
         <div>
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-normal text-gray-800">Market News</h3>
-                <a href="https://finance.yahoo.com/news/" target="_blank" rel="noopener noreferrer" class="text-sm text-[#1a73e8] font-medium hover:underline">More news ↗</a>
+                <h3 style="font-size:1rem;font-weight:600;color:#e0e0f5;">Market News</h3>
+                <a href="https://finance.yahoo.com/news/" target="_blank" rel="noopener noreferrer" style="font-size:13px;color:var(--v-gold);font-weight:600;text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">More news ↗</a>
             </div>
-            <div id="newsFeed" class="space-y-4"></div>
+            <div id="newsFeed" class="space-y-3"></div>
         </div>
 
     </aside>
@@ -708,42 +706,42 @@
 
 <!-- ═══ API CONFIG MODAL ═══ -->
 <div id="apiConfigModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8">
-        <div class="flex items-center justify-between mb-6">
+    <div style="background:#1a1a24;border:1px solid rgba(255,255,255,0.1);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,0.7);width:100%;max-width:520px;padding:36px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;">
             <div>
-                <h2 class="text-xl font-bold text-gray-900">⚡ Real-Time Market Data</h2>
-                <p class="text-sm text-gray-500 mt-1">Connect Finnhub API for live stock prices</p>
+                <h2 style="font-size:1.25rem;font-weight:700;color:#f0f0fa;margin:0 0 4px;">⚡ Real-Time Market Data</h2>
+                <p style="font-size:0.85rem;color:#8888a8;margin:0;">Connect your Finnhub API key for live prices</p>
             </div>
-            <button onclick="closeApiConfig()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            <button onclick="closeApiConfig()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;line-height:1;padding:0;" onmouseover="this.style.color='#f0f0fa'" onmouseout="this.style.color='#8888a8'">&times;</button>
         </div>
-        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-3 text-sm text-blue-800">
-            <strong>Free Finnhub API</strong> — Get your key at 
-            <a href="https://finnhub.io/register" target="_blank" class="underline font-semibold">finnhub.io/register</a>
+        <div style="background:rgba(99,179,237,0.08);border:1px solid rgba(99,179,237,0.2);border-radius:12px;padding:14px;margin-bottom:12px;font-size:0.875rem;color:#90cdf4;">
+            <strong style="color:#bee3f8;">Free Finnhub API</strong> — Get your key at
+            <a href="https://finnhub.io/register" target="_blank" style="color:#63b3ed;font-weight:600;text-decoration:underline;">finnhub.io/register</a>
             &nbsp;(60 calls/min, no credit card needed)
         </div>
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-5 text-sm text-amber-800">
-            ⬇️ <strong>Important:</strong> Download this file and open it in your browser locally for live data to work. Network calls are blocked in the Claude preview environment.
+        <div style="background:rgba(212,168,75,0.08);border:1px solid rgba(212,168,75,0.2);border-radius:12px;padding:14px;margin-bottom:20px;font-size:0.875rem;color:#d4a84b;">
+            ⬇️ <strong>Important:</strong> Download this file and open it locally in your browser. Network calls are blocked in the Claude preview.
         </div>
-        <div id="apiConfigError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4"></div>
-        <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Finnhub API Key</label>
-            <input id="finnhubKeyInput" type="text" placeholder="e.g. d0abc123..." class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <p class="text-xs text-gray-400 mt-1">Stored locally in your browser — never sent to any server.</p>
+        <div id="apiConfigError" class="hidden" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;"></div>
+        <div style="margin-bottom:16px;">
+            <label style="display:block;font-size:12px;font-weight:700;color:#a0a0b8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Finnhub API Key</label>
+            <input id="finnhubKeyInput" type="text" placeholder="e.g. d0abc123..." style="width:100%;background:#0f0f18;border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:12px 14px;font-size:14px;color:#e8e8f5;font-family:var(--v-mono);outline:none;" onfocus="this.style.borderColor='var(--v-gold)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+            <p style="font-size:11px;color:#606080;margin-top:6px;">Stored locally in your browser — never sent to any server.</p>
         </div>
-        <div class="mb-5">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Update Interval</label>
-            <select id="updateIntervalInput" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div style="margin-bottom:24px;">
+            <label style="display:block;font-size:12px;font-weight:700;color:#a0a0b8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Update Interval</label>
+            <select id="updateIntervalInput" style="width:100%;background:#0f0f18;border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:12px 14px;font-size:14px;color:#e8e8f5;outline:none;">
                 <option value="10000">Every 10 seconds (recommended)</option>
                 <option value="15000">Every 15 seconds</option>
                 <option value="30000">Every 30 seconds</option>
                 <option value="60000">Every 60 seconds</option>
             </select>
         </div>
-        <div class="flex gap-3">
-            <button onclick="saveApiConfig()" class="flex-1 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-semibold py-3 rounded-lg transition text-sm">Save & Activate</button>
-            <button onclick="clearApiConfig()" class="bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm font-semibold transition">Clear</button>
+        <div style="display:flex;gap:12px;">
+            <button onclick="saveApiConfig()" style="flex:1;background:var(--v-gold);color:#0a0a0f;font-weight:700;padding:14px;border-radius:10px;border:none;font-size:15px;cursor:pointer;font-family:var(--v-sans);" onmouseover="this.style.background='var(--v-gold-light)'" onmouseout="this.style.background='var(--v-gold)'">Save & Activate</button>
+            <button onclick="clearApiConfig()" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;padding:14px 20px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;" onmouseover="this.style.background='rgba(239,68,68,0.18)'" onmouseout="this.style.background='rgba(239,68,68,0.1)'">Clear</button>
         </div>
-        <div id="apiTestResult" class="mt-3 text-sm text-center text-gray-500 hidden"></div>
+        <div id="apiTestResult" style="margin-top:12px;font-size:13px;text-align:center;color:#8888a8;display:none;"></div>
     </div>
 </div>
 
@@ -1042,13 +1040,13 @@ function startNewsEngine() {
                 card.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div>
-                            <div class="font-bold text-gray-800 stock-sym">${stock.symbol}${freshLabel}</div>
-                            <div class="text-xs text-gray-500 truncate w-24">${stock.name}</div>
+                            <div class="font-bold stock-sym" style="color:#e8e8f5;font-size:0.95rem;letter-spacing:0.02em;">${stock.symbol}${freshLabel}</div>
+                            <div class="truncate w-28" style="font-size:0.75rem;color:#8888a8;margin-top:2px;">${stock.name}</div>
                         </div>
                         <div class="change-pill ${pillClass}">${changeStr}</div>
                     </div>
                     <div>
-                        <div class="text-2xl font-normal text-gray-900 stock-price">${priceStr}</div>
+                        <div class="stock-price" style="font-size:1.5rem;font-weight:300;color:#f0f0fa;font-family:var(--v-mono);margin-top:4px;">${priceStr}</div>
                     </div>`;
                 grid.insertBefore(card, grid.children[idx] || null);
             }
@@ -1493,20 +1491,20 @@ function startNewsEngine() {
             if (row) {
                 row.querySelector('.port-val').textContent = '$' + val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 row.querySelector('.port-chg').textContent = (isPos ? '+' : '') + stock.change.toFixed(2) + '% today';
-                row.querySelector('.port-chg').className   = 'port-chg text-xs ' + (isPos ? 'text-[#137333]' : 'text-[#c5221f]');
+                row.querySelector('.port-chg').style.color = isPos ? '#4ade80' : '#f87171';
                 row.querySelector('.port-qty').textContent = qty + ' shares · ' + (gainPct >= 0 ? '+' : '') + gainPct + '% avg';
             } else {
                 row = document.createElement('div');
-                row.className       = 'py-3 flex justify-between items-center cursor-pointer hover:bg-gray-50 rounded';
+                row.className       = 'py-3 flex justify-between items-center cursor-pointer rounded'; row.style.cssText = 'border-bottom:1px solid rgba(255,255,255,0.06);';
                 row.dataset.portSym = symbol;
                 row.innerHTML = `
                     <div>
-                        <div class="font-semibold text-gray-900">${symbol}</div>
-                        <div class="port-qty text-xs text-gray-500">${qty} shares · ${gainPct >= 0 ? '+' : ''}${gainPct}% avg</div>
+                        <div style="font-weight:700;color:#e8e8f5;font-size:0.875rem;">${symbol}</div>
+                        <div class="port-qty" style="font-size:11px;color:#8888a8;margin-top:2px;">${qty} shares · ${gainPct >= 0 ? '+' : ''}${gainPct}% avg</div>
                     </div>
-                    <div class="text-right">
-                        <div class="port-val font-semibold text-gray-900">$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                        <div class="port-chg text-xs ${isPos ? 'text-[#137333]' : 'text-[#c5221f]'}">${isPos ? '+' : ''}${stock.change.toFixed(2)}% today</div>
+                    <div style="text-align:right;">
+                        <div class="port-val" style="font-weight:600;color:#f0f0fa;font-size:0.875rem;font-family:var(--v-mono);">$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                        <div class="port-chg" style="font-size:11px;color:${isPos ? '#4ade80' : '#f87171'};">${isPos ? '+' : ''}${stock.change.toFixed(2)}% today</div>
                     </div>`;
                 row.onclick = () => openStockDetail(stock);
                 list.appendChild(row);
@@ -1514,7 +1512,7 @@ function startNewsEngine() {
         });
 
         if (symsInPortfolio.length === 0) {
-            list.innerHTML = '<div class="text-sm text-gray-500 py-4 text-center italic">Your portfolio is empty.</div>';
+            list.innerHTML = '<div style="font-size:13px;color:#8888a8;padding:16px 0;text-align:center;font-style:italic;">Your portfolio is empty.</div>';
         }
 
         // Total equity + P&L
@@ -1527,7 +1525,7 @@ function startNewsEngine() {
         const plEl  = document.getElementById('plDisplay');
         if (plEl) {
             plEl.innerText = (pl >= 0 ? '+$' : '-$') + Math.abs(pl).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' (' + (pl >= 0 ? '+' : '') + plPct + '%)';
-            plEl.className = 'text-sm font-medium mt-1 ' + (pl >= 0 ? 'text-[#137333]' : 'text-[#c5221f]');
+            plEl.style.color = pl >= 0 ? '#4ade80' : '#f87171';
         }
 
         // Cash / buying power
@@ -1958,7 +1956,7 @@ function startNewsEngine() {
         }).join('') || '<div class="text-gray-500">No alerts yet.</div>';
 
         const feed = document.getElementById('alertFeed');
-        if (feed) feed.innerHTML = alertEvents.slice(0, 4).map(x => '<div class="text-green-700 bg-green-50 border border-green-200 rounded px-2 py-1">' + x + '</div>').join('');
+        if (feed) feed.innerHTML = alertEvents.slice(0, 4).map(x => '<div style="color:#4ade80;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:6px;padding:4px 8px;">' + x + '</div>').join('');
     }
 
     function removeAlert(id) {
@@ -2071,26 +2069,27 @@ function startNewsEngine() {
         const el = document.getElementById('historyList');
         if (!el) return;
         if (transactions.length === 0) {
-            el.innerHTML = '<div class="text-gray-500 text-center py-3">No trades yet.</div>';
+            el.innerHTML = '<div style="color:#8888a8;text-align:center;padding:12px 0;font-style:italic;">No trades yet.</div>';
             return;
         }
         el.innerHTML = transactions.slice(0, 20).map(t => {
             const isBuy  = t.side === 'BUY';
-            const color  = isBuy ? '#137333' : '#c5221f';
-            const bg     = isBuy ? '#e6f4ea' : '#fce8e6';
+            const badgeStyle = isBuy
+                ? 'background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.25);'
+                : 'background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.25);';
             const plHtml = t.side === 'SELL'
-                ? `<span class="font-semibold ml-1" style="color:${t.realizedPL >= 0 ? '#137333' : '#c5221f'}">${t.realizedPL >= 0 ? '+' : ''}${fmtMoney(t.realizedPL)}</span>`
+                ? `<span style="font-weight:600;margin-left:6px;font-size:10px;color:${t.realizedPL >= 0 ? '#4ade80' : '#f87171'}">${t.realizedPL >= 0 ? '+' : ''}${fmtMoney(t.realizedPL)}</span>`
                 : '';
             const time = new Date(t.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            return `<div data-tx-id="${t.id}" class="flex items-center justify-between rounded-lg px-3 py-2 mb-1" style="background:${bg}">
-                <div>
-                    <span class="font-bold text-xs" style="color:${color}">${t.side}</span>
-                    <span class="text-xs text-gray-700 ml-1">${t.qty} × <strong>${t.symbol}</strong></span>
+            return `<div data-tx-id="${t.id}" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;margin-bottom:4px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                    <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;${badgeStyle}">${t.side}</span>
+                    <span style="font-size:12px;color:#c0c0d8;">${t.qty} × <strong style="color:#e8e8f5;">${t.symbol}</strong></span>
                     ${plHtml}
                 </div>
-                <div class="text-right">
-                    <div class="text-xs font-semibold text-gray-800">$${t.price.toFixed(2)}</div>
-                    <div class="text-[10px] text-gray-400">${time}</div>
+                <div style="text-align:right;">
+                    <div style="font-size:12px;font-weight:600;color:#e0e0f5;font-family:var(--v-mono);">$${t.price.toFixed(2)}</div>
+                    <div style="font-size:10px;color:#606080;">${time}</div>
                 </div>
             </div>`;
         }).join('');
@@ -2118,11 +2117,11 @@ function startNewsEngine() {
         const uEl = document.getElementById('unrealizedPL');
         if (rEl) {
             rEl.innerText  = (realized   >= 0 ? '+' : '') + fmtMoney(realized);
-            rEl.style.color = realized   >= 0 ? '#137333' : '#c5221f';
+            rEl.style.color = realized   >= 0 ? '#4ade80' : '#f87171';
         }
         if (uEl) {
             uEl.innerText  = (unrealized >= 0 ? '+' : '') + fmtMoney(unrealized);
-            uEl.style.color = unrealized >= 0 ? '#137333' : '#c5221f';
+            uEl.style.color = unrealized >= 0 ? '#4ade80' : '#f87171';
         }
 
         // Sector exposure
@@ -2231,15 +2230,16 @@ function startNewsEngine() {
         feed.innerHTML = movers.map((s, i) => {
             const pos = s.change >= 0;
             const sentiment = pos ? 'Bullish' : 'Bearish';
-            const tagClass = pos ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200';
+            const tagStyle = pos
+                ? 'background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.25);'
+                : 'background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);';
             const source = ['Reuters','Bloomberg','CNBC','WSJ'][i % 4];
             const headline = pos ? (s.symbol + ' climbs as momentum buyers step in') : (s.symbol + ' slips as sellers pressure the tape');
-            return '<div class="flex gap-3 p-3 border border-gray-100 rounded-lg">'
-                + '<div class="flex-1">'
-                + '<div class="text-xs text-gray-500 mb-1"><span class="font-bold text-gray-700">' + source + '</span> • ' + (15 + i * 10) + ' min ago</div>'
-                + '<div class="text-sm font-medium text-[#1a0dab]">' + headline + '</div>'
-                + '<div class="mt-1 inline-block text-[10px] px-2 py-0.5 border rounded ' + tagClass + '">' + sentiment + '</div>'
-                + '</div></div>';
+            return '<div style="padding:14px;border:1px solid rgba(255,255,255,0.08);border-radius:10px;background:#1a1a24;">'
+                + '<div style="font-size:11px;color:#8888a8;margin-bottom:6px;"><span style="font-weight:700;color:#b0b0c8;">' + source + '</span> · ' + (15 + i * 10) + ' min ago</div>'
+                + '<div style="font-size:0.875rem;font-weight:500;color:#e0e0f5;line-height:1.4;margin-bottom:8px;">' + headline + '</div>'
+                + '<div style="display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;' + tagStyle + '">' + sentiment + '</div>'
+                + '</div>';
         }).join('');
     }
 
@@ -2643,14 +2643,14 @@ function startNewsEngine() {
         if (RT.key && RT.liveCount > 0) {
             badge.textContent = '⚡ LIVE';
             badge.className = 'text-xs font-bold px-2 py-1 rounded badge-live';
-            if (btn) { btn.textContent = '⚡ Live: ON'; btn.className = 'text-xs bg-green-100 border border-green-400 text-green-800 px-2 py-1 rounded font-bold transition'; }
+            if (btn) { btn.textContent = '⚡ Live: ON'; btn.style.cssText = 'font-size:11px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.35);color:#4ade80;padding:4px 10px;border-radius:6px;font-weight:700;cursor:pointer;'; }
         } else if (RT.key) {
             badge.textContent = '↻ Fetching…';
             badge.className = 'text-xs font-bold px-2 py-1 rounded badge-stale';
         } else {
             badge.textContent = 'SIM';
             badge.className = 'text-xs font-bold px-2 py-1 rounded badge-sim';
-            if (btn) { btn.textContent = '⚡ Live Data'; btn.className = 'text-xs bg-green-50 hover:bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded font-bold transition'; }
+            if (btn) { btn.textContent = '⚡ Live Data'; btn.style.cssText = 'font-size:11px;background:rgba(212,168,75,0.12);border:1px solid rgba(212,168,75,0.3);color:var(--v-gold);padding:4px 10px;border-radius:6px;font-weight:700;cursor:pointer;'; }
         }
     }
 
@@ -2702,7 +2702,7 @@ function startNewsEngine() {
         localStorage.setItem('finnhub_api_key', key);
         localStorage.setItem('finnhub_interval', interval);
 
-        resultEl.className  = 'mt-3 text-sm text-center text-green-700 font-semibold';
+        resultEl.style.cssText = 'margin-top:12px;font-size:13px;text-align:center;color:#4ade80;font-weight:600;display:block;';
         resultEl.textContent = '✅ Key saved! Live data will activate when opened locally.';
 
         // Try a live test — works when opened as a local file, silently skips if blocked
