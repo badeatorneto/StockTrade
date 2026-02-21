@@ -3,14 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Market Simulator</title>
+    <title>Vestra — Trading With No Risk</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Roboto', sans-serif; background-color: #f8f9fa; color: #202124; }
-        h1, h2, h3, .brand { font-family: 'Google Sans', sans-serif; }
+        h1, h2, h3 { font-family: 'Roboto', sans-serif; }
+        .vestra-brand { font-family: 'Playfair Display', serif; letter-spacing: -0.5px; }
+
+        /* Tutorial overlay */
+        #tutorialOverlay {
+            position: fixed; inset: 0; z-index: 99999;
+            background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        #tutorialOverlay.hidden { display: none; }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+        @keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+        .tutorial-card {
+            background: #1c1c2e;
+            border: 1px solid rgba(139,92,246,0.3);
+            border-radius: 20px;
+            width: 520px;
+            max-width: 90vw;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(139,92,246,0.2);
+            animation: slideUp 0.35s cubic-bezier(0.16,1,0.3,1);
+        }
+        .tutorial-progress-bar { height: 3px; background: rgba(255,255,255,0.1); }
+        .tutorial-progress-fill { height: 3px; background: linear-gradient(90deg,#7c3aed,#a78bfa); transition: width 0.5s cubic-bezier(0.16,1,0.3,1); }
         
         /* Google Card Style */
         .g-card { 
@@ -71,15 +96,15 @@
 <body class="overflow-x-hidden">
 
 <!-- ═══ LOGIN / REGISTER OVERLAY ═══ -->
-<div id="authOverlay" class="fixed inset-0 z-[9999] flex items-center justify-center" style="background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);">
+<div id="authOverlay" class="fixed inset-0 z-[9999] flex items-center justify-center" style="background:rgba(0,0,0,0.92);backdrop-filter:blur(12px);">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
         <div class="text-center mb-8">
-            <div class="inline-flex items-center gap-2 mb-3">
-                <span class="text-2xl font-medium text-gray-500">S&P</span>
-                <span class="text-2xl font-medium text-gray-700">500</span>
+            <div class="inline-flex flex-col items-center gap-1 mb-5">
+                <span class="vestra-brand text-4xl font-bold text-gray-900">Vestra</span>
+                <span class="text-xs font-medium text-gray-400 tracking-widest uppercase">Trading With No Risk</span>
             </div>
-            <h2 id="authTitle" class="text-3xl font-bold text-gray-900">Sign in</h2>
-            <p id="authSubtitle" class="text-gray-500 mt-1">to your trading account</p>
+            <h2 id="authTitle" class="text-2xl font-bold text-gray-900">Sign in</h2>
+            <p id="authSubtitle" class="text-gray-500 mt-1 text-sm">to your trading account</p>
         </div>
         <div id="authError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4"></div>
         <div id="registerNameGroup" class="hidden mb-4">
@@ -128,9 +153,11 @@
 <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
     <div class="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between gap-8">
         
-        <div class="flex items-center gap-2 min-w-[150px]">
-            <span class="text-xl text-gray-500 font-medium brand">Google</span>
-            <span class="text-xl text-gray-600 font-medium brand">Finance</span>
+        <div class="flex items-center gap-3 min-w-[180px]">
+            <div>
+                <div class="vestra-brand text-2xl font-bold text-gray-900 leading-none">Vestra</div>
+                <div class="text-[10px] text-gray-400 tracking-widest uppercase font-medium">Trading With No Risk</div>
+            </div>
         </div>
 
         <div class="flex-1 max-w-2xl">
@@ -249,7 +276,7 @@
         <div>
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-normal text-gray-800">Market News</h3>
-                <a href="#" class="text-sm text-[#1a73e8] font-medium hover:underline">More news</a>
+                <a href="https://finance.yahoo.com/news/" target="_blank" rel="noopener noreferrer" class="text-sm text-[#1a73e8] font-medium hover:underline">More news ↗</a>
             </div>
             <div id="newsFeed" class="space-y-4"></div>
         </div>
@@ -336,12 +363,31 @@
     </div>
 </div>
 
-<div id="tutorialBox" class="fixed bottom-4 right-4 z-[9999] hidden bg-white border border-blue-200 rounded-xl shadow-xl w-80 p-4">
-    <div class="text-sm font-bold text-gray-800 mb-1">Tutorial</div>
-    <div id="tutorialText" class="text-xs text-gray-600 mb-3"></div>
-    <div class="flex gap-2">
-        <button onclick="nextTutorialStep()" class="flex-1 bg-blue-600 text-white text-xs font-semibold py-2 rounded">Next</button>
-        <button onclick="skipTutorial()" class="flex-1 bg-gray-100 text-gray-700 text-xs font-semibold py-2 rounded">Skip</button>
+<!-- ═══ IMMERSIVE TUTORIAL OVERLAY ═══ -->
+<div id="tutorialOverlay" class="hidden">
+    <div class="tutorial-card">
+        <!-- Progress bar -->
+        <div class="tutorial-progress-bar">
+            <div class="tutorial-progress-fill" id="tutorialProgressFill" style="width:0%"></div>
+        </div>
+        <!-- Step indicator -->
+        <div class="flex items-center justify-between px-8 pt-6 pb-0">
+            <div class="flex gap-2" id="tutorialDots"></div>
+            <button onclick="skipTutorial()" class="text-xs text-gray-500 hover:text-gray-300 transition font-medium">Skip tutorial</button>
+        </div>
+        <!-- Content -->
+        <div class="px-8 py-6">
+            <div id="tutorialIcon" class="text-5xl mb-4 text-center"></div>
+            <h2 id="tutorialTitle" class="text-white text-2xl font-bold mb-3 text-center"></h2>
+            <p id="tutorialDesc" class="text-gray-400 text-sm leading-relaxed text-center mb-6"></p>
+            <!-- Highlight hint box -->
+            <div id="tutorialHint" class="hidden rounded-xl px-4 py-3 mb-6 text-sm text-center font-medium" style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);color:#c4b5fd;"></div>
+        </div>
+        <!-- Actions -->
+        <div class="px-8 pb-8 flex gap-3">
+            <button id="tutorialPrevBtn" onclick="tutorialPrev()" class="hidden flex-1 border border-gray-600 text-gray-300 hover:border-gray-400 font-semibold py-3 rounded-xl text-sm transition">← Back</button>
+            <button id="tutorialNextBtn" onclick="tutorialNext()" class="flex-1 font-bold py-3 rounded-xl text-sm transition text-white" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">Continue →</button>
+        </div>
     </div>
 </div>
 
@@ -755,6 +801,23 @@ function startNewsEngine() {
         renderDetailNews(stock.symbol);
         renderPendingOrders();
         onTutorialEvent('open_stock');
+
+        // Dim trade buttons if no API key
+        const buyBtn  = document.querySelector('[onclick="execDetailTrade(\'BUY\')"]');
+        const sellBtn = document.querySelector('[onclick="execDetailTrade(\'SELL\')"]');
+        if (buyBtn && sellBtn) {
+            if (!RT.key) {
+                buyBtn.style.opacity  = '0.45';
+                sellBtn.style.opacity = '0.45';
+                buyBtn.title  = 'Connect Live Data API to trade';
+                sellBtn.title = 'Connect Live Data API to trade';
+            } else {
+                buyBtn.style.opacity  = '1';
+                sellBtn.style.opacity = '1';
+                buyBtn.title  = '';
+                sellBtn.title = '';
+            }
+        }
         document.querySelectorAll('.ctab').forEach(b => { b.className = 'ctab text-sm font-medium px-4 py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200'; });
         document.querySelector('.ctab').className = 'ctab text-sm font-medium px-4 py-3 border-b-2 border-[#8ab4f8] text-[#8ab4f8]';
         drawChart(stock, '1D'); // async — fires and runs in background
@@ -992,6 +1055,13 @@ function startNewsEngine() {
 
     function execDetailTrade(type) {
         if (!detailStock) return;
+
+        // Gate: require API key before trading
+        if (!RT.key) {
+            showNoApiToast();
+            return;
+        }
+
         const sym      = detailStock.symbol;
         const price    = detailStock.price;
         const orderType = document.getElementById('orderType').value;
@@ -1045,6 +1115,27 @@ function startNewsEngine() {
     }
 
     function executeTrade(type) { execDetailTrade(type); }
+
+    function showNoApiToast() {
+        const existing = document.getElementById('tradeToast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'tradeToast';
+        toast.style.cssText = `position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
+            background:#1c1c2e;color:white;padding:14px 28px;border-radius:14px;
+            font-weight:600;font-size:14px;z-index:99999;box-shadow:0 4px 30px rgba(0,0,0,0.4);
+            border:1px solid rgba(139,92,246,0.4);animation:toastIn 0.25s ease-out;
+            display:flex;align-items:center;gap:12px;`;
+        toast.innerHTML = `<span style="font-size:20px">🔑</span>
+            <div>
+                <div>API key required to trade</div>
+                <div style="font-size:11px;opacity:0.7;font-weight:400;margin-top:2px">Click <strong>⚡ Live Data</strong> in the header to connect</div>
+            </div>`;
+        document.body.appendChild(toast);
+        // Shake animation
+        toast.animate([{transform:'translateX(-50%) translateX(-6px)'},{transform:'translateX(-50%) translateX(6px)'},{transform:'translateX(-50%) translateX(-4px)'},{transform:'translateX(-50%) translateX(0)'}], {duration:300});
+        setTimeout(() => { toast.style.opacity='0'; toast.style.transition='opacity 0.4s'; setTimeout(()=>toast.remove(),400); }, 3000);
+    }
 
     function triggerCrash() {
         stocks.forEach(s => { s.price = s.price * 0.8; s.change = s.change - 20; });
@@ -1975,42 +2066,122 @@ function startNewsEngine() {
     }
 
     const tutorialSteps = [
-        'Welcome. Step 1: Open any stock card from the market grid.',
-        'Step 2: In the detail page, place a BUY market order.',
-        'Step 3: Place a SELL market order to complete the guided trade flow.'
+        {
+            icon: '👋',
+            title: 'Welcome to Vestra',
+            desc: 'Your risk-free trading simulator. Practice buying and selling real stocks with $100,000 in virtual cash — no real money, no real risk.',
+            hint: null,
+            event: null
+        },
+        {
+            icon: '📊',
+            title: 'Browse the Market',
+            desc: 'The main grid shows live stock prices updating in real-time. Search for any ticker or company name in the search bar above.',
+            hint: '👆 Try clicking on any stock card to open its detail page',
+            event: 'open_stock'
+        },
+        {
+            icon: '⚡',
+            title: 'Connect Live Data',
+            desc: 'Click the "⚡ Live Data" button in the header to connect your Finnhub API key. This enables real-time prices and candlestick charts. Without it, trading is disabled.',
+            hint: 'You need a free API key from finnhub.io to trade',
+            event: null
+        },
+        {
+            icon: '💸',
+            title: 'Place Your First Buy',
+            desc: 'Open any stock, set the quantity, make sure "Market" order is selected, then hit the green Buy button. Your shares and portfolio update instantly.',
+            hint: '🟢 Market orders fill immediately at the current price',
+            event: 'buy_trade'
+        },
+        {
+            icon: '📈',
+            title: 'Track Your Portfolio',
+            desc: 'The right sidebar shows your total equity, unrealized P&L, sector exposure, and transaction history — all updating live as prices move.',
+            hint: null,
+            event: null
+        },
+        {
+            icon: '🏆',
+            title: 'Compete on the Leaderboard',
+            desc: 'Every trade updates your rank. Click the Leaderboard button to see how you stack up against other traders globally.',
+            hint: null,
+            event: null
+        },
+        {
+            icon: '🎯',
+            title: 'You\'re Ready to Trade',
+            desc: 'Complete daily quests, unlock achievements, and grow your virtual portfolio. Remember — Vestra is trading with no risk.',
+            hint: '🚀 Good luck, trader!',
+            event: null
+        }
     ];
+
+    function renderTutorialStep() {
+        const step = tutorialState.step;
+        const s = tutorialSteps[step];
+        const total = tutorialSteps.length;
+
+        document.getElementById('tutorialIcon').textContent  = s.icon;
+        document.getElementById('tutorialTitle').textContent = s.title;
+        document.getElementById('tutorialDesc').textContent  = s.desc;
+
+        const hintEl = document.getElementById('tutorialHint');
+        if (s.hint) { hintEl.textContent = s.hint; hintEl.classList.remove('hidden'); }
+        else { hintEl.classList.add('hidden'); }
+
+        // Progress fill
+        document.getElementById('tutorialProgressFill').style.width = ((step / (total - 1)) * 100) + '%';
+
+        // Dots
+        const dotsEl = document.getElementById('tutorialDots');
+        dotsEl.innerHTML = tutorialSteps.map((_, i) =>
+            `<div class="rounded-full transition-all duration-300" style="width:${i===step?'20px':'8px'};height:8px;background:${i===step?'#a78bfa':i<step?'rgba(167,139,250,0.5)':'rgba(255,255,255,0.15)'}"></div>`
+        ).join('');
+
+        // Back button
+        const prevBtn = document.getElementById('tutorialPrevBtn');
+        if (step > 0) prevBtn.classList.remove('hidden'); else prevBtn.classList.add('hidden');
+
+        // Next button label
+        const nextBtn = document.getElementById('tutorialNextBtn');
+        nextBtn.textContent = step === total - 1 ? '🚀 Start Trading' : 'Continue →';
+    }
 
     function startTutorial(forceOpen) {
         if (!forceOpen && currentUser && currentUser.tutorialDone) return;
         tutorialState.active = true;
-        tutorialState.step = 0;
-        document.getElementById('tutorialBox').classList.remove('hidden');
-        document.getElementById('tutorialText').innerText = tutorialSteps[0];
+        tutorialState.step   = 0;
+        document.getElementById('tutorialOverlay').classList.remove('hidden');
+        renderTutorialStep();
     }
 
-    function nextTutorialStep() {
-        if (!tutorialState.active) return;
-        tutorialState.step = Math.min(tutorialState.step + 1, tutorialSteps.length - 1);
-        document.getElementById('tutorialText').innerText = tutorialSteps[tutorialState.step];
+    function tutorialNext() {
+        const total = tutorialSteps.length;
+        if (tutorialState.step >= total - 1) { skipTutorial(); return; }
+        tutorialState.step++;
+        renderTutorialStep();
+    }
+
+    function tutorialPrev() {
+        if (tutorialState.step <= 0) return;
+        tutorialState.step--;
+        renderTutorialStep();
     }
 
     function skipTutorial() {
         tutorialState.active = false;
-        document.getElementById('tutorialBox').classList.add('hidden');
-        if (currentUser) currentUser.tutorialDone = true;
-        saveUserData(false);
+        document.getElementById('tutorialOverlay').classList.add('hidden');
+        if (currentUser) { currentUser.tutorialDone = true; saveUserData(false); }
     }
+
+    function nextTutorialStep() { tutorialNext(); } // legacy alias
 
     function onTutorialEvent(eventName) {
         if (!tutorialState.active) return;
-        if (tutorialState.step === 0 && eventName === 'open_stock') nextTutorialStep();
-        else if (tutorialState.step === 1 && eventName === 'buy_trade') nextTutorialStep();
-        else if (tutorialState.step === 2 && eventName === 'sell_trade') {
-            if (currentUser) currentUser.tutorialDone = true;
-            tutorialState.active = false;
-            document.getElementById('tutorialText').innerText = 'Tutorial complete.';
-            setTimeout(() => document.getElementById('tutorialBox').classList.add('hidden'), 1200);
-            saveUserData(false);
+        const step = tutorialSteps[tutorialState.step];
+        if (step && step.event === eventName) {
+            setTimeout(() => tutorialNext(), 600); // slight delay so user sees the action
         }
     }
 
