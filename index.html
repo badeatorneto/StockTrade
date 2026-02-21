@@ -450,25 +450,24 @@
 
 
 <!-- ═══ LEADERBOARD OVERLAY ═══ -->
-<div id="leaderboardOverlay" class="fixed inset-0 z-[9998] hidden" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);" onclick="closeLeaderboard()">
-    <div onclick="event.stopPropagation()" class="absolute right-0 top-0 h-full w-full max-w-xl bg-white shadow-2xl overflow-y-auto flex flex-col">
-        <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
+<div id="leaderboardOverlay" class="fixed inset-0 z-[9998] hidden" style="background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);" onclick="closeLeaderboard()">
+    <div onclick="event.stopPropagation()" style="position:absolute;right:0;top:0;height:100%;width:100%;max-width:480px;background:#111118;border-left:1px solid rgba(255,255,255,0.08);overflow-y:auto;display:flex;flex-direction:column;">
+        <div style="position:sticky;top:0;background:#111118;border-bottom:1px solid rgba(255,255,255,0.08);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;z-index:10;">
             <div>
-                <h2 class="text-xl font-bold text-gray-900">🏆 Global Leaderboard</h2>
-                <p class="text-xs text-gray-500 mt-0.5">All registered traders ranked</p>
+                <h2 style="font-size:1.1rem;font-weight:700;color:#f0f0fa;margin:0 0 2px;">🏆 Global Leaderboard</h2>
+                <p style="font-size:11px;color:#8888a8;margin:0;">All registered traders ranked</p>
             </div>
-            <button onclick="closeLeaderboard()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            <button onclick="closeLeaderboard()" style="background:none;border:none;color:#8888a8;font-size:24px;cursor:pointer;line-height:1;" onmouseover="this.style.color='#f0f0fa'" onmouseout="this.style.color='#8888a8'">&times;</button>
         </div>
-        <!-- Sort tabs -->
-        <div class="flex border-b border-gray-100 px-6 pt-4 gap-2 pb-0">
-            <button onclick="setLeaderSort('total')" id="sort-total" class="lbsort-btn text-xs font-bold px-3 py-2 rounded-t border-b-2 border-[#1a73e8] text-[#1a73e8] bg-blue-50">💰 Total Value</button>
-            <button onclick="setLeaderSort('profit')" id="sort-profit" class="lbsort-btn text-xs font-bold px-3 py-2 rounded-t border-b-2 border-transparent text-gray-500 hover:text-gray-700">📈 Profit</button>
-            <button onclick="setLeaderSort('stocks')" id="sort-stocks" class="lbsort-btn text-xs font-bold px-3 py-2 rounded-t border-b-2 border-transparent text-gray-500 hover:text-gray-700">📦 Most Shares</button>
+        <div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.08);padding:12px 24px 0;gap:4px;">
+            <button onclick="setLeaderSort('total')" id="sort-total" class="lbsort-btn" style="font-size:12px;font-weight:700;padding:8px 14px;border-radius:8px 8px 0 0;border:none;cursor:pointer;background:rgba(212,168,75,0.15);color:var(--v-gold);border-bottom:2px solid var(--v-gold);">💰 Total Value</button>
+            <button onclick="setLeaderSort('profit')" id="sort-profit" class="lbsort-btn" style="font-size:12px;font-weight:700;padding:8px 14px;border-radius:8px 8px 0 0;border:none;cursor:pointer;background:transparent;color:#8888a8;border-bottom:2px solid transparent;">📈 Profit</button>
+            <button onclick="setLeaderSort('stocks')" id="sort-stocks" class="lbsort-btn" style="font-size:12px;font-weight:700;padding:8px 14px;border-radius:8px 8px 0 0;border:none;cursor:pointer;background:transparent;color:#8888a8;border-bottom:2px solid transparent;">📦 Shares</button>
         </div>
-        <div id="leaderboardList" class="flex-1 px-6 py-4">
-            <div class="text-center text-gray-400 py-12">Loading...</div>
+        <div id="leaderboardList" style="flex:1;padding:20px 24px;">
+            <div style="text-align:center;color:#8888a8;padding:40px 0;">Loading traders...</div>
         </div>
-        <div class="border-t border-gray-100 px-6 py-3 bg-gray-50 text-xs text-gray-400 text-center">Updates every time a trade is made</div>
+        <div style="border-top:1px solid rgba(255,255,255,0.08);padding:12px 24px;background:#0e0e16;font-size:11px;color:#606080;text-align:center;">Updates live after every trade</div>
     </div>
 </div>
 
@@ -1548,31 +1547,42 @@ function startNewsEngine() {
     // Storage adapter: use platform storage if available, otherwise fallback to localStorage.
     window.__storageFallback = false;
     function buildStorageFallback() {
-        const readLocal = (key) => {
-            try { return localStorage.getItem(key); } catch (_) { return null; }
-        };
+        // Prefix shared keys so they're distinguishable in localStorage
+        const lsKey = (key, shared) => shared ? 'shared:' + key : 'priv:' + key;
         return {
-            async get(key) {
-                const value = readLocal(key);
-                return value == null ? null : { key, value };
-            },
-            async set(key, value) {
+            async get(key, shared = false) {
                 try {
-                    localStorage.setItem(key, value);
-                    return { ok: true };
+                    const val = localStorage.getItem(lsKey(key, shared));
+                    return val == null ? null : { key, value: val, shared };
+                } catch (_) { return null; }
+            },
+            async set(key, value, shared = false) {
+                try {
+                    localStorage.setItem(lsKey(key, shared), value);
+                    return { key, value, shared };
                 } catch (e) {
-                    throw new Error('Local storage unavailable: ' + ((e && e.message) ? e.message : e));
+                    throw new Error('Storage unavailable: ' + (e.message || e));
                 }
             },
-            async list(prefix = '') {
+            async delete(key, shared = false) {
+                try {
+                    localStorage.removeItem(lsKey(key, shared));
+                    return { key, deleted: true, shared };
+                } catch (_) { return null; }
+            },
+            async list(prefix = '', shared = false) {
                 const keys = [];
+                const lsPrefix = lsKey(prefix, shared);
                 try {
                     for (let i = 0; i < localStorage.length; i++) {
                         const k = localStorage.key(i);
-                        if (k && k.startsWith(prefix)) keys.push(k);
+                        if (k && k.startsWith(lsPrefix)) {
+                            // Strip the ls prefix to return the original key
+                            keys.push(k.slice(shared ? 'shared:'.length : 'priv:'.length));
+                        }
                     }
                 } catch (_) {}
-                return { keys };
+                return { keys, prefix, shared };
             }
         };
     }
@@ -1664,6 +1674,8 @@ function startNewsEngine() {
         document.getElementById('authOverlay').style.display = 'none';
         document.getElementById('userAvatar').innerText = safeName[0].toUpperCase();
         document.getElementById('userDisplayName').innerText = safeName;
+        // Save immediately so user appears on leaderboard right away
+        await saveUserData(false);
         // Show the app and hide the homepage
         showApp();
         initMarket();
@@ -1751,20 +1763,27 @@ function startNewsEngine() {
     function setLeaderSort(type) {
         leaderSort = type;
         document.querySelectorAll('.lbsort-btn').forEach(b => {
-            b.className = 'lbsort-btn text-xs font-bold px-3 py-2 rounded-t border-b-2 border-transparent text-gray-500 hover:text-gray-700';
+            b.style.background = 'transparent';
+            b.style.color = '#8888a8';
+            b.style.borderBottom = '2px solid transparent';
         });
-        document.getElementById('sort-' + type).className = 'lbsort-btn text-xs font-bold px-3 py-2 rounded-t border-b-2 border-[#1a73e8] text-[#1a73e8] bg-blue-50';
+        const active = document.getElementById('sort-' + type);
+        if (active) {
+            active.style.background = 'rgba(212,168,75,0.15)';
+            active.style.color = 'var(--v-gold)';
+            active.style.borderBottom = '2px solid var(--v-gold)';
+        }
         loadLeaderboard();
     }
 
     async function loadLeaderboard() {
         const list = document.getElementById('leaderboardList');
-        list.innerHTML = '<div class="text-center text-gray-400 py-8">Loading traders...</div>';
+        list.innerHTML = '<div style="text-align:center;color:#8888a8;padding:32px 0;">Loading traders...</div>';
         try {
             const storage = ensureStorageAdapter();
             const keys = await storage.list('user:', true);
             if (!keys || !keys.keys || keys.keys.length === 0) {
-                list.innerHTML = '<div class="text-center text-gray-400 py-8">No traders yet. Be the first!</div>';
+                list.innerHTML = '<div style="text-align:center;color:#8888a8;padding:32px 0;">No traders yet — be the first!</div>';
                 return;
             }
             const users = [];
@@ -1791,32 +1810,39 @@ function startNewsEngine() {
             const medals = ['🥇','🥈','🥉'];
             const isMe = u => currentUser && u.username === currentUser.username;
 
-            list.innerHTML = '<div class="text-xs text-gray-500 mb-3">Season: ' + season + ' (weekly reset)</div>' + users.map((u, i) => {
+            list.innerHTML = '<div style="font-size:11px;color:#606080;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.06em;">Season: ' + season + ' · weekly reset</div>'
+            + users.map((u, i) => {
                 const totalVal = u._seasonTotal || 100000;
                 const profit = u._seasonProfit || 0;
                 const shares = u._seasonShares || 0;
-                const profitColor = profit >= 0 ? 'text-green-600' : 'text-red-500';
+                const profitColor = profit >= 0 ? '#4ade80' : '#f87171';
                 const profitSign = profit >= 0 ? '+' : '';
-                const highlight = isMe(u) ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50 border border-gray-100';
-                return `
-                <div class="rounded-xl px-4 py-3 mb-3 ${highlight} flex items-center gap-3">
-                    <div class="text-2xl w-8 text-center">${medals[i] || '#' + (i+1)}</div>
-                    <div class="w-10 h-10 rounded-full bg-[#1a73e8] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                const borderStyle = isMe(u)
+                    ? 'background:rgba(212,168,75,0.08);border:1px solid rgba(212,168,75,0.25);'
+                    : 'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);';
+                const avatarBg = isMe(u) ? 'var(--v-gold)' : '#2a2a3a';
+                const avatarColor = isMe(u) ? '#0a0a0f' : '#c0c0d8';
+                const medal = medals[i] || '<span style="font-size:12px;color:#606080;font-weight:700;">#' + (i+1) + '</span>';
+                return `<div style="border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;${borderStyle}">
+                    <div style="font-size:1.4rem;width:28px;text-align:center;flex-shrink:0;">${medal}</div>
+                    <div style="width:38px;height:38px;border-radius:50%;background:${avatarBg};display:flex;align-items:center;justify-content:center;color:${avatarColor};font-weight:700;font-size:14px;flex-shrink:0;">
                         ${u.displayName[0].toUpperCase()}
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="font-bold text-gray-900 truncate">${u.displayName} ${isMe(u) ? '<span class="text-xs text-blue-500 font-normal">(you)</span>' : ''}</div>
-                        <div class="text-xs text-gray-400">@${u.username}</div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-weight:700;color:#f0f0fa;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                            ${u.displayName} ${isMe(u) ? '<span style="font-size:10px;color:var(--v-gold);font-weight:600;">(you)</span>' : ''}
+                        </div>
+                        <div style="font-size:11px;color:#8888a8;margin-top:1px;">@${u.username}</div>
                     </div>
-                    <div class="text-right flex-shrink-0">
-                        <div class="font-bold text-gray-800 text-sm">$${totalVal.toLocaleString(undefined,{maximumFractionDigits:0})}</div>
-                        <div class="text-xs ${profitColor}">${profitSign}$${Math.abs(profit).toLocaleString(undefined,{maximumFractionDigits:0})}</div>
-                        <div class="text-xs text-gray-400">${shares} shares</div>
+                    <div style="text-align:right;flex-shrink:0;">
+                        <div style="font-weight:700;color:#f0f0fa;font-size:0.9rem;font-family:var(--v-mono);">$${totalVal.toLocaleString(undefined,{maximumFractionDigits:0})}</div>
+                        <div style="font-size:11px;color:${profitColor};font-family:var(--v-mono);">${profitSign}$${Math.abs(profit).toLocaleString(undefined,{maximumFractionDigits:0})}</div>
+                        <div style="font-size:10px;color:#606080;">${shares} shares</div>
                     </div>
                 </div>`;
-            }).join('') || '<div class="text-center text-gray-400 py-8">No traders yet.</div>';
+            }).join('') || '<div style="text-align:center;color:#8888a8;padding:32px 0;">No traders yet.</div>';
         } catch(e) {
-            list.innerHTML = '<div class="text-center text-red-400 py-8">Error loading: ' + e.message + '</div>';
+            list.innerHTML = '<div style="text-align:center;color:#f87171;padding:32px 0;">Error loading leaderboard: ' + e.message + '</div>';
         }
     }
 
@@ -2508,7 +2534,7 @@ function startNewsEngine() {
 
     // --- Config ---
     const RT = {
-        key: 'd6c804pr01qsiik14ah0d6c804pr01qsiik14ahg',
+        key: localStorage.getItem('finnhub_api_key') || '',
         interval: 10000,
         timer: null,
         cache: {},
@@ -2665,10 +2691,12 @@ function startNewsEngine() {
     // --- API Config Modal ---
     function openApiConfig() {
         const modal = document.getElementById('apiConfigModal');
-        document.getElementById('finnhubKeyInput').value  = RT.key;
-        document.getElementById('updateIntervalInput').value = RT.interval;
-        document.getElementById('apiConfigError').classList.add('hidden');
-        document.getElementById('apiTestResult').classList.add('hidden');
+        // Only pre-fill if the user themselves previously saved a key
+        const savedKey = localStorage.getItem('finnhub_api_key') || '';
+        document.getElementById('finnhubKeyInput').value = savedKey;
+        document.getElementById('updateIntervalInput').value = RT.interval || 10000;
+        document.getElementById('apiConfigError').style.display = 'none';
+        document.getElementById('apiTestResult').style.display = 'none';
         modal.classList.remove('hidden');
         modal.style.display = 'flex';
     }
