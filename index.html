@@ -416,8 +416,6 @@
 <!-- ═══════════════════════════════════════════════════════
      APP WRAPPER
 ═══════════════════════════════════════════════════════ -->
-<div id="appPage">
-
 <!-- ═══ LOGIN / REGISTER OVERLAY ═══ -->
 <div id="authOverlay" class="fixed inset-0 z-[9999] flex items-center justify-center" style="background:rgba(0,0,0,0.92);backdrop-filter:blur(16px);display:none;">
     <div style="background:var(--v-card);border:1px solid rgba(201,168,76,0.2);border-radius:20px;width:100%;max-width:440px;padding:40px;box-shadow:0 30px 100px rgba(0,0,0,0.6);position:relative;">
@@ -448,6 +446,10 @@
         </p>
     </div>
 </div>
+
+<div id="appPage">
+
+
 
 <!-- ═══ LEADERBOARD OVERLAY ═══ -->
 <div id="leaderboardOverlay" class="fixed inset-0 z-[9998] hidden" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);" onclick="closeLeaderboard()">
@@ -1666,6 +1668,8 @@ function startNewsEngine() {
         document.getElementById('authOverlay').style.display = 'none';
         document.getElementById('userAvatar').innerText = safeName[0].toUpperCase();
         document.getElementById('userDisplayName').innerText = safeName;
+        // Show the app and hide the homepage
+        showApp();
         initMarket();
         if (!currentUser.tutorialDone) startTutorial(false);
     }
@@ -1675,7 +1679,7 @@ function startNewsEngine() {
         currentUser = null;
         cash = 100000;
         portfolio = {};
-        document.getElementById('authOverlay').style.display = 'flex';
+        document.getElementById('authOverlay').style.display = 'none';
         document.getElementById('authUser').value = '';
         document.getElementById('authPass').value = '';
         document.getElementById('authName').value = '';
@@ -1683,10 +1687,8 @@ function startNewsEngine() {
         authMode = 'login';
         document.getElementById('authTitle').innerText = 'Sign in';
         document.getElementById('authSubtitle').innerText = 'to your trading account';
-        document.getElementById('authSubmitBtn').innerText = 'Sign In';
-        document.getElementById('authToggleText').innerText = "Don't have an account?";
-        document.getElementById('authToggleBtn').innerText = 'Create account';
-        document.getElementById('registerNameGroup').classList.add('hidden');
+        // Return to homepage
+        showHomepage();
     }
 
     function simpleHash(str) {
@@ -2757,6 +2759,7 @@ function startNewsEngine() {
     function showHomepage() {
         document.getElementById('homePage').style.display = 'block';
         document.getElementById('appPage').style.display  = 'none';
+        document.getElementById('authOverlay').style.display = 'none';
         drawHeroChart();
         initTicker();
     }
@@ -2764,60 +2767,46 @@ function startNewsEngine() {
     function showApp() {
         document.getElementById('homePage').style.display = 'none';
         document.getElementById('appPage').style.display  = 'block';
+        document.getElementById('authOverlay').style.display = 'none';
     }
 
     function showAuthFromHome(mode) {
-        // Show auth overlay on top of homepage
         authMode = mode;
-        const overlay = document.getElementById('authOverlay');
-        overlay.style.display = 'flex';
-        if (mode === 'register') {
-            document.getElementById('registerNameGroup').classList.remove('hidden');
-            document.getElementById('authTitle').textContent = 'Create Account';
-            document.getElementById('authSubtitle').textContent = 'Join Vestra — it\'s free';
-            document.getElementById('authSubmitBtn').textContent = 'Create Account';
-            document.getElementById('authToggleText').textContent = 'Already have an account?';
-            document.getElementById('authToggleBtn').textContent = 'Sign in';
-        } else {
-            document.getElementById('registerNameGroup').classList.add('hidden');
-            document.getElementById('authTitle').textContent = 'Sign In';
-            document.getElementById('authSubtitle').textContent = 'to your trading account';
-            document.getElementById('authSubmitBtn').textContent = 'Sign In';
-            document.getElementById('authToggleText').textContent = 'Don\'t have an account?';
-            document.getElementById('authToggleBtn').textContent = 'Create account';
-        }
+        const isRegister = mode === 'register';
+        document.getElementById('registerNameGroup').classList.toggle('hidden', !isRegister);
+        document.getElementById('authTitle').textContent    = isRegister ? 'Create Account' : 'Sign In';
+        document.getElementById('authSubtitle').textContent = isRegister ? 'Join Vestra — it\'s free' : 'to your trading account';
+        document.getElementById('authSubmitBtn').textContent = isRegister ? 'Create Account' : 'Sign In';
+        document.getElementById('authToggleText').textContent = isRegister ? 'Already have an account?' : 'Don\'t have an account?';
+        document.getElementById('authToggleBtn').textContent  = isRegister ? 'Sign in' : 'Create account';
+        document.getElementById('authOverlay').style.display = 'flex';
     }
 
     function scrollToSection(id) {
         document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Hero mini chart
     function drawHeroChart() {
         const canvas = document.getElementById('heroChart');
         if (!canvas) return;
-        const ctx = canvas.getContext('2d');
         const W = canvas.parentElement.clientWidth - 48;
         const H = 140;
-        canvas.width  = W * (window.devicePixelRatio || 1);
-        canvas.height = H * (window.devicePixelRatio || 1);
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width  = W * dpr;
+        canvas.height = H * dpr;
         canvas.style.width  = W + 'px';
         canvas.style.height = H + 'px';
-        ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
 
-        // Generate a nice upward trending line
         const pts = 80;
         const values = [];
         let v = 180;
-        for (let i = 0; i < pts; i++) {
-            v += (Math.random() - 0.42) * 4;
-            values.push(Math.max(140, v));
-        }
+        for (let i = 0; i < pts; i++) { v += (Math.random() - 0.42) * 4; values.push(Math.max(140, v)); }
         const min = Math.min(...values), max = Math.max(...values);
         const toX = i => (i / (pts - 1)) * W;
         const toY = v => H - ((v - min) / (max - min + 1)) * (H - 16) - 8;
 
-        // Gradient fill
         const grad = ctx.createLinearGradient(0, 0, 0, H);
         grad.addColorStop(0, 'rgba(201,168,76,0.25)');
         grad.addColorStop(1, 'rgba(201,168,76,0)');
@@ -2827,13 +2816,11 @@ function startNewsEngine() {
         ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
         ctx.fillStyle = grad; ctx.fill();
 
-        // Line
         ctx.beginPath();
         ctx.moveTo(toX(0), toY(values[0]));
         for (let i = 1; i < pts; i++) ctx.lineTo(toX(i), toY(values[i]));
         ctx.strokeStyle = '#c9a84c'; ctx.lineWidth = 2; ctx.stroke();
 
-        // Animate price
         let base = 214.37;
         setInterval(() => {
             base += (Math.random() - 0.48) * 0.5;
@@ -2848,101 +2835,19 @@ function startNewsEngine() {
         }, 2000);
     }
 
-    // Ticker tape
     function initTicker() {
-        const items = ['AAPL $214.37 +1.2%','TSLA $248.12 +0.8%','MSFT $415.23 +0.5%','NVDA $138.42 +3.1%','AMZN $224.18 -0.3%','META $612.45 +1.7%','GOOGL $198.23 +0.4%','BRK.B $482.11 +0.2%','JPM $281.43 +0.9%','V $341.27 +0.6%','JNJ $149.32 -0.4%','WMT $98.45 +1.1%','XOM $112.34 +0.7%','BAC $46.78 -0.2%','HD $387.12 +0.8%'];
+        const items = ['AAPL $214.37 +1.2%','TSLA $248.12 +0.8%','MSFT $415.23 +0.5%','NVDA $138.42 +3.1%','AMZN $224.18 -0.3%','META $612.45 +1.7%','GOOGL $198.23 +0.4%','JPM $281.43 +0.9%','V $341.27 +0.6%','WMT $98.45 +1.1%','XOM $112.34 +0.7%','HD $387.12 +0.8%'];
         const html = items.map(t => {
             const pos = t.includes('+');
-            return `<span style="display:inline-block;padding:0 32px;font-family:var(--v-mono);font-size:0.8rem;color:${pos ? '#4ade80' : '#f87171'};">${t}</span>`;
+            return `<span style="display:inline-block;padding:0 32px;font-family:var(--v-mono);font-size:0.8rem;color:${pos?'#4ade80':'#f87171'};">${t}</span>`;
         }).join('');
-        const t1 = document.getElementById('tickerInner');
-        const t2 = document.getElementById('tickerInner2');
-        if (t1) t1.innerHTML = html;
-        if (t2) t2.innerHTML = html;
+        ['tickerInner','tickerInner2'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = html; });
     }
 
-    // On load: show homepage, intercept login to go to app
-    const _origHandleAuth = handleAuthSubmit;
-    initMarket(); // still initializes market data in background
-
-    // Override auth success to show app instead of just hiding overlay
-    const _origHideOverlay = () => {
-        document.getElementById('authOverlay').style.display = 'none';
-        showApp();
-        startTutorial(false);
-    };
-
-    // Patch logOut to go back to homepage
-    const _origLogOut = logOut;
-    window.logOut = function() {
-        _origLogOut();
-        showHomepage();
-    };
-
-    // Show homepage on initial load (auth overlay will pop up when user clicks)
-    document.getElementById('authOverlay').style.display = 'none';
-    showHomepage();
-
-    // Patch handleAuthSubmit to show app on success
-    const _baseHandleAuth = window.handleAuthSubmit;
-    window.handleAuthSubmit = async function() {
-        await handleAuthSubmit();
-        // If login was successful (currentUser is set), show app
-        if (currentUser) {
-            document.getElementById('authOverlay').style.display = 'none';
-            showApp();
-        }
-    };
+    // ── Init ──
+    initMarket();  // pre-load stock data
+    showHomepage(); // start on homepage
 
 </script>
-        <!-- Your existing code above -->
-
-    <script>
-    let isLogin = true;
-
-    function showAuthFromHome() {
-        document.querySelector('homePage').style.display = 'none';
-        document.getElementById('authSection').style.display = 'block';
-    }
-
-    function toggleAuthMode() {
-        isLogin = !isLogin;
-        
-        const title = document.getElementById('authTitle');
-        const submitBtn = document.getElementById('authSubmitBtn');
-        const toggleText = document.getElementById('authToggleText');
-        const nameField = document.getElementById('nameField');
-
-        if (isLogin) {
-            title.textContent = "Welcome Back";
-            submitBtn.textContent = "Log In";
-            toggleText.textContent = "Don't have an account? Sign up";
-            nameField.style.display = "none";
-        } else {
-            title.textContent = "Create Account";
-            submitBtn.textContent = "Sign Up";
-            toggleText.textContent = "Already have an account? Log in";
-            nameField.style.display = "block";
-        }
-    }
-
-    function handleAuthSubmit(event) {
-        event.preventDefault();
-
-        const email = document.getElementById('emailInput').value;
-        const password = document.getElementById('passwordInput').value;
-
-        if (!email || !password) {
-            alert("Please fill in all fields.");
-            return;
-        }
-
-        alert(isLogin ? "Logged in successfully!" : "Account created successfully!");
-
-        document.getElementById('authSection').style.display = 'none';
-        document.querySelector('.home-section').style.display = 'block';
-    }
-    </script>
-
 </body>
 </html>
