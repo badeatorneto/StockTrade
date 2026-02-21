@@ -166,6 +166,95 @@
         .anim-2 { animation: heroFade 0.8s 0.3s both; }
         .anim-3 { animation: heroFade 0.8s 0.5s both; }
         .anim-4 { animation: heroFade 0.8s 0.7s both; }
+
+        /* ── Light Mode ── */
+        body.light-mode {
+            --v-bg: #f4f4f8;
+            --v-surface: #ffffff;
+            --v-card: #ffffff;
+            --v-border: rgba(0,0,0,0.1);
+            --v-text: #0f0f1a;
+            --v-muted: #5a5a78;
+            --v-gold: #b8860b;
+            --v-gold-light: #d4a017;
+        }
+        body.light-mode .g-card { box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+        body.light-mode .app-header { background: #fff; border-color: rgba(0,0,0,0.1); }
+        body.light-mode #stockDetailPage { background: #f4f4f8; }
+        body.light-mode .search-bar { background: #f0f0f8; }
+        body.light-mode input, body.light-mode select { background: #f0f0f8 !important; color: #0f0f1a !important; border-color: rgba(0,0,0,0.15) !important; }
+
+        /* ── Search Dropdown ── */
+        #searchWrap { position: relative; flex: 1; max-width: 42rem; }
+        #searchDropdown {
+            position: absolute; top: calc(100% + 8px); left: 0; right: 0; z-index: 999;
+            background: #1a1a24; border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px; overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            max-height: 420px; overflow-y: auto;
+        }
+        body.light-mode #searchDropdown { background: #fff; border-color: rgba(0,0,0,0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+        .search-result-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 16px; cursor: pointer; transition: background 0.1s;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .search-result-item:last-child { border-bottom: none; }
+        .search-result-item:hover { background: rgba(255,255,255,0.06); }
+        body.light-mode .search-result-item:hover { background: #f4f4f8; }
+        body.light-mode .search-result-item { border-color: rgba(0,0,0,0.05); }
+
+        /* ── Market Countdown ── */
+        #marketCountdown {
+            font-size: 11px; font-weight: 700; font-family: var(--v-mono);
+            color: var(--v-muted); letter-spacing: 0.03em;
+        }
+
+        /* ── Portfolio Performance Chart ── */
+        #perfChartWrap { position: relative; height: 160px; margin-top: 8px; }
+
+        /* ── Mobile Layout ── */
+        #mobileNav {
+            display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+            background: #111118; border-top: 1px solid rgba(255,255,255,0.08);
+            padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+        }
+        body.light-mode #mobileNav { background: #fff; border-color: rgba(0,0,0,0.1); }
+        .mob-nav-btn {
+            display: flex; flex-direction: column; align-items: center; gap: 3px;
+            background: none; border: none; color: #8888a8; cursor: pointer;
+            font-size: 10px; font-weight: 600; font-family: var(--v-sans); flex: 1;
+            padding: 4px 0; transition: color 0.15s;
+        }
+        .mob-nav-btn.active { color: var(--v-gold); }
+        .mob-nav-btn svg { width: 20px; height: 20px; }
+
+        /* ── Journal Modal ── */
+        #journalModal {
+            position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px); display: none;
+            align-items: center; justify-content: center;
+        }
+        #journalModal.open { display: flex; }
+
+        /* ── Analyst / Similar ── */
+        .analyst-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08); overflow: hidden; margin-top: 4px; }
+        .analyst-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            #mobileNav { display: flex; }
+            main { padding-bottom: 80px !important; }
+            .app-header { padding: 0 16px !important; }
+            #searchWrap { display: none; }
+            #desktopSidebar { display: none; }
+            main.max-w-\[1600px\] { grid-template-columns: 1fr !important; }
+            .home-nav { padding: 0 20px; }
+            .home-nav .logo { font-size: 1.4rem; }
+        }
+        @media (min-width: 769px) {
+            #mobilePortfolioView { display: none; }
+        }
     </style>
 </head>
 <body class="overflow-x-hidden">
@@ -479,11 +568,13 @@
                 <div style="font-size:9px;color:var(--v-gold);letter-spacing:0.15em;text-transform:uppercase;font-weight:600;">Trading With No Risk</div>
             </div>
         </div>
-        <div class="flex-1 max-w-2xl">
+        <div id="searchWrap">
             <div class="search-bar flex items-center px-4 h-11">
                 <svg class="w-4 h-4 mr-3" style="color:var(--v-muted)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                <input type="text" id="search" oninput="renderGrid()" placeholder="Search stocks, ETFs & more" class="bg-transparent border-none outline-none w-full text-sm">
+                <input type="text" id="search" oninput="handleSearch(this.value)" onfocus="showSearchDropdown()" placeholder="Search stocks, ETFs & more" class="bg-transparent border-none outline-none w-full text-sm" autocomplete="off">
+                <button id="searchClear" onclick="clearSearch()" style="display:none;background:none;border:none;color:var(--v-muted);cursor:pointer;font-size:16px;padding:0 4px;">✕</button>
             </div>
+            <div id="searchDropdown" style="display:none;"></div>
         </div>
         <div class="flex items-center gap-3">
             <div class="flex items-center gap-2">
@@ -497,6 +588,8 @@
             <button onclick="startTutorial(true)" class="btn-outline" style="padding:6px 12px;font-size:12px;">Tutorial</button>
             <input id="importFile" type="file" accept="application/json" class="hidden" onchange="importPortfolioData(event)">
             <div id="syncBadge" style="font-size:11px;padding:4px 8px;border-radius:6px;background:var(--v-card);color:var(--v-muted);border:1px solid var(--v-border);">Sync: Local</div>
+            <div id="marketCountdown" title="Time until market opens/closes"></div>
+            <button onclick="toggleTheme()" id="themeToggle" title="Toggle light/dark mode" style="background:rgba(255,255,255,0.06);border:1px solid var(--v-border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:15px;">🌙</button>
             <div style="display:flex;align-items:center;gap:10px;border-left:1px solid var(--v-border);padding-left:14px;">
                 <div id="userAvatar" style="width:32px;height:32px;border-radius:50%;background:var(--v-gold);display:flex;align-items:center;justify-content:center;color:#0a0a0f;font-size:13px;font-weight:700;">?</div>
                 <div class="hidden md:block">
@@ -525,7 +618,7 @@
             </div>
     </div>
 
-    <aside class="space-y-8">
+    <aside id="desktopSidebar" class="space-y-8">
         
         <div class="g-card p-6">
             <div class="flex justify-between items-center mb-6">
@@ -544,10 +637,18 @@
 
         <div class="g-card p-6">
             <div class="flex justify-between items-center mb-3">
-                <h3 style="font-size:1rem;font-weight:600;color:#e0e0f5;">Portfolio Analytics</h3>
-                <span style="font-size:11px;color:#4ade80;font-weight:600;">Live</span>
+                <h3 style="font-size:1rem;font-weight:600;color:#e0e0f5;">Portfolio Performance</h3>
+                <div style="display:flex;gap:6px;">
+                    <button onclick="setPerfPeriod('7D',this)" class="perf-btn" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;border:1px solid var(--v-gold);background:rgba(212,168,75,0.15);color:var(--v-gold);cursor:pointer;">7D</button>
+                    <button onclick="setPerfPeriod('30D',this)" class="perf-btn" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8888a8;cursor:pointer;">30D</button>
+                    <button onclick="setPerfPeriod('All',this)" class="perf-btn" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8888a8;cursor:pointer;">All</button>
+                </div>
             </div>
-            <div class="h-44 mb-3"><canvas id="allocationChart"></canvas></div>
+            <div id="perfChartWrap"><canvas id="perfChart"></canvas></div>
+            <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
+                <h4 style="font-size:0.875rem;font-weight:600;color:#e0e0f5;margin:0 0 8px;">Allocation</h4>
+            </div>
+            <div class="h-36 mb-3"><canvas id="allocationChart"></canvas></div>
             <div id="sectorExposure" class="space-y-1 mb-3" style="font-size:12px;color:#b0b0c8;"></div>
             <div style="font-size:12px;color:#a0a0b8;margin-bottom:2px;">Realized P/L: <span id="realizedPL" style="font-weight:700;">$0.00</span></div>
             <div style="font-size:12px;color:#a0a0b8;">Unrealized P/L: <span id="unrealizedPL" style="font-weight:700;">$0.00</span></div>
@@ -595,6 +696,46 @@
 
     </aside>
 </main>
+
+<!-- ═══ MOBILE BOTTOM NAV ═══ -->
+<nav id="mobileNav">
+    <button class="mob-nav-btn active" id="mnMarket" onclick="mobileTab('market')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Market
+    </button>
+    <button class="mob-nav-btn" id="mnPortfolio" onclick="mobileTab('portfolio')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Portfolio
+    </button>
+    <button class="mob-nav-btn" id="mnSearch" onclick="mobileTab('search')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        Search
+    </button>
+    <button class="mob-nav-btn" id="mnLeader" onclick="openLeaderboard()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+        Ranks
+    </button>
+    <button class="mob-nav-btn" id="mnProfile" onclick="mobileTab('profile')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        Profile
+    </button>
+</nav>
+
+<!-- ═══ MOBILE PORTFOLIO VIEW ═══ -->
+<div id="mobilePortfolioView" style="display:none;padding:16px;padding-bottom:80px;"></div>
+
+<!-- ═══ JOURNAL MODAL ═══ -->
+<div id="journalModal">
+    <div style="background:#1a1a24;border:1px solid rgba(255,255,255,0.1);border-radius:20px;width:100%;max-width:480px;padding:32px;margin:16px;">
+        <h3 style="font-family:var(--v-serif);font-size:1.3rem;color:#f0f0fa;margin:0 0 6px;">📓 Trade Journal</h3>
+        <p id="journalTradeInfo" style="font-size:13px;color:#8888a8;margin:0 0 16px;"></p>
+        <textarea id="journalNote" placeholder="Why did you make this trade? What's your thesis? Any concerns?" style="width:100%;background:#0f0f18;border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:12px 14px;font-size:14px;color:#e8e8f5;font-family:var(--v-sans);outline:none;resize:vertical;min-height:120px;line-height:1.6;" onfocus="this.style.borderColor='var(--v-gold)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'"></textarea>
+        <div style="display:flex;gap:10px;margin-top:14px;">
+            <button onclick="saveJournalNote()" style="flex:1;background:var(--v-gold);color:#0a0a0f;font-weight:700;padding:12px;border-radius:10px;border:none;font-size:14px;cursor:pointer;" onmouseover="this.style.background='var(--v-gold-light)'" onmouseout="this.style.background='var(--v-gold)'">Save Note</button>
+            <button onclick="closeJournal()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#a0a0b8;padding:12px 18px;border-radius:10px;font-size:14px;cursor:pointer;font-weight:600;">Skip</button>
+        </div>
+    </div>
+</div>
 
 <div id="stockDetailPage" class="fixed inset-0 bg-[#1c1c1e] hidden z-50 overflow-y-auto">
     <div class="bg-[#1c1c1e] border-b border-gray-700 px-6 py-4 flex items-center gap-4 sticky top-0 z-10">
@@ -649,6 +790,24 @@
             <div class="border-t border-gray-700 py-4 px-4"><div class="text-gray-400 mb-1">52-wk high</div><div class="text-white font-medium" id="s52H">—</div></div>
             <div class="border-t border-gray-700 py-4 pl-4"><div class="text-gray-400 mb-1">52-wk low</div><div class="text-white font-medium" id="s52L">—</div></div>
         </div>
+
+        <!-- Analyst Ratings -->
+        <div style="background:#1e1e28;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:16px;">
+            <h3 style="color:#f0f0fa;font-size:1rem;font-weight:600;margin:0 0 14px;">📊 Analyst Ratings</h3>
+            <div id="analystRatings"></div>
+        </div>
+
+        <!-- Earnings (simulated) -->
+        <div style="background:#1e1e28;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:16px;">
+            <h3 style="color:#f0f0fa;font-size:1rem;font-weight:600;margin:0 0 14px;">📈 Earnings History</h3>
+            <div id="earningsData" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
+        </div>
+
+        <!-- Similar Stocks -->
+        <div style="background:#1e1e28;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:16px;">
+            <h3 style="color:#f0f0fa;font-size:1rem;font-weight:600;margin:0 0 14px;">🔗 Similar Stocks</h3>
+            <div id="similarStocks" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+        </div>
         <div class="bg-[#2c2c2e] rounded-2xl p-6 border border-gray-700">
             <h3 class="text-white text-lg font-medium mb-4">Trade <span id="tradeSymLabel" class="text-gray-400"></span></h3>
             <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
@@ -670,7 +829,16 @@
                 <button onclick="execDetailTrade('SELL')" class="flex-1 bg-[#ff453a] hover:bg-[#e03d33] text-white font-semibold py-3 rounded-xl text-base transition">Sell / Place</button>
             </div>
             <div id="pendingOrdersList" class="mt-3 text-xs text-gray-300 space-y-1"></div>
+            <!-- Journal note for this stock -->
+            <div id="stockJournalNote" style="margin-top:12px;display:none;background:rgba(212,168,75,0.06);border:1px solid rgba(212,168,75,0.2);border-radius:10px;padding:12px;">
+                <div style="font-size:10px;font-weight:700;color:var(--v-gold);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">📓 Your Journal</div>
+                <div id="stockJournalText" style="font-size:13px;color:#c0c0d8;line-height:1.6;"></div>
+            </div>
             <div id="detailNews" class="mt-4 space-y-2"></div>
+        </div>
+        <!-- Share portfolio button -->
+        <div style="text-align:center;padding:16px 0 8px;">
+            <button onclick="sharePortfolio()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#a0a0b8;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;" onmouseover="this.style.borderColor='var(--v-gold)';this.style.color='var(--v-gold)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='#a0a0b8'">🔗 Share My Portfolio</button>
         </div>
     </div>
 </div>
@@ -718,9 +886,7 @@
             <a href="https://finnhub.io/register" target="_blank" style="color:#63b3ed;font-weight:600;text-decoration:underline;">finnhub.io/register</a>
             &nbsp;(60 calls/min, no credit card needed)
         </div>
-        <div style="background:rgba(212,168,75,0.08);border:1px solid rgba(212,168,75,0.2);border-radius:12px;padding:14px;margin-bottom:20px;font-size:0.875rem;color:#d4a84b;">
-            ⬇️ <strong>Important:</strong> Download this file and open it locally in your browser. Network calls are blocked in the Claude preview.
-        </div>
+
         <div id="apiConfigError" class="hidden" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;"></div>
         <div style="margin-bottom:16px;">
             <label style="display:block;font-size:12px;font-weight:700;color:#a0a0b8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Finnhub API Key</label>
@@ -747,6 +913,16 @@
 </div><!-- end #appPage -->
 
 <script>
+    // ── Clear any previously hardcoded API key if it matches the old default ──
+    (function() {
+        const OLD_KEY = 'd6c804pr01qsiik14ah0d6c804pr01qsiik14ahg';
+        const stored = localStorage.getItem('finnhub_api_key');
+        if (stored === OLD_KEY) {
+            localStorage.removeItem('finnhub_api_key');
+            localStorage.removeItem('finnhub_interval');
+        }
+    })();
+
     // --- Data Setup ---
     // Full 500 Ticker List (Simulated)
     // Real stock data as of Feb 17, 2026
@@ -972,13 +1148,15 @@ function startNewsEngine() {
         if (!marketLoopStarted) {
             marketLoopStarted = true;
             setInterval(simulateMarketTick, 30000);
+            setInterval(recordPerfSnapshot, 300000); // snapshot every 5 min
         }
         // Start live data if API key is already stored
         updateMarketStatus();
         updateDataSourceUI();
-        if (RT.key) {
-            startLiveData();
-        }
+        if (RT.key) startLiveData();
+        // Initial performance snapshot + chart draw
+        recordPerfSnapshot();
+        setTimeout(drawPerfChart, 200);
     }
 
     // --- Rendering ---
@@ -1134,7 +1312,12 @@ function startNewsEngine() {
         }
         document.querySelectorAll('.ctab').forEach(b => { b.className = 'ctab text-sm font-medium px-4 py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200'; });
         document.querySelector('.ctab').className = 'ctab text-sm font-medium px-4 py-3 border-b-2 border-[#8ab4f8] text-[#8ab4f8]';
-        drawChart(stock, '1D'); // async — fires and runs in background
+        drawChart(stock, '1D');
+        // New feature panels
+        renderAnalystRatings(stock);
+        renderEarnings(stock);
+        renderSimilarStocks(stock);
+        renderStockJournalNote(stock.symbol);
     }
 
     function closeStockDetail() {
@@ -1385,10 +1568,12 @@ function startNewsEngine() {
         if (orderType === 'market') {
             const ok = executeOrderNow({ side: type, symbol: sym, qty, type: 'market' }, price, false);
             if (ok) {
-                // Update shares owned and buying power in the detail panel immediately
                 document.getElementById('dShares').innerText = portfolio[sym] || 0;
                 document.getElementById('dBuyPow').innerText = '$' + (cash * leverage).toLocaleString(undefined, { maximumFractionDigits: 0 });
                 showTradeToast(type, qty, sym, price);
+                recordPerfSnapshot();
+                // Open journal after a short delay so toast is visible first
+                setTimeout(() => openJournal({ side: type, symbol: sym, qty, price, ts: Date.now() }), 800);
             }
             return;
         }
@@ -1417,13 +1602,14 @@ function startNewsEngine() {
         const toast = document.createElement('div');
         toast.id = 'tradeToast';
         const isBuy = type === 'BUY';
-        const bg = isPending ? '#1a73e8' : (isBuy ? '#34c759' : '#ff453a');
-        const label = isPending ? '⏳ Order Placed' : (isBuy ? '✅ Bought' : '✅ Sold');
+        const isInfo = type === 'INFO';
+        const bg = isInfo ? '#2a2a3a' : isPending ? '#1a73e8' : (isBuy ? '#34c759' : '#ff453a');
+        const label = isInfo ? '' : isPending ? '⏳ Order Placed' : (isBuy ? '✅ Bought' : '✅ Sold');
         toast.style.cssText = `position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
             background:${bg};color:white;padding:12px 24px;border-radius:12px;
             font-weight:600;font-size:14px;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.3);
-            animation:toastIn 0.25s ease-out;`;
-        toast.innerHTML = `${label}: ${qty} × ${sym} @ $${price.toFixed(2)}`;
+            animation:toastIn 0.25s ease-out;border:1px solid rgba(255,255,255,0.1);`;
+        toast.innerHTML = isInfo ? sym : `${label}: ${qty} × ${sym} @ $${price.toFixed(2)}`;
         document.body.appendChild(toast);
         setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.4s'; setTimeout(() => toast.remove(), 400); }, 2500);
     }
@@ -1536,6 +1722,7 @@ function startNewsEngine() {
         renderHistory();
         renderAnalytics();
         renderQuestsAndAchievements();
+        drawPerfChart();
     }
 
     // ═══════════════════════════════════════════
@@ -1669,7 +1856,10 @@ function startNewsEngine() {
         achievements = Array.isArray(currentUser.achievements) ? currentUser.achievements : [];
         tradeStreak = (currentUser.tradeStreak && typeof currentUser.tradeStreak === 'object') ? currentUser.tradeStreak : { count: 0, lastDay: '' };
         dailyQuest = (currentUser.dailyQuest && typeof currentUser.dailyQuest === 'object') ? currentUser.dailyQuest : { date: '', profitableTrades: 0, totalTrades: 0 };
+        perfHistory = Array.isArray(currentUser.perfHistory) ? currentUser.perfHistory : [];
+        tradeJournal = (currentUser.tradeJournal && typeof currentUser.tradeJournal === 'object') ? currentUser.tradeJournal : {};
         ensureDailyQuest();
+        requestNotificationPermission();
         updateSyncBadge();
         document.getElementById('authOverlay').style.display = 'none';
         document.getElementById('userAvatar').innerText = safeName[0].toUpperCase();
@@ -1736,6 +1926,8 @@ function startNewsEngine() {
             totalShares: currentUser.totalShares,
             totalTrades: currentUser.totalTrades || 0
         };
+        currentUser.perfHistory = perfHistory;
+        currentUser.tradeJournal = tradeJournal;
         try {
             const storage = ensureStorageAdapter();
             await storage.set('user:' + currentUser.username, JSON.stringify(currentUser), true);
@@ -2112,6 +2304,7 @@ function startNewsEngine() {
                     <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;${badgeStyle}">${t.side}</span>
                     <span style="font-size:12px;color:#c0c0d8;">${t.qty} × <strong style="color:#e8e8f5;">${t.symbol}</strong></span>
                     ${plHtml}
+                    ${(tradeJournal[t.symbol]||[]).length ? '<span title="Has journal note" style="font-size:10px;">📓</span>' : ''}
                 </div>
                 <div style="text-align:right;">
                     <div style="font-size:12px;font-weight:600;color:#e0e0f5;font-family:var(--v-mono);">$${t.price.toFixed(2)}</div>
@@ -2294,27 +2487,7 @@ function startNewsEngine() {
         if (changed) saveUserData(false);
     }
 
-    function processAlerts() {
-        let fired = false;
-        priceAlerts.forEach(a => {
-            if (a.triggered) return;
-            const st = getStockBySymbol(a.symbol);
-            if (!st) return;
-            const cond = (a.type === 'above' && st.price >= a.value)
-                || (a.type === 'below' && st.price <= a.value)
-                || (a.type === 'move' && Math.abs(st.change) >= a.value);
-            if (cond) {
-                a.triggered = true;
-                alertEvents.unshift('Alert hit: ' + a.symbol + ' ' + a.type + ' ' + a.value);
-                alertEvents = alertEvents.slice(0, 8);
-                fired = true;
-            }
-        });
-        if (fired) {
-            renderAlerts();
-            saveUserData(false);
-        }
-    }
+    // processAlerts is defined later with notification support
 
     function simulateMarketTick() {
         stocks.forEach(s => {
@@ -2768,10 +2941,495 @@ function startNewsEngine() {
         setTimeout(closeApiConfig, 1500);
     }
 
-    // Click outside modal to close
-    document.getElementById('apiConfigModal').addEventListener('click', function(e) {
-        if (e.target === this) closeApiConfig();
+    // ═══════════════════════════════════════════════════════
+    //  FEATURE: LIVE SEARCH DROPDOWN
+    // ═══════════════════════════════════════════════════════
+    let searchTimeout = null;
+    function handleSearch(val) {
+        document.getElementById('searchClear').style.display = val ? 'block' : 'none';
+        renderGrid(); // keep grid filtering
+        clearTimeout(searchTimeout);
+        if (!val.trim()) { hideSearchDropdown(); return; }
+        searchTimeout = setTimeout(() => showSearchDropdown(val), 80);
+    }
+    function showSearchDropdown(val) {
+        const q = (val || document.getElementById('search').value || '').toUpperCase().trim();
+        const drop = document.getElementById('searchDropdown');
+        if (!q) { drop.style.display = 'none'; return; }
+        const matches = stocks.filter(s =>
+            s.symbol.startsWith(q) || s.symbol.includes(q) || s.name.toUpperCase().includes(q)
+        ).slice(0, 12);
+        if (!matches.length) { drop.style.display = 'none'; return; }
+        drop.innerHTML = matches.map(s => {
+            const pos = s.change >= 0;
+            const col = pos ? '#4ade80' : '#f87171';
+            const sign = pos ? '+' : '';
+            return `<div class="search-result-item" onclick="selectSearchResult('${s.symbol}')">
+                <div>
+                    <div style="font-weight:700;color:#e8e8f5;font-size:0.9rem;">${s.symbol}</div>
+                    <div style="font-size:11px;color:#8888a8;margin-top:1px;">${s.name}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-family:var(--v-mono);font-size:0.9rem;color:#f0f0fa;">$${s.price.toFixed(2)}</div>
+                    <div style="font-size:11px;color:${col};font-family:var(--v-mono);">${sign}${s.change.toFixed(2)}%</div>
+                </div>
+            </div>`;
+        }).join('');
+        drop.style.display = 'block';
+    }
+    function hideSearchDropdown() {
+        document.getElementById('searchDropdown').style.display = 'none';
+    }
+    function selectSearchResult(symbol) {
+        const stock = getStockBySymbol(symbol);
+        if (stock) { hideSearchDropdown(); openStockDetail(stock); }
+    }
+    function clearSearch() {
+        document.getElementById('search').value = '';
+        document.getElementById('searchClear').style.display = 'none';
+        hideSearchDropdown();
+        renderGrid();
+    }
+    document.addEventListener('click', e => {
+        if (!document.getElementById('searchWrap')?.contains(e.target)) hideSearchDropdown();
     });
+
+    // ═══════════════════════════════════════════════════════
+    //  FEATURE: DESKTOP PRICE ALERT NOTIFICATIONS
+    // ═══════════════════════════════════════════════════════
+    function requestNotificationPermission() {
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    }
+    function fireAlertNotification(symbol, type, value, price) {
+        const title = `🔔 Vestra Alert: ${symbol}`;
+        const body = `${symbol} is ${type} $${value} — now at $${price.toFixed(2)}`;
+        if ('Notification' in window && Notification.permission === 'granted') {
+            const n = new Notification(title, { body, icon: '' });
+            setTimeout(() => n.close(), 6000);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  FEATURE: MARKET OPEN/CLOSE COUNTDOWN
+    // ═══════════════════════════════════════════════════════
+    function updateCountdown() {
+        const el = document.getElementById('marketCountdown');
+        if (!el) return;
+        const now = new Date();
+        const ny = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+        const day = ny.getDay();
+        const h = ny.getHours(), m = ny.getMinutes(), s = ny.getSeconds();
+        const totalSec = h * 3600 + m * 60 + s;
+        const openSec = 9 * 3600 + 30 * 60;
+        const closeSec = 16 * 3600;
+        const isWeekday = day >= 1 && day <= 5;
+        const marketOpen = isWeekday && totalSec >= openSec && totalSec < closeSec;
+
+        let diff, label;
+        if (!isWeekday || (!marketOpen && totalSec >= closeSec)) {
+            // Weekend or after close — count to next Monday or tomorrow open
+            let daysToOpen = day === 6 ? 2 : (day === 0 ? 1 : (day === 5 ? 3 : 1));
+            diff = daysToOpen * 86400 - totalSec + openSec;
+            label = 'Opens in';
+        } else if (marketOpen) {
+            diff = closeSec - totalSec;
+            label = 'Closes in';
+        } else {
+            diff = openSec - totalSec;
+            label = 'Opens in';
+        }
+        const hh = Math.floor(diff / 3600);
+        const mm = Math.floor((diff % 3600) / 60);
+        const ss = diff % 60;
+        const pad = n => String(n).padStart(2, '0');
+        el.textContent = `${label} ${hh > 0 ? hh + 'h ' : ''}${pad(mm)}m ${pad(ss)}s`;
+        el.style.color = marketOpen ? '#4ade80' : 'var(--v-muted)';
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // ═══════════════════════════════════════════════════════
+    //  FEATURE: DARK / LIGHT MODE TOGGLE
+    // ═══════════════════════════════════════════════════════
+    function toggleTheme() {
+        const isLight = document.body.classList.toggle('light-mode');
+        document.getElementById('themeToggle').textContent = isLight ? '🌙' : '☀️';
+        localStorage.setItem('vestra_theme', isLight ? 'light' : 'dark');
+    }
+    // Restore saved theme
+    if (localStorage.getItem('vestra_theme') === 'light') {
+        document.body.classList.add('light-mode');
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('themeToggle');
+            if (btn) btn.textContent = '☀️';
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  FEATURE: PORTFOLIO PERFORMANCE CHART
+    // ═══════════════════════════════════════════════════════
+    let perfHistory = []; // [{ts, value}]
+    let perfChart = null;
+    let perfPeriod = '7D';
+
+    function recordPerfSnapshot() {
+        if (!currentUser) return;
+        const val = cash + Object.keys(portfolio).reduce((sum, sym) => {
+            const s = getStockBySymbol(sym);
+            return sum + (s ? s.price * portfolio[sym] : 0);
+        }, 0);
+        const now = Date.now();
+        // Only add a snapshot every 5 minutes at most
+        if (perfHistory.length && now - perfHistory[perfHistory.length - 1].ts < 300000) {
+            perfHistory[perfHistory.length - 1].value = val; // update last
+        } else {
+            perfHistory.push({ ts: now, value: val });
+        }
+        // Keep max 365 days of data
+        const cutoff = now - 365 * 86400000;
+        perfHistory = perfHistory.filter(p => p.ts > cutoff);
+        if (currentUser) currentUser.perfHistory = perfHistory;
+        drawPerfChart();
+    }
+
+    function setPerfPeriod(p, btn) {
+        perfPeriod = p;
+        document.querySelectorAll('.perf-btn').forEach(b => {
+            b.style.background = 'transparent';
+            b.style.color = '#8888a8';
+            b.style.borderColor = 'rgba(255,255,255,0.1)';
+        });
+        if (btn) {
+            btn.style.background = 'rgba(212,168,75,0.15)';
+            btn.style.color = 'var(--v-gold)';
+            btn.style.borderColor = 'var(--v-gold)';
+        }
+        drawPerfChart();
+    }
+
+    function drawPerfChart() {
+        const canvas = document.getElementById('perfChart');
+        if (!canvas) return;
+        const wrap = document.getElementById('perfChartWrap');
+        if (!wrap) return;
+
+        // Filter by period
+        const now = Date.now();
+        const cutoffs = { '7D': 7*86400000, '30D': 30*86400000, 'All': Infinity };
+        const cutoff = now - (cutoffs[perfPeriod] || cutoffs['7D']);
+        let data = perfHistory.filter(p => p.ts >= cutoff);
+
+        // Always include a starting point at $100k if no data
+        if (data.length === 0) {
+            data = [{ ts: now - 86400000, value: 100000 }, { ts: now, value: cash }];
+        } else if (data.length === 1) {
+            data = [{ ts: data[0].ts - 3600000, value: 100000 }, ...data];
+        }
+
+        const W = wrap.clientWidth || 260;
+        const H = 150;
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = W * dpr; canvas.height = H * dpr;
+        canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+
+        const vals = data.map(d => d.value);
+        const minV = Math.min(...vals) * 0.998;
+        const maxV = Math.max(...vals) * 1.002;
+        const toX = i => (i / (data.length - 1)) * W;
+        const toY = v => H - ((v - minV) / (maxV - minV || 1)) * (H - 20) - 10;
+
+        const isPos = data[data.length - 1].value >= data[0].value;
+        const lineColor = isPos ? '#4ade80' : '#f87171';
+        const fillColor = isPos ? 'rgba(74,222,128,0.12)' : 'rgba(248,113,113,0.12)';
+
+        // Baseline at 100k
+        const baseY = toY(100000);
+        ctx.beginPath();
+        ctx.setLineDash([4, 4]);
+        ctx.moveTo(0, baseY); ctx.lineTo(W, baseY);
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Fill
+        ctx.beginPath();
+        ctx.moveTo(toX(0), toY(data[0].value));
+        data.forEach((d, i) => ctx.lineTo(toX(i), toY(d.value)));
+        ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+        ctx.fillStyle = fillColor; ctx.fill();
+
+        // Line
+        ctx.beginPath();
+        ctx.moveTo(toX(0), toY(data[0].value));
+        data.forEach((d, i) => ctx.lineTo(toX(i), toY(d.value)));
+        ctx.strokeStyle = lineColor; ctx.lineWidth = 2; ctx.stroke();
+
+        // Current value label
+        const cur = data[data.length - 1].value;
+        const pct = ((cur - 100000) / 100000 * 100).toFixed(2);
+        ctx.font = `bold ${11 * dpr / dpr}px DM Sans, sans-serif`;
+        ctx.fillStyle = lineColor;
+        ctx.fillText(`${isPos ? '+' : ''}${pct}%`, 4, 14);
+
+        if (perfChart) { try { perfChart.destroy(); } catch(e){} perfChart = null; }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  FEATURE: PAPER TRADING JOURNAL
+    // ═══════════════════════════════════════════════════════
+    let journalPendingTx = null;
+    let tradeJournal = {}; // { symbol: [{ ts, side, qty, price, note }] }
+
+    function openJournal(tx) {
+        journalPendingTx = tx;
+        const modal = document.getElementById('journalModal');
+        const info = document.getElementById('journalTradeInfo');
+        const note = document.getElementById('journalNote');
+        info.textContent = `${tx.side} ${tx.qty}× ${tx.symbol} @ $${tx.price.toFixed(2)}`;
+        // Pre-fill with previous note if any
+        const prev = (tradeJournal[tx.symbol] || []).slice(-1)[0];
+        note.value = prev ? prev.note : '';
+        note.placeholder = tx.side === 'BUY'
+            ? 'Why are you buying? What\'s your target price? Time horizon?'
+            : 'Why selling? Taking profit or cutting loss?';
+        modal.classList.add('open');
+        setTimeout(() => note.focus(), 100);
+    }
+
+    function saveJournalNote() {
+        if (!journalPendingTx) { closeJournal(); return; }
+        const note = document.getElementById('journalNote').value.trim();
+        const tx = journalPendingTx;
+        if (!tradeJournal[tx.symbol]) tradeJournal[tx.symbol] = [];
+        tradeJournal[tx.symbol].push({ ts: tx.ts || Date.now(), side: tx.side, qty: tx.qty, price: tx.price, note });
+        if (currentUser) currentUser.tradeJournal = tradeJournal;
+        closeJournal();
+        renderHistory(); // refresh to show note indicator
+        if (tx.symbol === detailStock?.symbol) renderStockJournalNote(tx.symbol);
+    }
+
+    function closeJournal() {
+        document.getElementById('journalModal').classList.remove('open');
+        journalPendingTx = null;
+    }
+
+    function renderStockJournalNote(symbol) {
+        const wrap = document.getElementById('stockJournalNote');
+        const txt = document.getElementById('stockJournalText');
+        if (!wrap || !txt) return;
+        const entries = (tradeJournal[symbol] || []).slice(-3);
+        if (!entries.length) { wrap.style.display = 'none'; return; }
+        wrap.style.display = 'block';
+        txt.innerHTML = entries.map(e => {
+            const d = new Date(e.ts).toLocaleDateString([], { month:'short', day:'numeric' });
+            return `<div style="margin-bottom:6px;"><span style="font-size:10px;color:${e.side==='BUY'?'#4ade80':'#f87171'};font-weight:700;">${e.side} ${d}</span><br>${e.note || '<em style="color:#606080;">No note</em>'}</div>`;
+        }).join('');
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  FEATURE: STOCK DETAIL ENRICHMENT
+    // ═══════════════════════════════════════════════════════
+    function renderAnalystRatings(stock) {
+        const el = document.getElementById('analystRatings');
+        if (!el) return;
+        // Generate deterministic simulated ratings from stock data
+        const seed = stock.symbol.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+        const rng = (min, max) => { const x = Math.sin(seed * 9301 + 49297) * 233280; return Math.floor((x - Math.floor(x)) * (max - min + 1)) + min; };
+        const buy = rng(35, 70), hold = rng(15, 35), sell = 100 - buy - Math.min(hold, 100 - buy);
+        const total = buy + hold + Math.max(0, sell);
+        const consensus = buy > 55 ? 'Strong Buy' : buy > 40 ? 'Buy' : buy > 30 ? 'Hold' : 'Underperform';
+        const consColor = buy > 55 ? '#4ade80' : buy > 40 ? '#a3e635' : buy > 30 ? '#facc15' : '#f87171';
+        const targetSeed = (seed % 30) / 100;
+        const target = (stock.price * (1 + targetSeed + 0.05)).toFixed(2);
+        const upside = ((target - stock.price) / stock.price * 100).toFixed(1);
+
+        el.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <div>
+                    <div style="font-size:1.1rem;font-weight:700;color:${consColor};">${consensus}</div>
+                    <div style="font-size:11px;color:#8888a8;">Based on ${rng(12,40)} analysts</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:13px;color:#f0f0fa;font-weight:600;">Target: $${target}</div>
+                    <div style="font-size:11px;color:${upside >= 0 ? '#4ade80' : '#f87171'};">${upside >= 0 ? '+' : ''}${upside}% upside</div>
+                </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                ${[['Buy', buy, '#4ade80'], ['Hold', hold, '#facc15'], ['Sell', Math.max(0,sell), '#f87171']].map(([label, pct, color]) => `
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="width:40px;font-size:11px;color:#8888a8;">${label}</div>
+                    <div class="analyst-bar" style="flex:1;"><div class="analyst-fill" style="width:${pct}%;background:${color};"></div></div>
+                    <div style="width:32px;font-size:11px;font-weight:700;color:#c0c0d8;text-align:right;">${pct}%</div>
+                </div>`).join('')}
+            </div>`;
+    }
+
+    function renderEarnings(stock) {
+        const el = document.getElementById('earningsData');
+        if (!el) return;
+        const seed = stock.symbol.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+        const quarters = ['Q1 2025','Q4 2024','Q3 2024','Q2 2024'];
+        el.innerHTML = quarters.map((q, i) => {
+            const base = stock.price * (0.04 + (seed % 7) * 0.01);
+            const est = (base + i * 0.02).toFixed(2);
+            const beat = (seed + i) % 3 !== 0;
+            const actual = beat ? (parseFloat(est) + Math.random() * 0.15).toFixed(2) : (parseFloat(est) - Math.random() * 0.08).toFixed(2);
+            const diff = ((actual - est) / est * 100).toFixed(1);
+            return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:10px;">
+                <div style="font-size:11px;color:#8888a8;margin-bottom:4px;">${q}</div>
+                <div style="font-size:13px;font-weight:700;color:#f0f0fa;">$${actual} <span style="font-size:10px;color:${beat?'#4ade80':'#f87171'};font-weight:600;">${beat?'BEAT':'MISS'} ${diff}%</span></div>
+                <div style="font-size:11px;color:#606080;">Est. $${est}</div>
+            </div>`;
+        }).join('');
+    }
+
+    function renderSimilarStocks(stock) {
+        const el = document.getElementById('similarStocks');
+        if (!el) return;
+        const sector = stock.sector || inferSector(stock.symbol, stock.name);
+        const similar = stocks.filter(s => s.symbol !== stock.symbol && inferSector(s.symbol, s.name) === sector).slice(0, 6);
+        if (!similar.length) { el.innerHTML = '<div style="color:#8888a8;font-size:13px;">No similar stocks found.</div>'; return; }
+        el.innerHTML = similar.map(s => {
+            const pos = s.change >= 0;
+            return `<button onclick="openStockDetail(getStockBySymbol('${s.symbol}'))" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 12px;cursor:pointer;text-align:left;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--v-gold)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+                <div style="font-weight:700;color:#e8e8f5;font-size:0.875rem;">${s.symbol}</div>
+                <div style="font-size:11px;color:${pos?'#4ade80':'#f87171'};font-family:var(--v-mono);">${pos?'+':''}${s.change.toFixed(2)}%</div>
+            </button>`;
+        }).join('');
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  FEATURE: SHAREABLE PORTFOLIO
+    // ═══════════════════════════════════════════════════════
+    function sharePortfolio() {
+        if (!currentUser) return;
+        const portfolioValue = Object.keys(portfolio).reduce((sum, sym) => {
+            const s = getStockBySymbol(sym); return sum + (s ? s.price * portfolio[sym] : 0);
+        }, 0);
+        const total = cash + portfolioValue;
+        const pl = total - 100000;
+        const plPct = (pl / 100000 * 100).toFixed(2);
+        const holdings = Object.keys(portfolio).slice(0, 5).map(sym => {
+            const s = getStockBySymbol(sym);
+            return s ? `${sym} ×${portfolio[sym]}` : sym;
+        }).join(', ');
+
+        const shareText = `📊 My Vestra Portfolio\n👤 ${currentUser.displayName}\n💰 $${total.toLocaleString(undefined,{maximumFractionDigits:0})} total equity\n${pl >= 0 ? '📈' : '📉'} ${pl >= 0 ? '+' : ''}$${Math.abs(pl).toLocaleString(undefined,{maximumFractionDigits:0})} (${pl >= 0 ? '+' : ''}${plPct}%)\n🏦 Holdings: ${holdings || 'None yet'}\n\nTry Vestra — risk-free trading!`;
+
+        if (navigator.share) {
+            navigator.share({ title: 'My Vestra Portfolio', text: shareText }).catch(() => {});
+        } else {
+            navigator.clipboard.writeText(shareText).then(() => {
+                showTradeToast('INFO', 0, 'Portfolio stats copied to clipboard!', 0, false);
+            }).catch(() => {
+                // fallback: show in a prompt
+                prompt('Copy your portfolio summary:', shareText);
+            });
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  FEATURE: MOBILE TABS
+    // ═══════════════════════════════════════════════════════
+    function mobileTab(tab) {
+        document.querySelectorAll('.mob-nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('mn' + tab.charAt(0).toUpperCase() + tab.slice(1))?.classList.add('active');
+
+        const grid = document.querySelector('#grid')?.parentElement;
+        const sidebar = document.getElementById('desktopSidebar');
+        const mobPortfolio = document.getElementById('mobilePortfolioView');
+        const searchWrap = document.getElementById('searchWrap');
+
+        if (tab === 'market') {
+            if (grid) grid.style.display = '';
+            if (mobPortfolio) mobPortfolio.style.display = 'none';
+        } else if (tab === 'portfolio') {
+            if (grid) grid.style.display = 'none';
+            if (mobPortfolio) {
+                mobPortfolio.style.display = 'block';
+                renderMobilePortfolio();
+            }
+        } else if (tab === 'search') {
+            if (grid) grid.style.display = '';
+            const inp = document.getElementById('search');
+            if (inp) { inp.focus(); }
+        } else if (tab === 'profile') {
+            if (grid) grid.style.display = 'none';
+            if (mobPortfolio) {
+                mobPortfolio.style.display = 'block';
+                mobPortfolio.innerHTML = `<div style="padding:20px 0;">
+                    <div style="font-family:var(--v-serif);font-size:1.5rem;color:#f0f0fa;margin-bottom:4px;">${currentUser?.displayName || '—'}</div>
+                    <div style="font-size:13px;color:#8888a8;margin-bottom:20px;">@${currentUser?.username || '—'}</div>
+                    <button onclick="sharePortfolio()" style="width:100%;background:rgba(212,168,75,0.1);border:1px solid rgba(212,168,75,0.25);color:var(--v-gold);padding:12px;border-radius:10px;font-weight:700;cursor:pointer;margin-bottom:10px;">🔗 Share Portfolio</button>
+                    <button onclick="openApiConfig()" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#c0c0d8;padding:12px;border-radius:10px;font-weight:700;cursor:pointer;margin-bottom:10px;">⚡ Live Data Settings</button>
+                    <button onclick="toggleTheme()" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#c0c0d8;padding:12px;border-radius:10px;font-weight:700;cursor:pointer;margin-bottom:10px;">🌙 Toggle Theme</button>
+                    <button onclick="logOut()" style="width:100%;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#f87171;padding:12px;border-radius:10px;font-weight:700;cursor:pointer;">Sign Out</button>
+                </div>`;
+            }
+        }
+    }
+
+    function renderMobilePortfolio() {
+        const el = document.getElementById('mobilePortfolioView');
+        if (!el) return;
+        const portfolioValue = Object.keys(portfolio).reduce((sum, sym) => {
+            const s = getStockBySymbol(sym); return sum + (s ? s.price * portfolio[sym] : 0);
+        }, 0);
+        const total = cash + portfolioValue;
+        const pl = total - 100000;
+        const plPct = (pl / 100000 * 100).toFixed(2);
+        const plColor = pl >= 0 ? '#4ade80' : '#f87171';
+        let holdingsHtml = '<div style="color:#8888a8;font-size:13px;padding:16px 0;">No holdings yet.</div>';
+        if (Object.keys(portfolio).length) {
+            holdingsHtml = Object.keys(portfolio).map(sym => {
+                const s = getStockBySymbol(sym);
+                if (!s) return '';
+                const val = s.price * portfolio[sym];
+                const pos = s.change >= 0;
+                return `<div onclick="openStockDetail(getStockBySymbol('${sym}'))" style="display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;">
+                    <div><div style="font-weight:700;color:#e8e8f5;">${sym}</div><div style="font-size:11px;color:#8888a8;">${portfolio[sym]} shares</div></div>
+                    <div style="text-align:right;"><div style="font-family:var(--v-mono);color:#f0f0fa;">$${val.toFixed(2)}</div><div style="font-size:11px;color:${pos?'#4ade80':'#f87171'};">${pos?'+':''}${s.change.toFixed(2)}% today</div></div>
+                </div>`;
+            }).join('');
+        }
+        el.innerHTML = `<div style="margin-bottom:20px;">
+            <div style="font-size:11px;color:#8888a8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Total Equity</div>
+            <div style="font-size:2.2rem;font-weight:300;color:#f5f5fa;font-family:var(--v-mono);">$${total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+            <div style="font-size:1rem;font-weight:600;color:${plColor};">${pl>=0?'+':''}$${Math.abs(pl).toFixed(2)} (${pl>=0?'+':''}${plPct}%)</div>
+        </div>
+        <div style="font-size:0.9rem;font-weight:600;color:#e0e0f5;margin-bottom:8px;">Holdings</div>
+        ${holdingsHtml}`;
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  HOOK: Patch processAlerts to fire notifications
+    // ═══════════════════════════════════════════════════════
+    function processAlerts() {
+        let fired = false;
+        priceAlerts.forEach(a => {
+            if (a.triggered) return;
+            const st = getStockBySymbol(a.symbol);
+            if (!st) return;
+            const cond = (a.type === 'above' && st.price >= a.value)
+                || (a.type === 'below' && st.price <= a.value)
+                || (a.type === 'move' && Math.abs(st.change) >= a.value);
+            if (cond) {
+                a.triggered = true;
+                alertEvents.unshift(`Alert: ${a.symbol} ${a.type} $${a.value} → $${st.price.toFixed(2)}`);
+                alertEvents = alertEvents.slice(0, 8);
+                fireAlertNotification(a.symbol, a.type, a.value, st.price);
+                fired = true;
+            }
+        });
+        if (fired) { renderAlerts(); saveUserData(false); }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  HOOK: Patch execDetailTrade to open journal
+    // ═══════════════════════════════════════════════════════
 
     // Update market status every minute
     setInterval(updateMarketStatus, 60000);
