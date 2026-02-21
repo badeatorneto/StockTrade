@@ -2895,5 +2895,54 @@ function startNewsEngine() {
     };
 
 </script>
+        <!-- Your existing code above -->
+
+    <script>
+    let isLogin = true;
+
+    function showAuthFromHome() {
+        document.querySelector('.home-section').style.display = 'none';
+        document.getElementById('authSection').style.display = 'block';
+    }
+
+    function toggleAuthMode() {
+        isLogin = !isLogin;
+        
+        const title = document.getElementById('authTitle');
+        const submitBtn = document.getElementById('authSubmitBtn');
+        const toggleText = document.getElementById('authToggleText');
+        const nameField = document.getElementById('nameField');
+
+        if (isLogin) {
+            title.textContent = "Welcome Back";
+            submitBtn.textContent = "Log In";
+            toggleText.textContent = "Don't have an account? Sign up";
+            nameField.style.display = "none";
+        } else {
+            title.textContent = "Create Account";
+            submitBtn.textContent = "Sign Up";
+            toggleText.textContent = "Already have an account? Log in";
+            nameField.style.display = "block";
+        }
+    }
+
+    function handleAuthSubmit(event) {
+        event.preventDefault();
+
+        const email = document.getElementById('emailInput').value;
+        const password = document.getElementById('passwordInput').value;
+
+        if (!email || !password) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        alert(isLogin ? "Logged in successfully!" : "Account created successfully!");
+
+        document.getElementById('authSection').style.display = 'none';
+        document.querySelector('.home-section').style.display = 'block';
+    }
+    </script>
+
 </body>
 </html>
