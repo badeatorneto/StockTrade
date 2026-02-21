@@ -12,14 +12,14 @@
         :root {
             --v-bg: #0a0a0f;
             --v-surface: #111118;
-            --v-card: #16161f;
-            --v-border: rgba(255,255,255,0.08);
-            --v-gold: #c9a84c;
-            --v-gold-light: #e8c97a;
+            --v-card: #1a1a24;
+            --v-border: rgba(255,255,255,0.12);
+            --v-gold: #d4a84b;
+            --v-gold-light: #f0c96a;
             --v-green: #22c55e;
             --v-red: #ef4444;
-            --v-text: #f0f0f5;
-            --v-muted: rgba(240,240,245,0.45);
+            --v-text: #f5f5fa;
+            --v-muted: #a0a0b8;
             --v-serif: 'DM Serif Display', serif;
             --v-sans: 'DM Sans', sans-serif;
             --v-mono: 'JetBrains Mono', monospace;
@@ -32,13 +32,6 @@
         #homePage { display: block; }
         #appPage  { display: none; }
 
-        /* Grain overlay */
-        body::before {
-            content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-            opacity: 0.35;
-        }
-
         /* Hero gradient orbs */
         .orb {
             position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none;
@@ -49,17 +42,18 @@
             position: fixed; top: 0; left: 0; right: 0; z-index: 100;
             padding: 0 48px; height: 72px;
             display: flex; align-items: center; justify-content: space-between;
-            background: rgba(10,10,15,0.7); backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--v-border);
+            background: rgba(10,10,15,0.85); backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        .home-nav .logo { font-family: var(--v-serif); font-size: 1.75rem; color: var(--v-text); }
+        .home-nav .logo { font-family: var(--v-serif); font-size: 1.75rem; color: #ffffff; }
         .nav-btn {
             padding: 9px 22px; border-radius: 8px; font-family: var(--v-sans);
             font-weight: 600; font-size: 0.875rem; cursor: pointer; transition: all 0.2s;
+            border: none;
         }
-        .nav-btn-ghost { background: transparent; border: 1px solid var(--v-border); color: var(--v-muted); }
-        .nav-btn-ghost:hover { border-color: var(--v-gold); color: var(--v-gold); }
-        .nav-btn-gold { background: var(--v-gold); border: 1px solid var(--v-gold); color: #0a0a0f; }
+        .nav-btn-ghost { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2) !important; color: #e0e0f0; }
+        .nav-btn-ghost:hover { background: rgba(255,255,255,0.12); border-color: var(--v-gold) !important; color: var(--v-gold); }
+        .nav-btn-gold { background: var(--v-gold); color: #0a0a0f; font-weight: 700; }
         .nav-btn-gold:hover { background: var(--v-gold-light); }
 
         /* Sections */
@@ -67,41 +61,45 @@
 
         /* Feature cards */
         .feat-card {
-            background: var(--v-card); border: 1px solid var(--v-border);
+            background: #1e1e2a; border: 1px solid rgba(255,255,255,0.1);
             border-radius: 16px; padding: 32px; transition: all 0.3s;
         }
-        .feat-card:hover { border-color: rgba(201,168,76,0.3); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+        .feat-card h3 { color: #ffffff; }
+        .feat-card p  { color: #b0b0c8; }
+        .feat-card:hover { border-color: rgba(212,168,75,0.4); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
 
         /* Ticker tape */
-        .ticker-wrap { overflow: hidden; background: var(--v-surface); border-top: 1px solid var(--v-border); border-bottom: 1px solid var(--v-border); }
+        .ticker-wrap { overflow: hidden; background: #0e0e16; border-top: 1px solid rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.08); }
         .ticker { display: flex; animation: tickerScroll 40s linear infinite; white-space: nowrap; }
         .ticker:hover { animation-play-state: paused; }
         @keyframes tickerScroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
         /* Stats counter */
         .stat-num { font-family: var(--v-serif); font-size: 3rem; color: var(--v-gold); line-height: 1; }
+        .stat-label { color: #9090aa; margin-top: 8px; font-size: 0.9rem; }
 
         /* Step circles */
         .step-num {
             width: 48px; height: 48px; border-radius: 50%;
-            border: 1px solid var(--v-gold); color: var(--v-gold);
+            background: rgba(212,168,75,0.1);
+            border: 1.5px solid var(--v-gold); color: var(--v-gold);
             font-family: var(--v-serif); font-size: 1.25rem;
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
 
         /* Gold divider */
-        .gold-line { height: 1px; background: linear-gradient(90deg, transparent, var(--v-gold), transparent); }
+        .gold-line { height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,75,0.5), transparent); }
 
         /* Footer */
-        footer { position: relative; z-index: 1; border-top: 1px solid var(--v-border); }
+        footer { position: relative; z-index: 1; border-top: 1px solid rgba(255,255,255,0.08); }
         .social-link {
             display: inline-flex; align-items: center; gap: 10px;
-            color: var(--v-muted); text-decoration: none; font-size: 0.875rem;
+            color: #9090aa; text-decoration: none; font-size: 0.875rem;
             transition: color 0.2s; padding: 8px 0;
         }
         .social-link:hover { color: var(--v-gold); }
-        .social-icon { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--v-border); display: flex; align-items: center; justify-content: center; transition: border-color 0.2s; }
-        .social-link:hover .social-icon { border-color: var(--v-gold); }
+        .social-icon { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); color: #b0b0c8; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s; }
+        .social-link:hover .social-icon { border-color: var(--v-gold); color: var(--v-gold); }
 
         /* ── App UI ── */
         .app-header {
@@ -201,7 +199,7 @@
       Trade Like a Pro.<br><em style="color:var(--v-gold);">Risk Nothing.</em>
     </h1>
 
-    <p class="anim-3" style="font-size:clamp(1rem,2vw,1.25rem);color:var(--v-muted);max-width:580px;line-height:1.7;margin:0 0 48px;">
+    <p class="anim-3" style="font-size:clamp(1rem,2vw,1.25rem);color:#b0b0c8;max-width:580px;line-height:1.7;margin:0 0 48px;">
       Vestra gives you $100,000 in virtual cash and real-time market data so you can master the art of trading — before it ever costs you a cent.
     </p>
 
@@ -219,7 +217,7 @@
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <div>
           <span style="font-family:var(--v-serif);font-size:1.5rem;">AAPL</span>
-          <span style="color:var(--v-muted);font-size:0.875rem;margin-left:8px;">Apple Inc.</span>
+          <span style="color:#b0b0c8;font-size:0.875rem;margin-left:8px;">Apple Inc.</span>
         </div>
         <div style="text-align:right;">
           <div style="font-family:var(--v-mono);font-size:1.5rem;color:var(--v-text);" id="heroPrice">$214.37</div>
@@ -239,25 +237,25 @@
   </div>
 
   <!-- STATS -->
-  <section style="padding:100px 24px;">
+  <section style="padding:100px 24px;background:var(--v-bg);">
     <div style="max-width:1100px;margin:0 auto;">
       <div class="gold-line" style="margin-bottom:80px;"></div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:48px;text-align:center;">
         <div>
           <div class="stat-num">$100K</div>
-          <div style="color:var(--v-muted);margin-top:8px;font-size:0.9rem;">Virtual Cash to Start</div>
+          <div style="color:#b0b0c8;margin-top:8px;font-size:0.9rem;">Virtual Cash to Start</div>
         </div>
         <div>
           <div class="stat-num">500+</div>
-          <div style="color:var(--v-muted);margin-top:8px;font-size:0.9rem;">Real Stocks & ETFs</div>
+          <div style="color:#b0b0c8;margin-top:8px;font-size:0.9rem;">Real Stocks & ETFs</div>
         </div>
         <div>
           <div class="stat-num">Live</div>
-          <div style="color:var(--v-muted);margin-top:8px;font-size:0.9rem;">Real-Time Price Data</div>
+          <div style="color:#b0b0c8;margin-top:8px;font-size:0.9rem;">Real-Time Price Data</div>
         </div>
         <div>
           <div class="stat-num">Zero</div>
-          <div style="color:var(--v-muted);margin-top:8px;font-size:0.9rem;">Financial Risk</div>
+          <div style="color:#b0b0c8;margin-top:8px;font-size:0.9rem;">Financial Risk</div>
         </div>
       </div>
       <div class="gold-line" style="margin-top:80px;"></div>
@@ -268,43 +266,43 @@
   <section style="padding:60px 24px 100px;">
     <div style="max-width:1100px;margin:0 auto;">
       <p style="text-align:center;color:var(--v-gold);font-size:0.8rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px;">Everything You Need</p>
-      <h2 style="font-family:var(--v-serif);font-size:clamp(2rem,5vw,3.5rem);text-align:center;margin:0 0 72px;">Built for Serious Learning</h2>
+      <h2 style="font-family:var(--v-serif);font-size:clamp(2rem,5vw,3.5rem);text-align:center;margin:0 0 72px;color:#ffffff;">Built for Serious Learning</h2>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;">
 
         <div class="feat-card">
           <div style="font-size:2rem;margin-bottom:16px;">📈</div>
           <h3 style="font-family:var(--v-serif);font-size:1.4rem;margin:0 0 10px;">Real-Time Market Data</h3>
-          <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Connect your Finnhub API key and watch prices update live every few seconds. Candlestick charts, day range, volume — all real.</p>
+          <p style="color:#b0b0c8;line-height:1.7;font-size:0.9rem;">Connect your Finnhub API key and watch prices update live every few seconds. Candlestick charts, day range, volume — all real.</p>
         </div>
 
         <div class="feat-card">
           <div style="font-size:2rem;margin-bottom:16px;">💼</div>
           <h3 style="font-family:var(--v-serif);font-size:1.4rem;margin:0 0 10px;">Full Portfolio Tracking</h3>
-          <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Realized & unrealized P&L, cost basis, sector allocation charts, and full transaction history — just like a real brokerage.</p>
+          <p style="color:#b0b0c8;line-height:1.7;font-size:0.9rem;">Realized & unrealized P&L, cost basis, sector allocation charts, and full transaction history — just like a real brokerage.</p>
         </div>
 
         <div class="feat-card">
           <div style="font-size:2rem;margin-bottom:16px;">⚡</div>
           <h3 style="font-family:var(--v-serif);font-size:1.4rem;margin:0 0 10px;">Multiple Order Types</h3>
-          <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Market, limit, stop-loss, take-profit orders. Practice advanced strategies with pending orders that fill automatically when price hits your target.</p>
+          <p style="color:#b0b0c8;line-height:1.7;font-size:0.9rem;">Market, limit, stop-loss, take-profit orders. Practice advanced strategies with pending orders that fill automatically when price hits your target.</p>
         </div>
 
         <div class="feat-card">
           <div style="font-size:2rem;margin-bottom:16px;">🏆</div>
           <h3 style="font-family:var(--v-serif);font-size:1.4rem;margin:0 0 10px;">Global Leaderboard</h3>
-          <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Compete with traders worldwide. Rankings by total value, profit, and shares owned. See who's on top and push to beat them.</p>
+          <p style="color:#b0b0c8;line-height:1.7;font-size:0.9rem;">Compete with traders worldwide. Rankings by total value, profit, and shares owned. See who's on top and push to beat them.</p>
         </div>
 
         <div class="feat-card">
           <div style="font-size:2rem;margin-bottom:16px;">🎯</div>
           <h3 style="font-family:var(--v-serif);font-size:1.4rem;margin:0 0 10px;">Daily Quests & Streaks</h3>
-          <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Daily trading challenges, achievement badges, and streak tracking keep you engaged and building real discipline.</p>
+          <p style="color:#b0b0c8;line-height:1.7;font-size:0.9rem;">Daily trading challenges, achievement badges, and streak tracking keep you engaged and building real discipline.</p>
         </div>
 
         <div class="feat-card">
           <div style="font-size:2rem;margin-bottom:16px;">🔐</div>
           <h3 style="font-family:var(--v-serif);font-size:1.4rem;margin:0 0 10px;">Your Account, Saved</h3>
-          <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Create an account and your portfolio persists between sessions. Trade today, pick up where you left off tomorrow.</p>
+          <p style="color:#b0b0c8;line-height:1.7;font-size:0.9rem;">Create an account and your portfolio persists between sessions. Trade today, pick up where you left off tomorrow.</p>
         </div>
 
       </div>
@@ -312,41 +310,41 @@
   </section>
 
   <!-- HOW IT WORKS -->
-  <section id="how" style="padding:80px 24px 100px;background:var(--v-surface);">
+  <section id="how" style="padding:80px 24px 100px;background:#0e0e18;">
     <div style="max-width:800px;margin:0 auto;">
       <p style="text-align:center;color:var(--v-gold);font-size:0.8rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px;">Get Started in Minutes</p>
-      <h2 style="font-family:var(--v-serif);font-size:clamp(2rem,5vw,3rem);text-align:center;margin:0 0 72px;">How Vestra Works</h2>
+      <h2 style="font-family:var(--v-serif);font-size:clamp(2rem,5vw,3rem);text-align:center;margin:0 0 72px;color:#ffffff;">How Vestra Works</h2>
 
       <div style="display:flex;flex-direction:column;gap:40px;">
         <div style="display:flex;gap:24px;align-items:flex-start;">
           <div class="step-num">1</div>
           <div>
-            <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;">Create Your Free Account</h3>
-            <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Sign up in seconds — just a username and password. You're immediately given $100,000 in virtual cash and access to the full market.</p>
+            <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;color:#f0f0fa;">Create Your Free Account</h3>
+            <p style="color:#b0b0c8;line-height:1.7;font-size:0.9rem;">Sign up in seconds — just a username and password. You're immediately given $100,000 in virtual cash and access to the full market.</p>
           </div>
         </div>
         <div class="gold-line"></div>
         <div style="display:flex;gap:24px;align-items:flex-start;">
           <div class="step-num">2</div>
           <div>
-            <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;">Connect Live Market Data</h3>
-            <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Get a free API key from <a href="https://finnhub.io" target="_blank" style="color:var(--v-gold);">finnhub.io</a> and paste it in the Live Data settings. Prices start updating in real-time instantly.</p>
+            <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;color:#f0f0fa;">Connect Live Market Data</h3>
+            <p style="color:#b0b0c8;line-height:1.7;font-size:0.9rem;">Get a free API key from <a href="https://finnhub.io" target="_blank" style="color:var(--v-gold);">finnhub.io</a> and paste it in the Live Data settings. Prices start updating in real-time instantly.</p>
           </div>
         </div>
         <div class="gold-line"></div>
         <div style="display:flex;gap:24px;align-items:flex-start;">
           <div class="step-num">3</div>
           <div>
-            <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;">Browse, Research & Trade</h3>
-            <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Search 500+ stocks, study candlestick charts, and place market or limit orders. Your portfolio updates live as prices move.</p>
+            <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;color:#f0f0fa;">Browse, Research & Trade</h3>
+            <p style="color:#b0b0c8;line-height:1.7;font-size:0.9rem;">Search 500+ stocks, study candlestick charts, and place market or limit orders. Your portfolio updates live as prices move.</p>
           </div>
         </div>
         <div class="gold-line"></div>
         <div style="display:flex;gap:24px;align-items:flex-start;">
           <div class="step-num">4</div>
           <div>
-            <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;">Grow, Compete & Learn</h3>
-            <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Track your P&L, climb the global leaderboard, complete daily quests, and unlock achievements as you sharpen your strategy.</p>
+            <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;color:#f0f0fa;">Grow, Compete & Learn</h3>
+            <p style="color:#b0b0c8;line-height:1.7;font-size:0.9rem;">Track your P&L, climb the global leaderboard, complete daily quests, and unlock achievements as you sharpen your strategy.</p>
           </div>
         </div>
       </div>
@@ -357,8 +355,8 @@
   <section style="padding:120px 24px;text-align:center;position:relative;overflow:hidden;">
     <div class="orb" style="width:700px;height:700px;background:radial-gradient(circle,rgba(201,168,76,0.09),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);"></div>
     <p style="color:var(--v-gold);font-size:0.8rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px;">No Credit Card. No Risk. Ever.</p>
-    <h2 style="font-family:var(--v-serif);font-size:clamp(2rem,6vw,4rem);margin:0 0 24px;max-width:700px;margin-left:auto;margin-right:auto;">Ready to Start Your Trading Journey?</h2>
-    <p style="color:var(--v-muted);max-width:480px;margin:0 auto 48px;line-height:1.7;">Join Vestra today and start practicing with real market conditions. The only thing you'll lose is your fear of the market.</p>
+    <h2 style="font-family:var(--v-serif);font-size:clamp(2rem,6vw,4rem);margin:0 0 24px;max-width:700px;margin-left:auto;margin-right:auto;color:#ffffff;">Ready to Start Your Trading Journey?</h2>
+    <p style="color:#b0b0c8;max-width:480px;margin:0 auto 48px;line-height:1.7;">Join Vestra today and start practicing with real market conditions. The only thing you'll lose is your fear of the market.</p>
     <button class="nav-btn nav-btn-gold" style="padding:18px 52px;font-size:1.1rem;border-radius:14px;" onclick="showAuthFromHome('register')">
       Create Free Account →
     </button>
@@ -371,11 +369,11 @@
 
         <div>
           <div class="logo" style="font-size:2rem;margin-bottom:8px;">Vestra</div>
-          <p style="color:var(--v-muted);font-size:0.85rem;line-height:1.7;max-width:340px;">Trading With No Risk. Practice with real market data, build your skills, and compete with traders worldwide — all with virtual money.</p>
+          <p style="color:#b0b0c8;font-size:0.85rem;line-height:1.7;max-width:340px;">Trading With No Risk. Practice with real market data, build your skills, and compete with traders worldwide — all with virtual money.</p>
         </div>
 
         <div>
-          <p style="color:var(--v-muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:20px;">Connect</p>
+          <p style="color:#b0b0c8;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:20px;">Connect</p>
           <div style="display:flex;flex-direction:column;gap:4px;">
 
             <a href="https://www.instagram.com/badeatorneto/?hl=en" target="_blank" rel="noopener noreferrer" class="social-link">
@@ -405,7 +403,7 @@
 
       <div class="gold-line" style="margin-bottom:28px;"></div>
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
-        <p style="color:var(--v-muted);font-size:0.78rem;">© 2026 Vestra. All rights reserved. For educational purposes only — not financial advice.</p>
+        <p style="color:#b0b0c8;font-size:0.78rem;">© 2026 Vestra. All rights reserved. For educational purposes only — not financial advice.</p>
         <button class="nav-btn nav-btn-ghost" style="font-size:0.8rem;padding:6px 16px;" onclick="showAuthFromHome('login')">Log In to Trade →</button>
       </div>
     </div>
