@@ -52,6 +52,7 @@
         .sidebar-scroll { height: calc(100vh - 200px); overflow-y: auto; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 4px; }
+        @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(12px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
         /* Price update flash */
         @keyframes flash-green { 0%{background:#e6f4ea} 100%{background:transparent} }
         @keyframes flash-red   { 0%{background:#fce8e6} 100%{background:transparent} }
@@ -991,14 +992,20 @@ function startNewsEngine() {
 
     function execDetailTrade(type) {
         if (!detailStock) return;
-        const sym = detailStock.symbol;
-        const price = detailStock.price;
+        const sym      = detailStock.symbol;
+        const price    = detailStock.price;
         const orderType = document.getElementById('orderType').value;
-        const qty = Math.max(1, parseInt(document.getElementById('orderQty').value || '1', 10));
-        const trigger = parseFloat(document.getElementById('orderTrigger').value || '0');
+        const qty      = Math.max(1, parseInt(document.getElementById('orderQty').value || '1', 10));
+        const trigger  = parseFloat(document.getElementById('orderTrigger').value || '0');
 
         if (orderType === 'market') {
-            executeOrderNow({ side: type, symbol: sym, qty, type: 'market' }, price, false);
+            const ok = executeOrderNow({ side: type, symbol: sym, qty, type: 'market' }, price, false);
+            if (ok) {
+                // Update shares owned and buying power in the detail panel immediately
+                document.getElementById('dShares').innerText = portfolio[sym] || 0;
+                document.getElementById('dBuyPow').innerText = '$' + (cash * leverage).toLocaleString(undefined, { maximumFractionDigits: 0 });
+                showTradeToast(type, qty, sym, price);
+            }
             return;
         }
         if (!Number.isFinite(trigger) || trigger <= 0) {
@@ -1011,17 +1018,30 @@ function startNewsEngine() {
         }
         pendingOrders.unshift({
             id: 'ord_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
-            symbol: sym,
-            side: type,
-            qty,
-            type: orderType,
-            trigger,
-            createdAt: Date.now(),
-            status: 'OPEN'
+            symbol: sym, side: type, qty, type: orderType, trigger,
+            createdAt: Date.now(), status: 'OPEN'
         });
         renderPendingOrders();
         updateUI();
         saveUserData(false);
+        showTradeToast(type, qty, sym, trigger, true);
+    }
+
+    function showTradeToast(type, qty, sym, price, isPending) {
+        const existing = document.getElementById('tradeToast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'tradeToast';
+        const isBuy = type === 'BUY';
+        const bg = isPending ? '#1a73e8' : (isBuy ? '#34c759' : '#ff453a');
+        const label = isPending ? '⏳ Order Placed' : (isBuy ? '✅ Bought' : '✅ Sold');
+        toast.style.cssText = `position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
+            background:${bg};color:white;padding:12px 24px;border-radius:12px;
+            font-weight:600;font-size:14px;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.3);
+            animation:toastIn 0.25s ease-out;`;
+        toast.innerHTML = `${label}: ${qty} × ${sym} @ $${price.toFixed(2)}`;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.4s'; setTimeout(() => toast.remove(), 400); }, 2500);
     }
 
     function executeTrade(type) { execDetailTrade(type); }
@@ -1036,53 +1056,69 @@ function startNewsEngine() {
     }
 
     function updateUI() {
-        // buying power logic
-        document.getElementById('buyingPower').innerText = (cash * leverage).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-        
-        // Portfolio Calculation
+        // Portfolio list — update in place to avoid flicker
         const list = document.getElementById('portfolioList');
-        list.innerHTML = '';
+        const symsInPortfolio = Object.keys(portfolio);
         let portfolioValue = 0;
-        
-        Object.keys(portfolio).forEach(symbol => {
-            const qty = portfolio[symbol];
+
+        // Remove rows no longer in portfolio
+        list.querySelectorAll('[data-port-sym]').forEach(el => {
+            if (!portfolio[el.dataset.portSym]) el.remove();
+        });
+
+        symsInPortfolio.forEach(symbol => {
+            const qty   = portfolio[symbol];
             const stock = stocks.find(s => s.symbol === symbol);
-            if(stock) {
-                const val = qty * stock.price;
-                portfolioValue += val;
-                
-                // Add list item
-                const div = document.createElement('div');
-                div.className = "py-3 flex justify-between items-center";
-                div.innerHTML = `
+            if (!stock) return;
+            const val = qty * stock.price;
+            portfolioValue += val;
+            const isPos = stock.change >= 0;
+
+            let row = list.querySelector(`[data-port-sym="${symbol}"]`);
+            if (row) {
+                // Update in place
+                row.querySelector('.port-val').textContent  = '$' + val.toLocaleString(undefined,{maximumFractionDigits:2});
+                row.querySelector('.port-chg').textContent  = stock.change.toFixed(2) + '%';
+                row.querySelector('.port-chg').className    = 'port-chg text-xs ' + (isPos ? 'text-[#137333]' : 'text-[#c5221f]');
+                row.querySelector('.port-qty').textContent  = qty + ' shares';
+            } else {
+                row = document.createElement('div');
+                row.className = 'py-3 flex justify-between items-center cursor-pointer';
+                row.dataset.portSym = symbol;
+                row.innerHTML = `
                     <div>
                         <div class="font-medium text-gray-800">${symbol}</div>
-                        <div class="text-xs text-gray-500">${qty} shares</div>
+                        <div class="port-qty text-xs text-gray-500">${qty} shares</div>
                     </div>
                     <div class="text-right">
-                        <div class="font-medium">$${val.toLocaleString()}</div>
-                        <div class="text-xs ${stock.change >= 0 ? 'text-[#137333]' : 'text-[#c5221f]'}">
-                            ${stock.change.toFixed(2)}%
-                        </div>
-                    </div>
-                `;
-                div.onclick = () => openStockDetail(stock);
-                div.style.cursor = 'pointer';
-                list.appendChild(div);
+                        <div class="port-val font-medium">$${val.toLocaleString(undefined,{maximumFractionDigits:2})}</div>
+                        <div class="port-chg text-xs ${isPos ? 'text-[#137333]' : 'text-[#c5221f]'}">${stock.change.toFixed(2)}%</div>
+                    </div>`;
+                row.onclick = () => openStockDetail(stock);
+                list.appendChild(row);
             }
         });
 
-        if (Object.keys(portfolio).length === 0) {
+        if (symsInPortfolio.length === 0) {
             list.innerHTML = '<div class="text-sm text-gray-500 py-4 text-center italic">Your portfolio is empty.</div>';
         }
 
-        const totalEquity = cash + portfolioValue; // Simplified net worth (cash + assets)
-        document.getElementById('netWorth').innerText = totalEquity.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-        
-        const pl = totalEquity - 100000;
-        const plEl = document.getElementById('plDisplay');
-        plEl.innerText = (pl >= 0 ? '+' : '') + "$" + pl.toLocaleString() + " (" + ((pl/100000)*100).toFixed(2) + "%)";
-        plEl.className = "text-sm font-medium mt-1 " + (pl >= 0 ? "text-[#137333]" : "text-[#c5221f]");
+        const totalEquity = cash + portfolioValue;
+        const nwEl = document.getElementById('netWorth');
+        if (nwEl) nwEl.innerText = totalEquity.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        const pl    = totalEquity - 100000;
+        const plPct = ((pl / 100000) * 100).toFixed(2);
+        const plEl  = document.getElementById('plDisplay');
+        if (plEl) {
+            plEl.innerText   = (pl >= 0 ? '+$' : '-$') + Math.abs(pl).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + ' (' + (pl >= 0 ? '+' : '') + plPct + '%)';
+            plEl.className   = 'text-sm font-medium mt-1 ' + (pl >= 0 ? 'text-[#137333]' : 'text-[#c5221f]');
+        }
+
+        // Cash display
+        const bpEl = document.getElementById('buyingPower');
+        if (bpEl) bpEl.innerText = (cash * leverage).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
         renderWatchlist();
         renderAlerts();
         renderHistory();
@@ -1619,22 +1655,45 @@ function startNewsEngine() {
     function renderHistory() {
         const el = document.getElementById('historyList');
         if (!el) return;
-        el.innerHTML = transactions.slice(0, 20).map(t => {
-            const c = t.side === 'BUY' ? 'text-green-700' : 'text-red-600';
-            const pl = t.side === 'SELL' ? ' | P/L ' + (t.realizedPL >= 0 ? '+' : '') + fmtMoney(t.realizedPL) : '';
-            return '<div class="border border-gray-100 rounded px-2 py-1">'
-                + '<span class="font-semibold ' + c + '">' + t.side + '</span> '
-                + t.qty + ' ' + t.symbol + ' @ $' + t.price.toFixed(2)
-                + ' <span class="text-gray-400">(' + t.orderType + ')</span>' + pl
-                + '</div>';
-        }).join('') || '<div class="text-gray-500">No trades yet.</div>';
+        if (transactions.length === 0) {
+            el.innerHTML = '<div class="text-gray-500 text-center py-3">No trades yet.</div>';
+            return;
+        }
+        // Update in-place: only rebuild if count changed
+        const existing = el.querySelectorAll('[data-tx-id]');
+        const latest   = transactions.slice(0, 20);
+        // Fast path: if top transaction matches, just update values
+        if (existing.length === latest.length && existing.length > 0
+            && existing[0].dataset.txId === latest[0].id) return;
+
+        el.innerHTML = latest.map(t => {
+            const isBuy  = t.side === 'BUY';
+            const color  = isBuy ? '#137333' : '#c5221f';
+            const bg     = isBuy ? '#e6f4ea' : '#fce8e6';
+            const plHtml = t.side === 'SELL'
+                ? `<span class="ml-1 font-semibold" style="color:${t.realizedPL >= 0 ? '#137333' : '#c5221f'}">${t.realizedPL >= 0 ? '+' : ''}${fmtMoney(t.realizedPL)}</span>`
+                : '';
+            const time = new Date(t.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            return `<div data-tx-id="${t.id}" class="flex items-center justify-between rounded-lg px-3 py-2 mb-1" style="background:${bg}">
+                <div>
+                    <span class="font-bold text-xs" style="color:${color}">${t.side}</span>
+                    <span class="text-xs text-gray-700 ml-1">${t.qty} × <strong>${t.symbol}</strong></span>
+                    ${plHtml}
+                </div>
+                <div class="text-right">
+                    <div class="text-xs font-semibold text-gray-800">$${t.price.toFixed(2)}</div>
+                    <div class="text-[10px] text-gray-400">${time}</div>
+                </div>
+            </div>`;
+        }).join('');
     }
 
     function renderAnalytics() {
         const realized = Number(currentUser && currentUser.realizedPL || 0);
         let unrealized = 0;
-        const alloc = [];
-        const sectors = {};
+        const alloc    = [];
+        const sectors  = {};
+
         Object.keys(portfolio).forEach(sym => {
             const st = getStockBySymbol(sym);
             if (!st) return;
@@ -1645,43 +1704,116 @@ function startNewsEngine() {
             unrealized += (st.price - avg) * qty;
             sectors[st.sector] = (sectors[st.sector] || 0) + val;
         });
-        const r = document.getElementById('realizedPL');
-        const u = document.getElementById('unrealizedPL');
-        if (r) r.innerText = (realized >= 0 ? '+' : '') + fmtMoney(realized);
-        if (u) u.innerText = (unrealized >= 0 ? '+' : '') + fmtMoney(unrealized);
 
+        // Realized / Unrealized P&L
+        const rEl = document.getElementById('realizedPL');
+        const uEl = document.getElementById('unrealizedPL');
+        if (rEl) {
+            rEl.innerText  = (realized   >= 0 ? '+' : '') + fmtMoney(realized);
+            rEl.style.color = realized   >= 0 ? '#137333' : '#c5221f';
+        }
+        if (uEl) {
+            uEl.innerText  = (unrealized >= 0 ? '+' : '') + fmtMoney(unrealized);
+            uEl.style.color = unrealized >= 0 ? '#137333' : '#c5221f';
+        }
+
+        // Sector exposure
         const secEl = document.getElementById('sectorExposure');
         if (secEl) {
             const total = Object.values(sectors).reduce((a,b)=>a+b,0) || 1;
-            secEl.innerHTML = Object.entries(sectors).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k,v]) => {
-                return '<div class="flex justify-between"><span>' + k + '</span><span>' + ((v/total)*100).toFixed(1) + '%</span></div>';
-            }).join('') || '<div>No sector exposure yet.</div>';
+            const sorted = Object.entries(sectors).sort((a,b)=>b[1]-a[1]).slice(0,5);
+            if (sorted.length === 0) {
+                secEl.innerHTML = '<div class="text-gray-400">No positions yet.</div>';
+            } else {
+                secEl.innerHTML = sorted.map(([k,v]) => {
+                    const pct = ((v/total)*100).toFixed(1);
+                    return `<div class="flex justify-between items-center">
+                        <span class="text-gray-600">${k}</span>
+                        <div class="flex items-center gap-2">
+                            <div class="h-1.5 rounded-full bg-blue-400" style="width:${Math.round(pct)}px"></div>
+                            <span class="font-semibold">${pct}%</span>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
         }
 
+        // Pie chart — update data instead of destroying/recreating
         const canvas = document.getElementById('allocationChart');
         if (!canvas) return;
-        const labels = alloc.slice(0, 8).map(x => x.sym);
-        const values = alloc.slice(0, 8).map(x => x.val);
-        if (allocationChart) allocationChart.destroy();
-        allocationChart = new Chart(canvas, {
-            type: 'pie',
-            data: { labels, datasets: [{ data: values, backgroundColor: ['#1a73e8','#34a853','#fbbc05','#ea4335','#7baaf7','#81c995','#fdd663','#f28b82'] }] },
-            options: { plugins: { legend: { display: false } }, maintainAspectRatio: false }
-        });
+        const labels = alloc.slice(0,8).map(x => x.sym);
+        const values = alloc.slice(0,8).map(x => x.val);
+        const COLORS  = ['#1a73e8','#34a853','#fbbc05','#ea4335','#7baaf7','#81c995','#fdd663','#f28b82'];
+
+        if (allocationChart && allocationChart.data) {
+            // Update existing chart data without destroying it
+            allocationChart.data.labels   = labels;
+            allocationChart.data.datasets[0].data = values.length ? values : [1];
+            allocationChart.data.datasets[0].backgroundColor = values.length ? COLORS : ['#e0e0e0'];
+            allocationChart.update('none'); // 'none' = no animation, instant
+        } else {
+            if (allocationChart) allocationChart.destroy();
+            allocationChart = new Chart(canvas, {
+                type: 'pie',
+                data: {
+                    labels: labels.length ? labels : ['Empty'],
+                    datasets: [{ data: values.length ? values : [1], backgroundColor: values.length ? COLORS : ['#e0e0e0'] }]
+                },
+                options: {
+                    plugins: { legend: { display: false }, tooltip: {
+                        callbacks: { label: ctx => `${ctx.label}: $${ctx.parsed.toLocaleString(undefined,{maximumFractionDigits:0})}` }
+                    }},
+                    maintainAspectRatio: false,
+                    animation: { duration: 300 }
+                }
+            });
+        }
     }
 
     function renderQuestsAndAchievements() {
         ensureDailyQuest();
+
+        // Daily quests with progress bars
         const quest = document.getElementById('questList');
         if (quest) {
-            quest.innerHTML = ''
-                + '<div>Profitable trades: <b>' + dailyQuest.profitableTrades + '/3</b></div>'
-                + '<div>Total trades today: <b>' + dailyQuest.totalTrades + '/5</b></div>';
+            const pTrades   = Math.min(dailyQuest.profitableTrades, 3);
+            const tTrades   = Math.min(dailyQuest.totalTrades, 5);
+            const pPct      = (pTrades / 3 * 100).toFixed(0);
+            const tPct      = (tTrades / 5 * 100).toFixed(0);
+            const pDone     = pTrades >= 3;
+            const tDone     = tTrades >= 5;
+            quest.innerHTML = `
+                <div class="mb-2">
+                    <div class="flex justify-between text-xs mb-1">
+                        <span>${pDone ? '✅' : '🎯'} Profitable trades</span>
+                        <span class="font-bold ${pDone ? 'text-green-600' : ''}">${pTrades}/3</span>
+                    </div>
+                    <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full rounded-full transition-all duration-500" style="width:${pPct}%;background:${pDone?'#34a853':'#1a73e8'}"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs mb-1">
+                        <span>${tDone ? '✅' : '📊'} Total trades today</span>
+                        <span class="font-bold ${tDone ? 'text-green-600' : ''}">${tTrades}/5</span>
+                    </div>
+                    <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full rounded-full transition-all duration-500" style="width:${tPct}%;background:${tDone?'#34a853':'#1a73e8'}"></div>
+                    </div>
+                </div>`;
         }
+
+        // Streak
         const streak = document.getElementById('tradeStreak');
-        if (streak) streak.innerText = (tradeStreak.count || 0) + ' days';
+        if (streak) streak.innerText = (tradeStreak.count || 0) + ' day' + (tradeStreak.count !== 1 ? 's' : '');
+
+        // Achievements
         const ach = document.getElementById('achievementList');
-        if (ach) ach.innerHTML = achievements.slice(0, 8).map(a => '<span class="text-xs bg-yellow-50 border border-yellow-200 text-yellow-800 px-2 py-1 rounded">🏅 ' + a.name + '</span>').join('') || '<span class="text-xs text-gray-500">No badges yet.</span>';
+        if (ach) {
+            ach.innerHTML = achievements.slice(0,8).map(a =>
+                `<span class="text-xs bg-yellow-50 border border-yellow-200 text-yellow-800 px-2 py-1 rounded">🏅 ${a.name}</span>`
+            ).join('') || '<span class="text-xs text-gray-400">Complete trades to earn badges.</span>';
+        }
     }
 
     function renderNews() {
