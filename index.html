@@ -1056,43 +1056,49 @@ function startNewsEngine() {
     }
 
     function updateUI() {
-        // Portfolio list — update in place to avoid flicker
         const list = document.getElementById('portfolioList');
         const symsInPortfolio = Object.keys(portfolio);
         let portfolioValue = 0;
 
-        // Remove rows no longer in portfolio
+        // Clear the empty-state message if we now have holdings
+        if (symsInPortfolio.length > 0 && list.querySelector('.italic')) {
+            list.innerHTML = '';
+        }
+
+        // Remove rows for sold positions
         list.querySelectorAll('[data-port-sym]').forEach(el => {
             if (!portfolio[el.dataset.portSym]) el.remove();
         });
 
+        // Add/update rows
         symsInPortfolio.forEach(symbol => {
             const qty   = portfolio[symbol];
             const stock = stocks.find(s => s.symbol === symbol);
             if (!stock) return;
-            const val = qty * stock.price;
+            const val   = qty * stock.price;
             portfolioValue += val;
             const isPos = stock.change >= 0;
+            const cost  = (costBasis[symbol] ? costBasis[symbol].totalCost / costBasis[symbol].shares : stock.price);
+            const gainPct = ((stock.price - cost) / cost * 100).toFixed(2);
 
             let row = list.querySelector(`[data-port-sym="${symbol}"]`);
             if (row) {
-                // Update in place
-                row.querySelector('.port-val').textContent  = '$' + val.toLocaleString(undefined,{maximumFractionDigits:2});
-                row.querySelector('.port-chg').textContent  = stock.change.toFixed(2) + '%';
-                row.querySelector('.port-chg').className    = 'port-chg text-xs ' + (isPos ? 'text-[#137333]' : 'text-[#c5221f]');
-                row.querySelector('.port-qty').textContent  = qty + ' shares';
+                row.querySelector('.port-val').textContent = '$' + val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                row.querySelector('.port-chg').textContent = (isPos ? '+' : '') + stock.change.toFixed(2) + '% today';
+                row.querySelector('.port-chg').className   = 'port-chg text-xs ' + (isPos ? 'text-[#137333]' : 'text-[#c5221f]');
+                row.querySelector('.port-qty').textContent = qty + ' shares · ' + (gainPct >= 0 ? '+' : '') + gainPct + '% avg';
             } else {
                 row = document.createElement('div');
-                row.className = 'py-3 flex justify-between items-center cursor-pointer';
+                row.className       = 'py-3 flex justify-between items-center cursor-pointer hover:bg-gray-50 rounded';
                 row.dataset.portSym = symbol;
                 row.innerHTML = `
                     <div>
-                        <div class="font-medium text-gray-800">${symbol}</div>
-                        <div class="port-qty text-xs text-gray-500">${qty} shares</div>
+                        <div class="font-semibold text-gray-900">${symbol}</div>
+                        <div class="port-qty text-xs text-gray-500">${qty} shares · ${gainPct >= 0 ? '+' : ''}${gainPct}% avg</div>
                     </div>
                     <div class="text-right">
-                        <div class="port-val font-medium">$${val.toLocaleString(undefined,{maximumFractionDigits:2})}</div>
-                        <div class="port-chg text-xs ${isPos ? 'text-[#137333]' : 'text-[#c5221f]'}">${stock.change.toFixed(2)}%</div>
+                        <div class="port-val font-semibold text-gray-900">$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                        <div class="port-chg text-xs ${isPos ? 'text-[#137333]' : 'text-[#c5221f]'}">${isPos ? '+' : ''}${stock.change.toFixed(2)}% today</div>
                     </div>`;
                 row.onclick = () => openStockDetail(stock);
                 list.appendChild(row);
@@ -1103,6 +1109,7 @@ function startNewsEngine() {
             list.innerHTML = '<div class="text-sm text-gray-500 py-4 text-center italic">Your portfolio is empty.</div>';
         }
 
+        // Total equity + P&L
         const totalEquity = cash + portfolioValue;
         const nwEl = document.getElementById('netWorth');
         if (nwEl) nwEl.innerText = totalEquity.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -1111,13 +1118,13 @@ function startNewsEngine() {
         const plPct = ((pl / 100000) * 100).toFixed(2);
         const plEl  = document.getElementById('plDisplay');
         if (plEl) {
-            plEl.innerText   = (pl >= 0 ? '+$' : '-$') + Math.abs(pl).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + ' (' + (pl >= 0 ? '+' : '') + plPct + '%)';
-            plEl.className   = 'text-sm font-medium mt-1 ' + (pl >= 0 ? 'text-[#137333]' : 'text-[#c5221f]');
+            plEl.innerText = (pl >= 0 ? '+$' : '-$') + Math.abs(pl).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' (' + (pl >= 0 ? '+' : '') + plPct + '%)';
+            plEl.className = 'text-sm font-medium mt-1 ' + (pl >= 0 ? 'text-[#137333]' : 'text-[#c5221f]');
         }
 
-        // Cash display
+        // Cash / buying power
         const bpEl = document.getElementById('buyingPower');
-        if (bpEl) bpEl.innerText = (cash * leverage).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        if (bpEl) bpEl.innerText = (cash * leverage).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
         renderWatchlist();
         renderAlerts();
@@ -1659,19 +1666,12 @@ function startNewsEngine() {
             el.innerHTML = '<div class="text-gray-500 text-center py-3">No trades yet.</div>';
             return;
         }
-        // Update in-place: only rebuild if count changed
-        const existing = el.querySelectorAll('[data-tx-id]');
-        const latest   = transactions.slice(0, 20);
-        // Fast path: if top transaction matches, just update values
-        if (existing.length === latest.length && existing.length > 0
-            && existing[0].dataset.txId === latest[0].id) return;
-
-        el.innerHTML = latest.map(t => {
+        el.innerHTML = transactions.slice(0, 20).map(t => {
             const isBuy  = t.side === 'BUY';
             const color  = isBuy ? '#137333' : '#c5221f';
             const bg     = isBuy ? '#e6f4ea' : '#fce8e6';
             const plHtml = t.side === 'SELL'
-                ? `<span class="ml-1 font-semibold" style="color:${t.realizedPL >= 0 ? '#137333' : '#c5221f'}">${t.realizedPL >= 0 ? '+' : ''}${fmtMoney(t.realizedPL)}</span>`
+                ? `<span class="font-semibold ml-1" style="color:${t.realizedPL >= 0 ? '#137333' : '#c5221f'}">${t.realizedPL >= 0 ? '+' : ''}${fmtMoney(t.realizedPL)}</span>`
                 : '';
             const time = new Date(t.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             return `<div data-tx-id="${t.id}" class="flex items-center justify-between rounded-lg px-3 py-2 mb-1" style="background:${bg}">
@@ -2032,18 +2032,16 @@ function startNewsEngine() {
         sanityMax: 0.30,    // max 30% price change before rejecting
     };
 
-    // Priority symbols: watchlist + portfolio + top 20
+    // Priority symbols: watchlist + portfolio + top 20, then rest
     function buildQueue() {
         const priority = new Set([
-            ...watchlist,
             ...Object.keys(portfolio),
+            ...watchlist,
             ...stocks.slice(0, 20).map(s => s.symbol)
         ]);
-        const rest = stocks
-            .filter(s => !priority.has(s.symbol))
-            .map(s => s.symbol);
+        const rest = stocks.filter(s => !priority.has(s.symbol)).map(s => s.symbol);
         RT.queue = [...priority, ...rest];
-        RT.queueIdx = 0;
+        // Do NOT reset queueIdx here — we want to cycle through all stocks over time
     }
 
     // Fetch a single quote from Finnhub
@@ -2064,24 +2062,18 @@ function startNewsEngine() {
         }
     }
 
-    // Apply a real quote to our stock object with sanity checks
+    // Apply a real quote to our stock object
     function applyRealQuote(symbol, data) {
         const stock = getStockBySymbol(symbol);
         if (!stock) return;
         const newPrice = data.c;
         if (!newPrice || newPrice <= 0) return;
-        // Sanity check: reject if >30% swing from last known price
-        if (Math.abs(newPrice - stock.price) / stock.price > RT.sanityMax) {
-            console.warn(`[RT] Sanity check failed for ${symbol}: ${stock.price} → ${newPrice}`);
-            return;
-        }
         stock.price  = newPrice;
-        stock.change = data.dp ?? stock.change;
-        if (data.h)  stock.dayHigh  = data.h;
-        if (data.l)  stock.dayLow   = data.l;
-        if (data.o)  stock.dayOpen  = data.o;
+        stock.change = (data.dp != null) ? data.dp : stock.change;
+        if (data.h)  stock.dayHigh   = data.h;
+        if (data.l)  stock.dayLow    = data.l;
+        if (data.o)  stock.dayOpen   = data.o;
         if (data.pc) stock.prevClose = data.pc;
-
         RT.cache[symbol] = { price: newPrice, change: stock.change, ts: Date.now() };
         RT.liveCount++;
     }
@@ -2089,28 +2081,28 @@ function startNewsEngine() {
     // Batch-fetch the next N symbols in queue
     async function fetchNextBatch() {
         if (!RT.key) return;
-        buildQueue();
-        const batch = [];
-        for (let i = 0; i < RT.batchSize && RT.queueIdx < RT.queue.length; i++, RT.queueIdx++) {
-            batch.push(RT.queue[RT.queueIdx]);
+
+        // Rebuild queue if empty or exhausted
+        if (RT.queue.length === 0 || RT.queueIdx >= RT.queue.length) {
+            buildQueue();
+            RT.queueIdx = 0;
         }
-        if (RT.queueIdx >= RT.queue.length) RT.queueIdx = 0;
+
+        // Grab the next batch
+        const batch = RT.queue.slice(RT.queueIdx, RT.queueIdx + RT.batchSize);
+        RT.queueIdx += RT.batchSize;
 
         RT.liveCount = 0;
         await Promise.all(batch.map(async sym => {
             const data = await fetchQuote(sym);
-            if (data) {
-                applyRealQuote(sym, data);
-            }
+            if (data) applyRealQuote(sym, data);
         }));
 
-        console.log(`[RT] Batch done. Live symbols updated: ${RT.liveCount}`, batch);
-
-        // Always refresh grid + portfolio after each batch
+        // Refresh grid + all sidebar panels
         renderGrid();
         updateUI();
 
-        // If stock detail is open and it's in this batch, update header prices only
+        // If stock detail is open and in this batch, update its price header
         if (detailStock && batch.includes(detailStock.symbol)) {
             const s = getStockBySymbol(detailStock.symbol);
             if (s) updateDetailPriceFields(s);
