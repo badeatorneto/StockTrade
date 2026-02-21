@@ -27,102 +27,453 @@
             background: #1c1c2e;
             border: 1px solid rgba(139,92,246,0.3);
             border-radius: 20px;
-            width: 520px;
-            max-width: 90vw;
-            padding: 0;
-            overflow: hidden;
-            box-shadow: 0 25px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(139,92,246,0.2);
-            animation: slideUp 0.35s cubic-bezier(0.16,1,0.3,1);
+            width: 520px;<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vestra — Trading With No Risk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --v-bg: #0a0a0f;
+            --v-surface: #111118;
+            --v-card: #16161f;
+            --v-border: rgba(255,255,255,0.08);
+            --v-gold: #c9a84c;
+            --v-gold-light: #e8c97a;
+            --v-green: #22c55e;
+            --v-red: #ef4444;
+            --v-text: #f0f0f5;
+            --v-muted: rgba(240,240,245,0.45);
+            --v-serif: 'DM Serif Display', serif;
+            --v-sans: 'DM Sans', sans-serif;
+            --v-mono: 'JetBrains Mono', monospace;
         }
-        .tutorial-progress-bar { height: 3px; background: rgba(255,255,255,0.1); }
-        .tutorial-progress-fill { height: 3px; background: linear-gradient(90deg,#7c3aed,#a78bfa); transition: width 0.5s cubic-bezier(0.16,1,0.3,1); }
-        
-        /* Google Card Style */
-        .g-card { 
-            background: white; 
-            border: 1px solid #dadce0; 
-            border-radius: 8px; 
-            transition: box-shadow 0.2s, transform 0.1s; 
-        }
-        .g-card:hover { 
-            box-shadow: 0 1px 3px rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15); 
-            z-index: 10;
+        * { box-sizing: border-box; }
+        body { font-family: var(--v-sans); background: var(--v-bg); color: var(--v-text); overflow-x: hidden; }
+        .vestra-brand { font-family: var(--v-serif); }
+
+        /* ── Homepage ── */
+        #homePage { display: block; }
+        #appPage  { display: none; }
+
+        /* Grain overlay */
+        body::before {
+            content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            opacity: 0.35;
         }
 
-        /* Buttons */
-        .btn-google { background-color: #1a73e8; color: white; border-radius: 4px; font-weight: 500; padding: 8px 24px; transition: 0.2s; }
-        .btn-google:hover { background-color: #1557b0; box-shadow: 0 1px 2px rgba(60,64,67,0.3); }
-        .btn-outline { border: 1px solid #dadce0; color: #1a73e8; border-radius: 4px; font-weight: 500; padding: 8px 24px; }
-        .btn-outline:hover { background-color: #f6fafe; }
-        
-        /* Pills */
-        .change-pill { padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; display: inline-flex; items-center: center; }
-        .pill-up { background: #e6f4ea; color: #137333; }
-        .pill-down { background: #fce8e6; color: #c5221f; }
-
-        /* Search */
-        .search-bar { 
-            background: #f1f3f4; 
-            border: 1px solid transparent; 
-            border-radius: 24px; 
-            transition: 0.2s; 
-        }
-        .search-bar:focus-within { 
-            background: white; 
-            box-shadow: 0 1px 6px rgba(32,33,36,0.28); 
-            border-color: rgba(223,225,229,0); 
+        /* Hero gradient orbs */
+        .orb {
+            position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none;
         }
 
-        /* Layout Utilities */
+        /* Nav */
+        .home-nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 0 48px; height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(10,10,15,0.7); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--v-border);
+        }
+        .home-nav .logo { font-family: var(--v-serif); font-size: 1.75rem; color: var(--v-text); }
+        .nav-btn {
+            padding: 9px 22px; border-radius: 8px; font-family: var(--v-sans);
+            font-weight: 600; font-size: 0.875rem; cursor: pointer; transition: all 0.2s;
+        }
+        .nav-btn-ghost { background: transparent; border: 1px solid var(--v-border); color: var(--v-muted); }
+        .nav-btn-ghost:hover { border-color: var(--v-gold); color: var(--v-gold); }
+        .nav-btn-gold { background: var(--v-gold); border: 1px solid var(--v-gold); color: #0a0a0f; }
+        .nav-btn-gold:hover { background: var(--v-gold-light); }
+
+        /* Sections */
+        section { position: relative; z-index: 1; }
+
+        /* Feature cards */
+        .feat-card {
+            background: var(--v-card); border: 1px solid var(--v-border);
+            border-radius: 16px; padding: 32px; transition: all 0.3s;
+        }
+        .feat-card:hover { border-color: rgba(201,168,76,0.3); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+
+        /* Ticker tape */
+        .ticker-wrap { overflow: hidden; background: var(--v-surface); border-top: 1px solid var(--v-border); border-bottom: 1px solid var(--v-border); }
+        .ticker { display: flex; animation: tickerScroll 40s linear infinite; white-space: nowrap; }
+        .ticker:hover { animation-play-state: paused; }
+        @keyframes tickerScroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+        /* Stats counter */
+        .stat-num { font-family: var(--v-serif); font-size: 3rem; color: var(--v-gold); line-height: 1; }
+
+        /* Step circles */
+        .step-num {
+            width: 48px; height: 48px; border-radius: 50%;
+            border: 1px solid var(--v-gold); color: var(--v-gold);
+            font-family: var(--v-serif); font-size: 1.25rem;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+
+        /* Gold divider */
+        .gold-line { height: 1px; background: linear-gradient(90deg, transparent, var(--v-gold), transparent); }
+
+        /* Footer */
+        footer { position: relative; z-index: 1; border-top: 1px solid var(--v-border); }
+        .social-link {
+            display: inline-flex; align-items: center; gap: 10px;
+            color: var(--v-muted); text-decoration: none; font-size: 0.875rem;
+            transition: color 0.2s; padding: 8px 0;
+        }
+        .social-link:hover { color: var(--v-gold); }
+        .social-icon { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--v-border); display: flex; align-items: center; justify-content: center; transition: border-color 0.2s; }
+        .social-link:hover .social-icon { border-color: var(--v-gold); }
+
+        /* ── App UI ── */
+        .app-header {
+            background: var(--v-surface); border-bottom: 1px solid var(--v-border);
+            position: sticky; top: 0; z-index: 50;
+        }
+        .g-card {
+            background: var(--v-card); border: 1px solid var(--v-border);
+            border-radius: 12px; transition: box-shadow 0.2s, border-color 0.2s, transform 0.1s;
+        }
+        .g-card:hover { border-color: rgba(201,168,76,0.25); box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+        .search-bar {
+            background: var(--v-card); border: 1px solid var(--v-border);
+            border-radius: 24px; transition: 0.2s;
+        }
+        .search-bar:focus-within { border-color: var(--v-gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.1); }
+        .search-bar input { color: var(--v-text); }
+        .search-bar input::placeholder { color: var(--v-muted); }
+        .btn-google { background: var(--v-gold); color: #0a0a0f; border-radius: 8px; font-weight: 600; padding: 8px 20px; transition: 0.2s; }
+        .btn-google:hover { background: var(--v-gold-light); }
+        .btn-outline { border: 1px solid var(--v-border); color: var(--v-muted); border-radius: 8px; font-weight: 500; padding: 8px 20px; transition: 0.2s; }
+        .btn-outline:hover { border-color: var(--v-gold); color: var(--v-gold); }
+        .change-pill { padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; font-family: var(--v-mono); display: inline-flex; align-items: center; }
+        .pill-up   { background: rgba(34,197,94,0.12);  color: #4ade80; }
+        .pill-down { background: rgba(239,68,68,0.12);  color: #f87171; }
+        .badge-live  { background: rgba(34,197,94,0.15); color: #4ade80; }
+        .badge-sim   { background: var(--v-card); color: var(--v-muted); }
+        .badge-stale { background: rgba(201,168,76,0.12); color: var(--v-gold); }
+        .dot-live    { background: #22c55e; animation: pulse-green 2s infinite; }
+        .dot-closed  { background: #ef4444; }
+        .dot-unknown { background: #6b7280; }
+        @keyframes pulse-green { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        /* Tutorial overlay */
+        #tutorialOverlay { position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; }
+        #tutorialOverlay.hidden { display:none; }
+        .tutorial-card { background: var(--v-card); border:1px solid rgba(201,168,76,0.3); border-radius:20px; width:520px; max-width:90vw; overflow:hidden; box-shadow:0 25px 80px rgba(0,0,0,0.7); animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1); }
+        .tutorial-progress-bar  { height:3px; background:var(--v-border); }
+        .tutorial-progress-fill { height:3px; background:linear-gradient(90deg,var(--v-gold),var(--v-gold-light)); transition:width 0.5s cubic-bezier(0.16,1,0.3,1); }
+
+        /* App sidebar */
+        #appSidebar { background: var(--v-surface); border-left: 1px solid var(--v-border); }
+        #appSidebar h3 { color: var(--v-text); }
+        #portfolioList .port-val { color: var(--v-text); }
+
+        /* Scrollbar */
         .sidebar-scroll { height: calc(100vh - 200px); overflow-y: auto; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 4px; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--v-border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,0.3); }
+
+        /* Animations */
+        @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
+        @keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
         @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(12px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
-        /* Price update flash */
-        @keyframes flash-green { 0%{background:#e6f4ea} 100%{background:transparent} }
-        @keyframes flash-red   { 0%{background:#fce8e6} 100%{background:transparent} }
+        @keyframes flash-green { 0%{background:rgba(34,197,94,0.15)} 100%{background:transparent} }
+        @keyframes flash-red   { 0%{background:rgba(239,68,68,0.15)} 100%{background:transparent} }
+        @keyframes heroFade { from{opacity:0;transform:translateY(32px)} to{opacity:1;transform:translateY(0)} }
         .flash-up   { animation: flash-green 0.8s ease-out; }
         .flash-down { animation: flash-red   0.8s ease-out; }
         .stock-price, .change-pill { transition: color 0.3s; }
-        .badge-live { background: #e6f4ea; color: #137333; }
-        .badge-sim  { background: #f1f3f4; color: #5f6368; }
-        .badge-stale { background: #fef7e0; color: #b06000; }
-        .dot-live { background: #34a853; animation: pulse-green 2s infinite; }
-        .dot-closed { background: #ea4335; }
-        .dot-unknown { background: #9aa0a6; }
-        @keyframes pulse-green { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+        .anim-1 { animation: heroFade 0.8s 0.1s both; }
+        .anim-2 { animation: heroFade 0.8s 0.3s both; }
+        .anim-3 { animation: heroFade 0.8s 0.5s both; }
+        .anim-4 { animation: heroFade 0.8s 0.7s both; }
     </style>
 </head>
 <body class="overflow-x-hidden">
 
+<!-- ═══════════════════════════════════════════════════════
+     VESTRA HOMEPAGE
+═══════════════════════════════════════════════════════ -->
+<div id="homePage">
+
+  <!-- NAV -->
+  <nav class="home-nav">
+    <div class="logo">Vestra</div>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <button class="nav-btn nav-btn-ghost" onclick="showAuthFromHome('login')">Log In</button>
+      <button class="nav-btn nav-btn-gold" onclick="showAuthFromHome('register')">Sign Up Free</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:120px 24px 80px;text-align:center;overflow:hidden;">
+    <!-- Orbs -->
+    <div class="orb" style="width:600px;height:600px;background:radial-gradient(circle,rgba(201,168,76,0.12),transparent 70%);top:-100px;left:-100px;"></div>
+    <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,rgba(34,197,94,0.07),transparent 70%);bottom:0;right:-80px;"></div>
+
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);padding:6px 16px;border-radius:100px;margin-bottom:32px;" class="anim-1">
+      <div class="orb" style="position:relative;width:6px;height:6px;background:#22c55e;border-radius:50%;filter:none;animation:pulse-green 2s infinite;flex-shrink:0;"></div>
+      <span style="font-size:0.78rem;color:var(--v-gold);font-weight:600;letter-spacing:0.05em;">500+ REAL STOCKS · LIVE PRICES</span>
+    </div>
+
+    <h1 class="anim-2" style="font-family:var(--v-serif);font-size:clamp(3rem,8vw,6.5rem);line-height:1.05;max-width:900px;margin:0 0 24px;">
+      Trade Like a Pro.<br><em style="color:var(--v-gold);">Risk Nothing.</em>
+    </h1>
+
+    <p class="anim-3" style="font-size:clamp(1rem,2vw,1.25rem);color:var(--v-muted);max-width:580px;line-height:1.7;margin:0 0 48px;">
+      Vestra gives you $100,000 in virtual cash and real-time market data so you can master the art of trading — before it ever costs you a cent.
+    </p>
+
+    <div class="anim-4" style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">
+      <button class="nav-btn nav-btn-gold" style="padding:16px 40px;font-size:1rem;border-radius:12px;" onclick="showAuthFromHome('register')">
+        Start Trading Free →
+      </button>
+      <button class="nav-btn nav-btn-ghost" style="padding:16px 32px;font-size:1rem;border-radius:12px;" onclick="scrollToSection('how')">
+        See How It Works
+      </button>
+    </div>
+
+    <!-- Mock chart preview -->
+    <div class="anim-4" style="margin-top:80px;width:100%;max-width:900px;background:var(--v-card);border:1px solid var(--v-border);border-radius:20px;padding:24px;box-shadow:0 40px 120px rgba(0,0,0,0.5);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div>
+          <span style="font-family:var(--v-serif);font-size:1.5rem;">AAPL</span>
+          <span style="color:var(--v-muted);font-size:0.875rem;margin-left:8px;">Apple Inc.</span>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:var(--v-mono);font-size:1.5rem;color:var(--v-text);" id="heroPrice">$214.37</div>
+          <div style="color:#4ade80;font-size:0.875rem;font-family:var(--v-mono);" id="heroChange">+1.24%</div>
+        </div>
+      </div>
+      <canvas id="heroChart" style="width:100%;height:140px;display:block;"></canvas>
+    </div>
+  </section>
+
+  <!-- TICKER TAPE -->
+  <div class="ticker-wrap" style="padding:12px 0;">
+    <div class="ticker" id="homeTicker">
+      <span id="tickerInner"></span>
+      <span id="tickerInner2"></span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <section style="padding:100px 24px;">
+    <div style="max-width:1100px;margin:0 auto;">
+      <div class="gold-line" style="margin-bottom:80px;"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:48px;text-align:center;">
+        <div>
+          <div class="stat-num">$100K</div>
+          <div style="color:var(--v-muted);margin-top:8px;font-size:0.9rem;">Virtual Cash to Start</div>
+        </div>
+        <div>
+          <div class="stat-num">500+</div>
+          <div style="color:var(--v-muted);margin-top:8px;font-size:0.9rem;">Real Stocks & ETFs</div>
+        </div>
+        <div>
+          <div class="stat-num">Live</div>
+          <div style="color:var(--v-muted);margin-top:8px;font-size:0.9rem;">Real-Time Price Data</div>
+        </div>
+        <div>
+          <div class="stat-num">Zero</div>
+          <div style="color:var(--v-muted);margin-top:8px;font-size:0.9rem;">Financial Risk</div>
+        </div>
+      </div>
+      <div class="gold-line" style="margin-top:80px;"></div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section style="padding:60px 24px 100px;">
+    <div style="max-width:1100px;margin:0 auto;">
+      <p style="text-align:center;color:var(--v-gold);font-size:0.8rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px;">Everything You Need</p>
+      <h2 style="font-family:var(--v-serif);font-size:clamp(2rem,5vw,3.5rem);text-align:center;margin:0 0 72px;">Built for Serious Learning</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;">
+
+        <div class="feat-card">
+          <div style="font-size:2rem;margin-bottom:16px;">📈</div>
+          <h3 style="font-family:var(--v-serif);font-size:1.4rem;margin:0 0 10px;">Real-Time Market Data</h3>
+          <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Connect your Finnhub API key and watch prices update live every few seconds. Candlestick charts, day range, volume — all real.</p>
+        </div>
+
+        <div class="feat-card">
+          <div style="font-size:2rem;margin-bottom:16px;">💼</div>
+          <h3 style="font-family:var(--v-serif);font-size:1.4rem;margin:0 0 10px;">Full Portfolio Tracking</h3>
+          <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Realized & unrealized P&L, cost basis, sector allocation charts, and full transaction history — just like a real brokerage.</p>
+        </div>
+
+        <div class="feat-card">
+          <div style="font-size:2rem;margin-bottom:16px;">⚡</div>
+          <h3 style="font-family:var(--v-serif);font-size:1.4rem;margin:0 0 10px;">Multiple Order Types</h3>
+          <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Market, limit, stop-loss, take-profit orders. Practice advanced strategies with pending orders that fill automatically when price hits your target.</p>
+        </div>
+
+        <div class="feat-card">
+          <div style="font-size:2rem;margin-bottom:16px;">🏆</div>
+          <h3 style="font-family:var(--v-serif);font-size:1.4rem;margin:0 0 10px;">Global Leaderboard</h3>
+          <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Compete with traders worldwide. Rankings by total value, profit, and shares owned. See who's on top and push to beat them.</p>
+        </div>
+
+        <div class="feat-card">
+          <div style="font-size:2rem;margin-bottom:16px;">🎯</div>
+          <h3 style="font-family:var(--v-serif);font-size:1.4rem;margin:0 0 10px;">Daily Quests & Streaks</h3>
+          <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Daily trading challenges, achievement badges, and streak tracking keep you engaged and building real discipline.</p>
+        </div>
+
+        <div class="feat-card">
+          <div style="font-size:2rem;margin-bottom:16px;">🔐</div>
+          <h3 style="font-family:var(--v-serif);font-size:1.4rem;margin:0 0 10px;">Your Account, Saved</h3>
+          <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Create an account and your portfolio persists between sessions. Trade today, pick up where you left off tomorrow.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" style="padding:80px 24px 100px;background:var(--v-surface);">
+    <div style="max-width:800px;margin:0 auto;">
+      <p style="text-align:center;color:var(--v-gold);font-size:0.8rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px;">Get Started in Minutes</p>
+      <h2 style="font-family:var(--v-serif);font-size:clamp(2rem,5vw,3rem);text-align:center;margin:0 0 72px;">How Vestra Works</h2>
+
+      <div style="display:flex;flex-direction:column;gap:40px;">
+        <div style="display:flex;gap:24px;align-items:flex-start;">
+          <div class="step-num">1</div>
+          <div>
+            <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;">Create Your Free Account</h3>
+            <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Sign up in seconds — just a username and password. You're immediately given $100,000 in virtual cash and access to the full market.</p>
+          </div>
+        </div>
+        <div class="gold-line"></div>
+        <div style="display:flex;gap:24px;align-items:flex-start;">
+          <div class="step-num">2</div>
+          <div>
+            <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;">Connect Live Market Data</h3>
+            <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Get a free API key from <a href="https://finnhub.io" target="_blank" style="color:var(--v-gold);">finnhub.io</a> and paste it in the Live Data settings. Prices start updating in real-time instantly.</p>
+          </div>
+        </div>
+        <div class="gold-line"></div>
+        <div style="display:flex;gap:24px;align-items:flex-start;">
+          <div class="step-num">3</div>
+          <div>
+            <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;">Browse, Research & Trade</h3>
+            <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Search 500+ stocks, study candlestick charts, and place market or limit orders. Your portfolio updates live as prices move.</p>
+          </div>
+        </div>
+        <div class="gold-line"></div>
+        <div style="display:flex;gap:24px;align-items:flex-start;">
+          <div class="step-num">4</div>
+          <div>
+            <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;">Grow, Compete & Learn</h3>
+            <p style="color:var(--v-muted);line-height:1.7;font-size:0.9rem;">Track your P&L, climb the global leaderboard, complete daily quests, and unlock achievements as you sharpen your strategy.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section style="padding:120px 24px;text-align:center;position:relative;overflow:hidden;">
+    <div class="orb" style="width:700px;height:700px;background:radial-gradient(circle,rgba(201,168,76,0.09),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+    <p style="color:var(--v-gold);font-size:0.8rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px;">No Credit Card. No Risk. Ever.</p>
+    <h2 style="font-family:var(--v-serif);font-size:clamp(2rem,6vw,4rem);margin:0 0 24px;max-width:700px;margin-left:auto;margin-right:auto;">Ready to Start Your Trading Journey?</h2>
+    <p style="color:var(--v-muted);max-width:480px;margin:0 auto 48px;line-height:1.7;">Join Vestra today and start practicing with real market conditions. The only thing you'll lose is your fear of the market.</p>
+    <button class="nav-btn nav-btn-gold" style="padding:18px 52px;font-size:1.1rem;border-radius:14px;" onclick="showAuthFromHome('register')">
+      Create Free Account →
+    </button>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="padding:60px 48px 40px;background:var(--v-surface);">
+    <div style="max-width:1100px;margin:0 auto;">
+      <div style="display:grid;grid-template-columns:1fr auto;gap:48px;align-items:start;margin-bottom:48px;">
+
+        <div>
+          <div class="logo" style="font-size:2rem;margin-bottom:8px;">Vestra</div>
+          <p style="color:var(--v-muted);font-size:0.85rem;line-height:1.7;max-width:340px;">Trading With No Risk. Practice with real market data, build your skills, and compete with traders worldwide — all with virtual money.</p>
+        </div>
+
+        <div>
+          <p style="color:var(--v-muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:20px;">Connect</p>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+
+            <a href="https://www.instagram.com/badeatorneto/?hl=en" target="_blank" rel="noopener noreferrer" class="social-link">
+              <div class="social-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+              </div>
+              <span>Instagram</span>
+            </a>
+
+            <a href="https://www.snapchat.com/@guywholikesfifa" target="_blank" rel="noopener noreferrer" class="social-link">
+              <div class="social-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.5 2 6 4.5 6 8v.5c0 .5-.3.9-.7 1.1-.4.2-.3.7.1.8.6.2 1.1.4 1.4.9.1.2.1.4 0 .6-.3.5-1.1 1.3-1.1 2.2 0 1.1.9 1.9 2 1.9.3 0 .7-.1 1-.2.5-.2 1.1.1 1.3.6.5 1.1 1.8 1.6 3 1.6s2.5-.5 3-1.6c.2-.5.8-.8 1.3-.6.3.1.7.2 1 .2 1.1 0 2-.8 2-1.9 0-.9-.8-1.7-1.1-2.2-.1-.2-.1-.4 0-.6.3-.5.8-.7 1.4-.9.4-.1.5-.6.1-.8-.4-.2-.7-.6-.7-1.1V8c0-3.5-2.5-6-6-6z"/></svg>
+              </div>
+              <span>Snapchat</span>
+            </a>
+
+            <a href="mailto:arush2011jain@gmail.com" class="social-link">
+              <div class="social-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <span>arush2011jain@gmail.com</span>
+            </a>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="gold-line" style="margin-bottom:28px;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <p style="color:var(--v-muted);font-size:0.78rem;">© 2026 Vestra. All rights reserved. For educational purposes only — not financial advice.</p>
+        <button class="nav-btn nav-btn-ghost" style="font-size:0.8rem;padding:6px 16px;" onclick="showAuthFromHome('login')">Log In to Trade →</button>
+      </div>
+    </div>
+  </footer>
+
+</div><!-- end #homePage -->
+
+<!-- ═══════════════════════════════════════════════════════
+     APP WRAPPER
+═══════════════════════════════════════════════════════ -->
+<div id="appPage">
+
 <!-- ═══ LOGIN / REGISTER OVERLAY ═══ -->
-<div id="authOverlay" class="fixed inset-0 z-[9999] flex items-center justify-center" style="background:rgba(0,0,0,0.92);backdrop-filter:blur(12px);">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
-        <div class="text-center mb-8">
-            <div class="inline-flex flex-col items-center gap-1 mb-5">
-                <span class="vestra-brand text-4xl font-bold text-gray-900">Vestra</span>
-                <span class="text-xs font-medium text-gray-400 tracking-widest uppercase">Trading With No Risk</span>
-            </div>
-            <h2 id="authTitle" class="text-2xl font-bold text-gray-900">Sign in</h2>
-            <p id="authSubtitle" class="text-gray-500 mt-1 text-sm">to your trading account</p>
+<div id="authOverlay" class="fixed inset-0 z-[9999] flex items-center justify-center" style="background:rgba(0,0,0,0.92);backdrop-filter:blur(16px);display:none;">
+    <div style="background:var(--v-card);border:1px solid rgba(201,168,76,0.2);border-radius:20px;width:100%;max-width:440px;padding:40px;box-shadow:0 30px 100px rgba(0,0,0,0.6);position:relative;">
+        <button onclick="document.getElementById('authOverlay').style.display='none'" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--v-muted);font-size:18px;cursor:pointer;line-height:1;" title="Close">✕</button>
+        <div class="text-center" style="margin-bottom:28px;">
+            <div style="font-family:var(--v-serif);font-size:2.5rem;color:var(--v-text);margin-bottom:6px;">Vestra</div>
+            <div style="font-size:10px;color:var(--v-gold);letter-spacing:0.15em;text-transform:uppercase;font-weight:600;margin-bottom:20px;">Trading With No Risk</div>
+            <h2 id="authTitle" style="font-size:1.3rem;font-weight:700;color:var(--v-text);margin:0 0 4px;">Sign In</h2>
+            <p id="authSubtitle" style="color:var(--v-muted);font-size:0.875rem;margin:0;">to your trading account</p>
         </div>
-        <div id="authError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4"></div>
-        <div id="registerNameGroup" class="hidden mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
-            <input id="authName" type="text" placeholder="e.g. TradingWolf99" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div id="authError" class="hidden" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;"></div>
+        <div id="registerNameGroup" class="hidden" style="margin-bottom:14px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--v-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Display Name</label>
+            <input id="authName" type="text" placeholder="e.g. TradingWolf99" style="width:100%;background:var(--v-surface);border:1px solid var(--v-border);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--v-text);outline:none;font-family:var(--v-sans);" onfocus="this.style.borderColor='var(--v-gold)'" onblur="this.style.borderColor='var(--v-border)'">
         </div>
-        <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-            <input id="authUser" type="text" placeholder="username" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div style="margin-bottom:14px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--v-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Username</label>
+            <input id="authUser" type="text" placeholder="username" style="width:100%;background:var(--v-surface);border:1px solid var(--v-border);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--v-text);outline:none;font-family:var(--v-sans);" onfocus="this.style.borderColor='var(--v-gold)'" onblur="this.style.borderColor='var(--v-border)'">
         </div>
-        <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input id="authPass" type="password" placeholder="••••••••" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div style="margin-bottom:24px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--v-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Password</label>
+            <input id="authPass" type="password" placeholder="••••••••" style="width:100%;background:var(--v-surface);border:1px solid var(--v-border);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--v-text);outline:none;font-family:var(--v-sans);" onfocus="this.style.borderColor='var(--v-gold)'" onblur="this.style.borderColor='var(--v-border)'">
         </div>
-        <button id="authSubmitBtn" onclick="handleAuthSubmit()" class="w-full bg-[#1a73e8] hover:bg-[#1557b0] text-white font-semibold py-3 rounded-lg transition text-sm">Sign In</button>
-        <p class="text-center text-sm text-gray-500 mt-4">
+        <button id="authSubmitBtn" onclick="handleAuthSubmit()" style="width:100%;background:var(--v-gold);color:#0a0a0f;font-weight:700;padding:14px;border-radius:10px;border:none;font-size:15px;cursor:pointer;font-family:var(--v-sans);transition:background 0.2s;" onmouseover="this.style.background='var(--v-gold-light)'" onmouseout="this.style.background='var(--v-gold)'">Sign In</button>
+        <p style="text-align:center;font-size:13px;color:var(--v-muted);margin-top:16px;">
             <span id="authToggleText">Don't have an account?</span>
-            <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-[#1a73e8] font-semibold ml-1 hover:underline">Create account</button>
+            <button onclick="toggleAuthMode()" id="authToggleBtn" style="color:var(--v-gold);font-weight:600;margin-left:4px;background:none;border:none;cursor:pointer;font-size:13px;font-family:var(--v-sans);">Create account</button>
         </p>
     </div>
 </div>
@@ -150,55 +501,48 @@
     </div>
 </div>
 
-<header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+<header class="app-header">
     <div class="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between gap-8">
-        
-        <div class="flex items-center gap-3 min-w-[180px]">
+        <div class="flex items-center gap-3 min-w-[160px]">
             <div>
-                <div class="vestra-brand text-2xl font-bold text-gray-900 leading-none">Vestra</div>
-                <div class="text-[10px] text-gray-400 tracking-widest uppercase font-medium">Trading With No Risk</div>
+                <div class="vestra-brand text-2xl font-bold leading-none" style="color:var(--v-text)">Vestra</div>
+                <div style="font-size:9px;color:var(--v-gold);letter-spacing:0.15em;text-transform:uppercase;font-weight:600;">Trading With No Risk</div>
             </div>
         </div>
-
         <div class="flex-1 max-w-2xl">
-            <div class="search-bar flex items-center px-4 h-12">
-                <svg class="w-5 h-5 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                <input type="text" id="search" oninput="renderGrid()" placeholder="Search for stocks, ETFs & more" class="bg-transparent border-none outline-none w-full text-gray-700 placeholder-gray-500">
+            <div class="search-bar flex items-center px-4 h-11">
+                <svg class="w-4 h-4 mr-3" style="color:var(--v-muted)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" id="search" oninput="renderGrid()" placeholder="Search stocks, ETFs & more" class="bg-transparent border-none outline-none w-full text-sm">
             </div>
         </div>
-
-        <div class="flex items-center gap-6">
-            <!-- Market Status & API Config -->
+        <div class="flex items-center gap-3">
             <div class="flex items-center gap-2">
                 <div id="marketStatusDot" class="w-2 h-2 rounded-full bg-gray-400"></div>
-                <span id="marketStatusText" class="text-xs text-gray-500 font-medium">Market Closed</span>
-                <button onclick="openApiConfig()" title="Configure real-time data" class="text-xs bg-green-50 hover:bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded font-bold transition" id="liveDataBtn">⚡ Live Data</button>
+                <span id="marketStatusText" class="text-xs font-medium" style="color:var(--v-muted)">Market Closed</span>
+                <button onclick="openApiConfig()" id="liveDataBtn" style="font-size:11px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:var(--v-gold);padding:4px 10px;border-radius:6px;font-weight:700;cursor:pointer;">⚡ Live Data</button>
             </div>
-            <button onclick="openLeaderboard()" class="flex items-center gap-2 bg-yellow-50 hover:bg-yellow-100 border border-yellow-300 text-yellow-800 px-3 py-2 rounded-lg text-sm font-bold transition">
-                🏆 Leaderboard
-            </button>
-            <button onclick="exportPortfolioData()" class="bg-gray-50 hover:bg-gray-100 border border-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold transition">Export</button>
-            <button onclick="document.getElementById('importFile').click()" class="bg-gray-50 hover:bg-gray-100 border border-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold transition">Import</button>
-            <button onclick="startTutorial(true)" class="bg-blue-50 hover:bg-blue-100 border border-blue-300 text-blue-700 px-3 py-2 rounded-lg text-sm font-semibold transition">Tutorial</button>
+            <button onclick="openLeaderboard()" style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);color:var(--v-gold);padding:6px 14px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">🏆 Leaderboard</button>
+            <button onclick="exportPortfolioData()" class="btn-outline" style="padding:6px 12px;font-size:12px;">Export</button>
+            <button onclick="document.getElementById('importFile').click()" class="btn-outline" style="padding:6px 12px;font-size:12px;">Import</button>
+            <button onclick="startTutorial(true)" class="btn-outline" style="padding:6px 12px;font-size:12px;">Tutorial</button>
             <input id="importFile" type="file" accept="application/json" class="hidden" onchange="importPortfolioData(event)">
-            <div id="syncBadge" class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600 font-semibold">Sync: Local</div>
-            <div class="flex items-center gap-2 border-l pl-4 border-gray-200">
-                <div class="w-8 h-8 rounded-full bg-[#1a73e8] flex items-center justify-center text-white text-sm font-bold" id="userAvatar">?</div>
+            <div id="syncBadge" style="font-size:11px;padding:4px 8px;border-radius:6px;background:var(--v-card);color:var(--v-muted);border:1px solid var(--v-border);">Sync: Local</div>
+            <div style="display:flex;align-items:center;gap:10px;border-left:1px solid var(--v-border);padding-left:14px;">
+                <div id="userAvatar" style="width:32px;height:32px;border-radius:50%;background:var(--v-gold);display:flex;align-items:center;justify-content:center;color:#0a0a0f;font-size:13px;font-weight:700;">?</div>
                 <div class="hidden md:block">
-                    <div class="text-sm font-semibold text-gray-800" id="userDisplayName">—</div>
-                    <button onclick="logOut()" class="text-xs text-gray-400 hover:text-red-500 transition">Sign out</button>
+                    <div id="userDisplayName" style="font-size:13px;font-weight:600;color:var(--v-text);">—</div>
+                    <button onclick="logOut()" style="font-size:11px;color:var(--v-muted);background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--v-muted)'">Sign out</button>
                 </div>
             </div>
         </div>
     </div>
-</header>
 </header>
 
 <!-- News banner (added for volatility headlines) -->
 <div id="newsBanner" class="fixed top-16 left-0 right-0 z-40 hidden px-6 py-3 text-center font-medium text-white shadow-lg transition-all duration-400">
     <span id="newsHeadline"></span>
 </div>
-<main class="max-w-[1600px] mx-auto p-6 grid grid-cols-1 lg:grid-cols-4 gap-8">
+<main class="max-w-[1600px] mx-auto p-6 grid grid-cols-1 lg:grid-cols-4 gap-8" style="min-height:calc(100vh - 64px);">
     
     <div class="lg:col-span-3">
         <div class="flex justify-between items-end mb-6">
@@ -431,6 +775,8 @@
         <div id="apiTestResult" class="mt-3 text-sm text-center text-gray-500 hidden"></div>
     </div>
 </div>
+
+</div><!-- end #appPage -->
 
 <script>
     // --- Data Setup ---
@@ -841,17 +1187,18 @@ function startNewsEngine() {
     // ── Pure canvas candlestick renderer ─────────────────
     const candleCache = {};
 
-    // Map period to Yahoo Finance params (free, no key, full history)
-    function periodToYahoo(period) {
+    function periodToFinnhub(period) {
+        const now = Math.floor(Date.now() / 1000);
+        const DAY = 86400, MONTH = 30*DAY, YEAR = 365*DAY;
         switch (period) {
-            case '1D':  return { interval: '5m',  range: '1d'  };
-            case '5D':  return { interval: '15m', range: '5d'  };
-            case '1M':  return { interval: '60m', range: '1mo' };
-            case '6M':  return { interval: '1d',  range: '6mo' };
-            case 'YTD': return { interval: '1d',  range: 'ytd' };
-            case '1Y':  return { interval: '1wk', range: '1y'  };
-            case '5Y':  return { interval: '1mo', range: '5y'  };
-            default:    return { interval: '3mo', range: 'max' };
+            case '1D':  return { resolution: '5',  from: now - DAY };
+            case '5D':  return { resolution: '15', from: now - 5*DAY };
+            case '1M':  return { resolution: '60', from: now - MONTH };
+            case '6M':  return { resolution: 'D',  from: now - 6*MONTH };
+            case 'YTD': return { resolution: 'D',  from: Math.floor(new Date(new Date().getFullYear(),0,1)/1000) };
+            case '1Y':  return { resolution: 'W',  from: now - YEAR };
+            case '5Y':  return { resolution: 'M',  from: now - 5*YEAR };
+            default:    return { resolution: 'M',  from: now - 10*YEAR };
         }
     }
 
@@ -883,36 +1230,20 @@ function startNewsEngine() {
     }
 
     async function fetchCandles(symbol, period) {
-        const cacheKey = symbol + '_' + period;
-        const ttl = (period === '1D' || period === '5D') ? 60000 : 300000;
-        if (candleCache[cacheKey] && (Date.now() - candleCache[cacheKey].ts) < ttl) {
-            return candleCache[cacheKey].data;
-        }
+        const key = symbol+'_'+period;
+        if (candleCache[key] && (Date.now()-candleCache[key].ts)<60000) return candleCache[key].data;
+        if (!RT.key) return null;
         try {
-            const { interval, range } = periodToYahoo(period);
-            const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=${interval}&range=${range}&includePrePost=false`;
-            const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(yahooUrl));
-            if (!res.ok) return null;
-            const body = await res.json();
-            const result = body?.chart?.result?.[0];
-            if (!result?.timestamp) return null;
-            const q = result.indicators.quote[0];
-            const candles = [];
-            result.timestamp.forEach((ts, i) => {
-                const c = q.close?.[i];
-                if (!c || c === 0) return;
-                candles.push({
-                    x: ts * 1000,
-                    o: +(q.open?.[i]  ?? c).toFixed(2),
-                    h: +(q.high?.[i]  ?? c).toFixed(2),
-                    l: +(q.low?.[i]   ?? c).toFixed(2),
-                    c: +c.toFixed(2)
-                });
-            });
-            if (candles.length === 0) return null;
-            candleCache[cacheKey] = { data: candles, ts: Date.now() };
+            const {resolution,from} = periodToFinnhub(period);
+            const to = Math.floor(Date.now()/1000);
+            const url = `https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(symbol)}&resolution=${resolution}&from=${from}&to=${to}&token=${RT.key}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            if (!data||data.s!=='ok'||!data.t||data.t.length===0) return null;
+            const candles = data.t.map((ts,i)=>({x:ts*1000,o:data.o[i],h:data.h[i],l:data.l[i],c:data.c[i]}));
+            candleCache[key]={data:candles,ts:Date.now()};
             return candles;
-        } catch (e) { return null; }
+        } catch(e){ return null; }
     }
 
     // Draw candlesticks directly on canvas — no library needed
@@ -2207,13 +2538,13 @@ function startNewsEngine() {
     // --- Config ---
     const RT = {
         key: 'd6c804pr01qsiik14ah0d6c804pr01qsiik14ahg',
-        interval: 5000,   // fetch every 5s — bulk request so very fast
+        interval: 10000,
         timer: null,
-        cache: {},        // { SYMBOL: { price, change, ts } }
+        cache: {},
         queue: [],
         queueIdx: 0,
         liveCount: 0,
-        batchSize: 50,    // fetch 50 at a time via Yahoo bulk endpoint (1 HTTP request)
+        batchSize: 10,
     };
 
     // Priority symbols: watchlist + portfolio + top 20, then rest
@@ -2228,30 +2559,16 @@ function startNewsEngine() {
         // Do NOT reset queueIdx here — we want to cycle through all stocks over time
     }
 
-    // Fetch a single quote via Yahoo Finance (no API key needed, fast)
+    // Fetch a single quote from Finnhub
     async function fetchQuote(symbol) {
+        if (!RT.key) return null;
         try {
-            const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=5d`;
-            const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(yahooUrl));
+            const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${RT.key}`;
+            const res = await fetch(url);
             if (!res.ok) return null;
-            const body = await res.json();
-            const r = body?.chart?.result?.[0];
-            if (!r) return null;
-            const meta = r.meta;
-            const c  = meta.regularMarketPrice || meta.previousClose;
-            const pc = meta.previousClose || c;
-            const dp = pc ? ((c - pc) / pc * 100) : 0;
-            const d  = c - pc;
-            if (!c || c === 0) return null;
-            return {
-                c,                                          // current price
-                d,                                          // change amount
-                dp,                                         // change %
-                h: meta.regularMarketDayHigh  || c,
-                l: meta.regularMarketDayLow   || c,
-                o: meta.regularMarketOpen     || c,
-                pc
-            };
+            const data = await res.json();
+            if (!data.c || data.c === 0) return null;
+            return data;
         } catch (e) { return null; }
     }
 
@@ -2271,36 +2588,10 @@ function startNewsEngine() {
         RT.liveCount++;
     }
 
-    // Fetch many quotes at once via Yahoo Finance spark endpoint (very fast, no key)
-    async function fetchBulkQuotes(symbols) {
-        if (!symbols.length) return {};
-        try {
-            const joined = symbols.map(s => encodeURIComponent(s)).join('%2C');
-            const yahooUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${joined}&fields=regularMarketPrice,regularMarketChangePercent,regularMarketChange,regularMarketDayHigh,regularMarketDayLow,regularMarketOpen,regularMarketPreviousClose`;
-            const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(yahooUrl));
-            if (!res.ok) return {};
-            const body = await res.json();
-            const results = {};
-            (body?.quoteResponse?.result || []).forEach(q => {
-                const c = q.regularMarketPrice;
-                if (!c) return;
-                results[q.symbol] = {
-                    c,
-                    d:  q.regularMarketChange || 0,
-                    dp: q.regularMarketChangePercent || 0,
-                    h:  q.regularMarketDayHigh  || c,
-                    l:  q.regularMarketDayLow   || c,
-                    o:  q.regularMarketOpen     || c,
-                    pc: q.regularMarketPreviousClose || c
-                };
-            });
-            return results;
-        } catch (e) { return {}; }
-    }
-
-    // Batch-fetch: priority stocks every cycle, rest rotate in chunks of 50
+    // Batch-fetch: priority stocks every cycle, rest rotate
     async function fetchNextBatch() {
-        // Priority: portfolio + watchlist + open stock + top 20 visible
+        if (!RT.key) return;
+
         const prioritySet = new Set([
             ...Object.keys(portfolio),
             ...watchlist,
@@ -2310,16 +2601,17 @@ function startNewsEngine() {
         const prioritySyms = [...prioritySet];
         const restSyms = stocks.filter(s => !prioritySet.has(s.symbol)).map(s => s.symbol);
 
-        // Rotate remaining stocks 50 at a time
         if (RT.queueIdx >= restSyms.length) RT.queueIdx = 0;
-        const rotating = restSyms.slice(RT.queueIdx, RT.queueIdx + 50);
-        RT.queueIdx += 50;
+        const rotatingBatch = restSyms.slice(RT.queueIdx, RT.queueIdx + 10);
+        RT.queueIdx += 10;
 
-        const batch = [...new Set([...prioritySyms, ...rotating])];
+        const batch = [...new Set([...prioritySyms, ...rotatingBatch])];
 
         RT.liveCount = 0;
-        const quotes = await fetchBulkQuotes(batch);
-        Object.entries(quotes).forEach(([sym, data]) => applyRealQuote(sym, data));
+        await Promise.all(batch.map(async sym => {
+            const data = await fetchQuote(sym);
+            if (data) applyRealQuote(sym, data);
+        }));
 
         renderGrid();
         updateUI();
@@ -2487,8 +2779,149 @@ function startNewsEngine() {
 
     // ═══ END REAL-TIME DATA ENGINE ═══
 
-    // Show auth on load
-    initMarket();
+    // ═══════════════════════════════════════════════════════
+    //   HOMEPAGE LOGIC
+    // ═══════════════════════════════════════════════════════
+
+    function showHomepage() {
+        document.getElementById('homePage').style.display = 'block';
+        document.getElementById('appPage').style.display  = 'none';
+        drawHeroChart();
+        initTicker();
+    }
+
+    function showApp() {
+        document.getElementById('homePage').style.display = 'none';
+        document.getElementById('appPage').style.display  = 'block';
+    }
+
+    function showAuthFromHome(mode) {
+        // Show auth overlay on top of homepage
+        authMode = mode;
+        const overlay = document.getElementById('authOverlay');
+        overlay.style.display = 'flex';
+        if (mode === 'register') {
+            document.getElementById('registerNameGroup').classList.remove('hidden');
+            document.getElementById('authTitle').textContent = 'Create Account';
+            document.getElementById('authSubtitle').textContent = 'Join Vestra — it\'s free';
+            document.getElementById('authSubmitBtn').textContent = 'Create Account';
+            document.getElementById('authToggleText').textContent = 'Already have an account?';
+            document.getElementById('authToggleBtn').textContent = 'Sign in';
+        } else {
+            document.getElementById('registerNameGroup').classList.add('hidden');
+            document.getElementById('authTitle').textContent = 'Sign In';
+            document.getElementById('authSubtitle').textContent = 'to your trading account';
+            document.getElementById('authSubmitBtn').textContent = 'Sign In';
+            document.getElementById('authToggleText').textContent = 'Don\'t have an account?';
+            document.getElementById('authToggleBtn').textContent = 'Create account';
+        }
+    }
+
+    function scrollToSection(id) {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Hero mini chart
+    function drawHeroChart() {
+        const canvas = document.getElementById('heroChart');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const W = canvas.parentElement.clientWidth - 48;
+        const H = 140;
+        canvas.width  = W * (window.devicePixelRatio || 1);
+        canvas.height = H * (window.devicePixelRatio || 1);
+        canvas.style.width  = W + 'px';
+        canvas.style.height = H + 'px';
+        ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+
+        // Generate a nice upward trending line
+        const pts = 80;
+        const values = [];
+        let v = 180;
+        for (let i = 0; i < pts; i++) {
+            v += (Math.random() - 0.42) * 4;
+            values.push(Math.max(140, v));
+        }
+        const min = Math.min(...values), max = Math.max(...values);
+        const toX = i => (i / (pts - 1)) * W;
+        const toY = v => H - ((v - min) / (max - min + 1)) * (H - 16) - 8;
+
+        // Gradient fill
+        const grad = ctx.createLinearGradient(0, 0, 0, H);
+        grad.addColorStop(0, 'rgba(201,168,76,0.25)');
+        grad.addColorStop(1, 'rgba(201,168,76,0)');
+        ctx.beginPath();
+        ctx.moveTo(toX(0), toY(values[0]));
+        for (let i = 1; i < pts; i++) ctx.lineTo(toX(i), toY(values[i]));
+        ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+        ctx.fillStyle = grad; ctx.fill();
+
+        // Line
+        ctx.beginPath();
+        ctx.moveTo(toX(0), toY(values[0]));
+        for (let i = 1; i < pts; i++) ctx.lineTo(toX(i), toY(values[i]));
+        ctx.strokeStyle = '#c9a84c'; ctx.lineWidth = 2; ctx.stroke();
+
+        // Animate price
+        let base = 214.37;
+        setInterval(() => {
+            base += (Math.random() - 0.48) * 0.5;
+            const el = document.getElementById('heroPrice');
+            const ch = document.getElementById('heroChange');
+            if (el) el.textContent = '$' + base.toFixed(2);
+            if (ch) {
+                const pct = ((base - 211.74) / 211.74 * 100).toFixed(2);
+                ch.textContent = (pct >= 0 ? '+' : '') + pct + '%';
+                ch.style.color = pct >= 0 ? '#4ade80' : '#f87171';
+            }
+        }, 2000);
+    }
+
+    // Ticker tape
+    function initTicker() {
+        const items = ['AAPL $214.37 +1.2%','TSLA $248.12 +0.8%','MSFT $415.23 +0.5%','NVDA $138.42 +3.1%','AMZN $224.18 -0.3%','META $612.45 +1.7%','GOOGL $198.23 +0.4%','BRK.B $482.11 +0.2%','JPM $281.43 +0.9%','V $341.27 +0.6%','JNJ $149.32 -0.4%','WMT $98.45 +1.1%','XOM $112.34 +0.7%','BAC $46.78 -0.2%','HD $387.12 +0.8%'];
+        const html = items.map(t => {
+            const pos = t.includes('+');
+            return `<span style="display:inline-block;padding:0 32px;font-family:var(--v-mono);font-size:0.8rem;color:${pos ? '#4ade80' : '#f87171'};">${t}</span>`;
+        }).join('');
+        const t1 = document.getElementById('tickerInner');
+        const t2 = document.getElementById('tickerInner2');
+        if (t1) t1.innerHTML = html;
+        if (t2) t2.innerHTML = html;
+    }
+
+    // On load: show homepage, intercept login to go to app
+    const _origHandleAuth = handleAuthSubmit;
+    initMarket(); // still initializes market data in background
+
+    // Override auth success to show app instead of just hiding overlay
+    const _origHideOverlay = () => {
+        document.getElementById('authOverlay').style.display = 'none';
+        showApp();
+        startTutorial(false);
+    };
+
+    // Patch logOut to go back to homepage
+    const _origLogOut = logOut;
+    window.logOut = function() {
+        _origLogOut();
+        showHomepage();
+    };
+
+    // Show homepage on initial load (auth overlay will pop up when user clicks)
+    document.getElementById('authOverlay').style.display = 'none';
+    showHomepage();
+
+    // Patch handleAuthSubmit to show app on success
+    const _baseHandleAuth = window.handleAuthSubmit;
+    window.handleAuthSubmit = async function() {
+        await handleAuthSubmit();
+        // If login was successful (currentUser is set), show app
+        if (currentUser) {
+            document.getElementById('authOverlay').style.display = 'none';
+            showApp();
+        }
+    };
 
 </script>
 </body>
