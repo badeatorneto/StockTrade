@@ -841,18 +841,17 @@ function startNewsEngine() {
     // ── Pure canvas candlestick renderer ─────────────────
     const candleCache = {};
 
-    function periodToFinnhub(period) {
-        const now = Math.floor(Date.now() / 1000);
-        const DAY = 86400, MONTH = 30*DAY, YEAR = 365*DAY;
+    // Map period to Yahoo Finance params (free, no key, full history)
+    function periodToYahoo(period) {
         switch (period) {
-            case '1D':  return { resolution: '5',  from: now - DAY };
-            case '5D':  return { resolution: '15', from: now - 5*DAY };
-            case '1M':  return { resolution: '60', from: now - MONTH };
-            case '6M':  return { resolution: 'D',  from: now - 6*MONTH };
-            case 'YTD': return { resolution: 'D',  from: Math.floor(new Date(new Date().getFullYear(),0,1)/1000) };
-            case '1Y':  return { resolution: 'W',  from: now - YEAR };
-            case '5Y':  return { resolution: 'M',  from: now - 5*YEAR };
-            default:    return { resolution: 'M',  from: now - 10*YEAR };
+            case '1D':  return { interval: '5m',  range: '1d'  };
+            case '5D':  return { interval: '15m', range: '5d'  };
+            case '1M':  return { interval: '60m', range: '1mo' };
+            case '6M':  return { interval: '1d',  range: '6mo' };
+            case 'YTD': return { interval: '1d',  range: 'ytd' };
+            case '1Y':  return { interval: '1wk', range: '1y'  };
+            case '5Y':  return { interval: '1mo', range: '5y'  };
+            default:    return { interval: '3mo', range: 'max' };
         }
     }
 
@@ -884,20 +883,36 @@ function startNewsEngine() {
     }
 
     async function fetchCandles(symbol, period) {
-        const key = symbol+'_'+period;
-        if (candleCache[key] && (Date.now()-candleCache[key].ts)<60000) return candleCache[key].data;
-        if (!RT.key) return null;
+        const cacheKey = symbol + '_' + period;
+        const ttl = (period === '1D' || period === '5D') ? 60000 : 300000;
+        if (candleCache[cacheKey] && (Date.now() - candleCache[cacheKey].ts) < ttl) {
+            return candleCache[cacheKey].data;
+        }
         try {
-            const {resolution,from} = periodToFinnhub(period);
-            const to = Math.floor(Date.now()/1000);
-            const url = `https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(symbol)}&resolution=${resolution}&from=${from}&to=${to}&token=${RT.key}`;
-            const res = await fetch(url);
-            const data = await res.json();
-            if (!data||data.s!=='ok'||!data.t||data.t.length===0) return null;
-            const candles = data.t.map((ts,i)=>({x:ts*1000,o:data.o[i],h:data.h[i],l:data.l[i],c:data.c[i]}));
-            candleCache[key]={data:candles,ts:Date.now()};
+            const { interval, range } = periodToYahoo(period);
+            const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=${interval}&range=${range}&includePrePost=false`;
+            const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(yahooUrl));
+            if (!res.ok) return null;
+            const body = await res.json();
+            const result = body?.chart?.result?.[0];
+            if (!result?.timestamp) return null;
+            const q = result.indicators.quote[0];
+            const candles = [];
+            result.timestamp.forEach((ts, i) => {
+                const c = q.close?.[i];
+                if (!c || c === 0) return;
+                candles.push({
+                    x: ts * 1000,
+                    o: +(q.open?.[i]  ?? c).toFixed(2),
+                    h: +(q.high?.[i]  ?? c).toFixed(2),
+                    l: +(q.low?.[i]   ?? c).toFixed(2),
+                    c: +c.toFixed(2)
+                });
+            });
+            if (candles.length === 0) return null;
+            candleCache[cacheKey] = { data: candles, ts: Date.now() };
             return candles;
-        } catch(e){ return null; }
+        } catch (e) { return null; }
     }
 
     // Draw candlesticks directly on canvas — no library needed
@@ -2192,15 +2207,13 @@ function startNewsEngine() {
     // --- Config ---
     const RT = {
         key: 'd6c804pr01qsiik14ah0d6c804pr01qsiik14ahg',
-        interval: Number(localStorage.getItem('finnhub_interval') || 10000),
+        interval: 5000,   // fetch every 5s — bulk request so very fast
         timer: null,
-        cache: {},          // { SYMBOL: { price, change, ts } }
-        queue: [],          // symbols to fetch
+        cache: {},        // { SYMBOL: { price, change, ts } }
+        queue: [],
         queueIdx: 0,
-        liveCount: 0,       // how many symbols have real data
-        lastBatch: 0,       // timestamp of last batch fetch
-        batchSize: 10,      // symbols per 10-sec cycle (stays under 60/min)
-        sanityMax: 0.30,    // max 30% price change before rejecting
+        liveCount: 0,
+        batchSize: 50,    // fetch 50 at a time via Yahoo bulk endpoint (1 HTTP request)
     };
 
     // Priority symbols: watchlist + portfolio + top 20, then rest
@@ -2215,22 +2228,31 @@ function startNewsEngine() {
         // Do NOT reset queueIdx here — we want to cycle through all stocks over time
     }
 
-    // Fetch a single quote from Finnhub
+    // Fetch a single quote via Yahoo Finance (no API key needed, fast)
     async function fetchQuote(symbol) {
-        if (!RT.key) return null;
-        // Finnhub doesn't support BRK.B directly — skip problematic symbols
-        const safeSymbol = symbol.replace('.', '-'); // some need remapping
         try {
-            const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${RT.key}`;
-            const res = await fetch(url);
+            const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=5d`;
+            const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(yahooUrl));
             if (!res.ok) return null;
-            const data = await res.json();
-            // Finnhub returns { c: current, d: change, dp: changePct, h, l, o, pc }
-            if (!data.c || data.c === 0) return null;
-            return data;
-        } catch (e) {
-            return null;
-        }
+            const body = await res.json();
+            const r = body?.chart?.result?.[0];
+            if (!r) return null;
+            const meta = r.meta;
+            const c  = meta.regularMarketPrice || meta.previousClose;
+            const pc = meta.previousClose || c;
+            const dp = pc ? ((c - pc) / pc * 100) : 0;
+            const d  = c - pc;
+            if (!c || c === 0) return null;
+            return {
+                c,                                          // current price
+                d,                                          // change amount
+                dp,                                         // change %
+                h: meta.regularMarketDayHigh  || c,
+                l: meta.regularMarketDayLow   || c,
+                o: meta.regularMarketOpen     || c,
+                pc
+            };
+        } catch (e) { return null; }
     }
 
     // Apply a real quote to our stock object
@@ -2249,36 +2271,63 @@ function startNewsEngine() {
         RT.liveCount++;
     }
 
-    // Batch-fetch the next N symbols in queue
+    // Fetch many quotes at once via Yahoo Finance spark endpoint (very fast, no key)
+    async function fetchBulkQuotes(symbols) {
+        if (!symbols.length) return {};
+        try {
+            const joined = symbols.map(s => encodeURIComponent(s)).join('%2C');
+            const yahooUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${joined}&fields=regularMarketPrice,regularMarketChangePercent,regularMarketChange,regularMarketDayHigh,regularMarketDayLow,regularMarketOpen,regularMarketPreviousClose`;
+            const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(yahooUrl));
+            if (!res.ok) return {};
+            const body = await res.json();
+            const results = {};
+            (body?.quoteResponse?.result || []).forEach(q => {
+                const c = q.regularMarketPrice;
+                if (!c) return;
+                results[q.symbol] = {
+                    c,
+                    d:  q.regularMarketChange || 0,
+                    dp: q.regularMarketChangePercent || 0,
+                    h:  q.regularMarketDayHigh  || c,
+                    l:  q.regularMarketDayLow   || c,
+                    o:  q.regularMarketOpen     || c,
+                    pc: q.regularMarketPreviousClose || c
+                };
+            });
+            return results;
+        } catch (e) { return {}; }
+    }
+
+    // Batch-fetch: priority stocks every cycle, rest rotate in chunks of 50
     async function fetchNextBatch() {
-        if (!RT.key) return;
+        // Priority: portfolio + watchlist + open stock + top 20 visible
+        const prioritySet = new Set([
+            ...Object.keys(portfolio),
+            ...watchlist,
+            ...(detailStock ? [detailStock.symbol] : []),
+            ...stocks.slice(0, 20).map(s => s.symbol)
+        ]);
+        const prioritySyms = [...prioritySet];
+        const restSyms = stocks.filter(s => !prioritySet.has(s.symbol)).map(s => s.symbol);
 
-        // Rebuild queue if empty or exhausted
-        if (RT.queue.length === 0 || RT.queueIdx >= RT.queue.length) {
-            buildQueue();
-            RT.queueIdx = 0;
-        }
+        // Rotate remaining stocks 50 at a time
+        if (RT.queueIdx >= restSyms.length) RT.queueIdx = 0;
+        const rotating = restSyms.slice(RT.queueIdx, RT.queueIdx + 50);
+        RT.queueIdx += 50;
 
-        // Grab the next batch
-        const batch = RT.queue.slice(RT.queueIdx, RT.queueIdx + RT.batchSize);
-        RT.queueIdx += RT.batchSize;
+        const batch = [...new Set([...prioritySyms, ...rotating])];
 
         RT.liveCount = 0;
-        await Promise.all(batch.map(async sym => {
-            const data = await fetchQuote(sym);
-            if (data) applyRealQuote(sym, data);
-        }));
+        const quotes = await fetchBulkQuotes(batch);
+        Object.entries(quotes).forEach(([sym, data]) => applyRealQuote(sym, data));
 
-        // Refresh grid + all sidebar panels
         renderGrid();
         updateUI();
 
-        // If stock detail is open and in this batch, update its price header
-        if (detailStock && batch.includes(detailStock.symbol)) {
+        if (detailStock) {
             const s = getStockBySymbol(detailStock.symbol);
             if (s) updateDetailPriceFields(s);
         }
-
         updateDataSourceUI();
     }
 
