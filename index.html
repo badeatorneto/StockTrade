@@ -301,16 +301,17 @@
         }
         @media (max-width: 768px) {
             #mobileNav { display: flex; }
-            main { padding-bottom: 80px !important; }
-            .app-header { padding: 0 16px !important; }
+            #appMain { padding-bottom: 80px !important; grid-template-columns: 1fr !important; }
+            .app-header { padding: 0 12px !important; }
             #searchWrap { display: none; }
-            #desktopSidebar { display: none; }
-            main.max-w-\[1600px\] { grid-template-columns: 1fr !important; }
-            #howGrid { grid-template-columns: 1fr !important; }
+            #desktopSidebar { display: none !important; }
         }
         @media (min-width: 769px) {
             #mobilePortfolioView { display: none; }
         }
+        /* light mode overrides for more menu */
+        body.light-mode #moreMenu { background: #fff; border-color: rgba(0,0,0,0.1); }
+        body.light-mode #moreMenu button { color: #1a1a2e; }
     </style>
 </head>
 <body class="overflow-x-hidden">
@@ -323,242 +324,245 @@
   <!-- NAV -->
   <nav class="home-nav">
     <div class="logo">Vestra</div>
-    <div style="display:flex;gap:12px;align-items:center;">
+    <div style="display:flex;gap:10px;align-items:center;">
       <button class="nav-btn nav-btn-ghost" onclick="showAuthFromHome('login')">Log In</button>
       <button class="nav-btn nav-btn-gold" onclick="showAuthFromHome('register')">Sign Up Free</button>
     </div>
   </nav>
 
-  <!-- HERO — two-column -->
-  <section style="min-height:100vh;display:flex;align-items:center;padding:100px 48px 60px;overflow:hidden;position:relative;">
-    <div class="orb" style="width:700px;height:700px;background:radial-gradient(circle,rgba(201,168,76,0.11),transparent 70%);top:-200px;right:-200px;"></div>
-    <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,rgba(34,197,94,0.06),transparent 70%);bottom:-100px;left:-100px;"></div>
+  <!-- ═══ HERO — two column ═══ -->
+  <section style="min-height:100vh;display:flex;align-items:center;padding:80px 48px 60px;overflow:hidden;position:relative;">
+    <div class="orb" style="width:800px;height:800px;background:radial-gradient(circle,rgba(201,168,76,0.1),transparent 65%);top:-300px;right:-300px;pointer-events:none;"></div>
+    <div class="orb" style="width:400px;height:400px;background:radial-gradient(circle,rgba(34,197,94,0.05),transparent 70%);bottom:0;left:-80px;pointer-events:none;"></div>
 
-    <div id="heroGrid" style="max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;">
+    <div style="max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;">
 
-      <!-- Left: copy -->
-      <div id="heroLeft">
-        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);padding:5px 14px;border-radius:100px;margin-bottom:28px;" class="anim-1">
-          <div style="width:6px;height:6px;background:#22c55e;border-radius:50%;animation:pulse-green 2s infinite;flex-shrink:0;"></div>
-          <span style="font-size:0.72rem;color:var(--v-gold);font-weight:700;letter-spacing:0.07em;">500+ REAL STOCKS · LIVE PRICES</span>
+      <!-- Copy -->
+      <div>
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.22);padding:5px 14px;border-radius:100px;margin-bottom:28px;" class="anim-1">
+          <div style="width:6px;height:6px;background:#22c55e;border-radius:50%;flex-shrink:0;animation:pulse-green 2s infinite;"></div>
+          <span style="font-size:0.7rem;color:var(--v-gold);font-weight:700;letter-spacing:0.08em;">500+ REAL STOCKS · LIVE PRICES</span>
         </div>
 
-        <h1 class="anim-2" style="font-family:var(--v-serif);font-size:clamp(2.8rem,5vw,5rem);line-height:1.06;margin:0 0 20px;">
+        <h1 class="anim-2" style="font-family:var(--v-serif);font-size:clamp(2.6rem,4.5vw,4.8rem);line-height:1.05;margin:0 0 22px;color:#f0f0fa;">
           Trade Like a Pro.<br><em style="color:var(--v-gold);">Risk Nothing.</em>
         </h1>
 
-        <p class="anim-3" style="font-size:1.1rem;color:#b0b0c8;line-height:1.75;margin:0 0 36px;max-width:480px;">
-          $100,000 in virtual cash. Real market data. Master the art of trading before it ever costs you a cent.
+        <p class="anim-3" style="font-size:1.05rem;color:#9090b8;line-height:1.75;margin:0 0 36px;max-width:440px;">
+          Start with $100,000 in virtual cash and real-time market data. Build your strategy before it ever costs you a cent.
         </p>
 
-        <div class="anim-4" style="display:flex;gap:14px;flex-wrap:wrap;">
-          <button class="nav-btn nav-btn-gold" style="padding:15px 36px;font-size:1rem;border-radius:12px;" onclick="showAuthFromHome('register')">
-            Start Trading Free →
-          </button>
-          <button class="nav-btn nav-btn-ghost" style="padding:15px 28px;font-size:1rem;border-radius:12px;" onclick="scrollToSection('how')">
-            How It Works
-          </button>
+        <div class="anim-4" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:44px;">
+          <button class="nav-btn nav-btn-gold" style="padding:14px 34px;font-size:0.95rem;border-radius:10px;" onclick="showAuthFromHome('register')">Start Trading Free →</button>
+          <button class="nav-btn nav-btn-ghost" style="padding:14px 26px;font-size:0.95rem;border-radius:10px;" onclick="scrollToSection('how')">How It Works</button>
         </div>
 
-        <!-- Mini stats row -->
-        <div class="anim-4" id="heroMiniStats" style="display:flex;gap:32px;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.07);">
+        <!-- Three stats inline -->
+        <div class="anim-4" style="display:flex;gap:28px;padding-top:28px;border-top:1px solid rgba(255,255,255,0.07);">
           <div>
-            <div style="font-family:var(--v-serif);font-size:1.75rem;color:var(--v-gold);line-height:1;">$100K</div>
-            <div style="font-size:11px;color:#8888a8;margin-top:3px;">Virtual cash</div>
+            <div style="font-family:var(--v-mono);font-size:1.6rem;color:var(--v-gold);line-height:1;font-weight:300;">$100K</div>
+            <div style="font-size:10px;color:#6868a0;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Starting cash</div>
           </div>
           <div>
-            <div style="font-family:var(--v-serif);font-size:1.75rem;color:var(--v-gold);line-height:1;">500+</div>
-            <div style="font-size:11px;color:#8888a8;margin-top:3px;">Real stocks</div>
+            <div style="font-family:var(--v-mono);font-size:1.6rem;color:var(--v-gold);line-height:1;font-weight:300;">500+</div>
+            <div style="font-size:10px;color:#6868a0;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Real stocks</div>
           </div>
           <div>
-            <div style="font-family:var(--v-serif);font-size:1.75rem;color:var(--v-gold);line-height:1;">Zero</div>
-            <div style="font-size:11px;color:#8888a8;margin-top:3px;">Financial risk</div>
+            <div style="font-family:var(--v-mono);font-size:1.6rem;color:var(--v-gold);line-height:1;font-weight:300;">$0</div>
+            <div style="font-size:10px;color:#6868a0;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Financial risk</div>
           </div>
         </div>
       </div>
 
-      <!-- Right: mock trading card -->
-      <div id="heroRight" class="anim-3" style="position:relative;">
-        <div style="background:var(--v-card);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:28px;box-shadow:0 40px 100px rgba(0,0,0,0.5);">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <!-- Mock app card -->
+      <div class="anim-3" style="position:relative;">
+        <!-- Floating badge -->
+        <div style="position:absolute;top:-14px;right:-10px;z-index:2;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;padding:7px 13px;border-radius:9px;font-size:11px;font-weight:700;box-shadow:0 8px 28px rgba(34,197,94,0.35);white-space:nowrap;">📈 +$3,241 this week</div>
+
+        <div style="background:var(--v-card);border:1px solid rgba(255,255,255,0.09);border-radius:20px;padding:24px;box-shadow:0 32px 80px rgba(0,0,0,0.55);">
+          <!-- Mini header row -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
             <div>
-              <div style="font-family:var(--v-serif);font-size:1.4rem;color:#f0f0fa;">AAPL</div>
-              <div style="font-size:12px;color:#8888a8;">Apple Inc.</div>
+              <div style="font-family:var(--v-serif);font-size:1.2rem;color:#f0f0fa;line-height:1;">AAPL</div>
+              <div style="font-size:11px;color:#8888a8;margin-top:2px;">Apple Inc.</div>
             </div>
             <div style="text-align:right;">
-              <div style="font-family:var(--v-mono);font-size:1.5rem;color:#f0f0fa;" id="heroPrice">$254.86</div>
-              <div style="color:#4ade80;font-size:0.85rem;font-family:var(--v-mono);" id="heroChange">+1.24%</div>
+              <div style="font-family:var(--v-mono);font-size:1.35rem;color:#f0f0fa;" id="heroPrice">$254.86</div>
+              <div style="font-size:11px;color:#4ade80;font-family:var(--v-mono);" id="heroChange">+1.24%</div>
             </div>
           </div>
-          <canvas id="heroChart" style="width:100%;height:130px;display:block;"></canvas>
-          <!-- Fake portfolio snapshot -->
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;">
-            <div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:12px;">
-              <div style="font-size:10px;color:#8888a8;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Portfolio</div>
-              <div style="font-family:var(--v-mono);font-size:1.1rem;color:#f0f0fa;">$103,241</div>
-              <div style="font-size:11px;color:#4ade80;">+3.24%</div>
+
+          <!-- Chart -->
+          <canvas id="heroChart" style="width:100%;height:110px;display:block;"></canvas>
+
+          <!-- Portfolio row -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;">
+            <div style="background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:11px 13px;">
+              <div style="font-size:9px;color:#6868a0;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;">Portfolio</div>
+              <div style="font-family:var(--v-mono);font-size:1rem;color:#f0f0fa;">$103,241</div>
+              <div style="font-size:10px;color:#4ade80;margin-top:2px;">+3.24%</div>
             </div>
-            <div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:12px;">
-              <div style="font-size:10px;color:#8888a8;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Today's P&amp;L</div>
-              <div style="font-family:var(--v-mono);font-size:1.1rem;color:#f0f0fa;">+$241</div>
-              <div style="font-size:11px;color:#4ade80;">+0.23%</div>
+            <div style="background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:11px 13px;">
+              <div style="font-size:9px;color:#6868a0;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;">Today P&amp;L</div>
+              <div style="font-family:var(--v-mono);font-size:1rem;color:#f0f0fa;">+$241</div>
+              <div style="font-size:10px;color:#4ade80;margin-top:2px;">+0.23%</div>
+            </div>
+          </div>
+
+          <!-- Holdings list mock -->
+          <div style="margin-top:14px;border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;">
+            <div style="font-size:9px;color:#6868a0;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Holdings</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#c0c0d8;font-weight:600;">AAPL</span><span style="color:#4ade80;font-family:var(--v-mono);">+2.1%</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#c0c0d8;font-weight:600;">NVDA</span><span style="color:#4ade80;font-family:var(--v-mono);">+5.8%</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#c0c0d8;font-weight:600;">MSFT</span><span style="color:#f87171;font-family:var(--v-mono);">−0.4%</span></div>
             </div>
           </div>
         </div>
-        <!-- Floating badge -->
-        <div style="position:absolute;top:-16px;right:-16px;background:var(--v-gold);color:#0a0a0f;padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;box-shadow:0 8px 24px rgba(201,168,76,0.3);">📈 +$3,241 this week</div>
       </div>
 
     </div>
   </section>
 
-  <!-- TICKER TAPE -->
+  <!-- TICKER -->
   <div class="ticker-wrap" style="padding:10px 0;">
-    <div class="ticker" id="homeTicker">
-      <span id="tickerInner"></span>
-      <span id="tickerInner2"></span>
-    </div>
+    <div class="ticker" id="homeTicker"><span id="tickerInner"></span><span id="tickerInner2"></span></div>
   </div>
 
-  <!-- FEATURES — 3-column bento grid -->
-  <section style="padding:80px 48px 80px;">
+  <!-- ═══ FEATURES — bento grid ═══ -->
+  <section style="padding:80px 48px;">
     <div style="max-width:1200px;margin:0 auto;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:52px;flex-wrap:wrap;gap:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:48px;flex-wrap:wrap;gap:16px;">
         <div>
-          <p style="color:var(--v-gold);font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin:0 0 10px;">Everything You Need</p>
-          <h2 style="font-family:var(--v-serif);font-size:clamp(2rem,4vw,3rem);margin:0;color:#ffffff;">Built for Serious Learning</h2>
+          <p style="color:var(--v-gold);font-size:0.7rem;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;margin:0 0 8px;">Everything You Need</p>
+          <h2 style="font-family:var(--v-serif);font-size:clamp(1.8rem,3.5vw,2.8rem);margin:0;color:#f0f0fa;line-height:1.15;">Built for Serious Learning</h2>
         </div>
-        <button class="nav-btn nav-btn-gold" style="padding:12px 28px;font-size:0.9rem;" onclick="showAuthFromHome('register')">Get Started Free →</button>
+        <button class="nav-btn nav-btn-gold" style="padding:11px 26px;font-size:0.875rem;flex-shrink:0;" onclick="showAuthFromHome('register')">Get Started →</button>
       </div>
-      <div id="featuresGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
 
-        <div class="feat-card" style="grid-column:span 2;">
-          <div style="display:flex;gap:20px;align-items:flex-start;">
-            <div style="font-size:2.5rem;flex-shrink:0;">📈</div>
-            <div>
-              <h3 style="font-family:var(--v-serif);font-size:1.4rem;margin:0 0 10px;">Real-Time Market Data</h3>
-              <p style="color:#b0b0c8;line-height:1.7;font-size:0.9rem;margin:0;">Connect your free Finnhub API key and watch 500+ stock prices update live every few seconds. Candlestick charts, day range, 52-week high/low — all real.</p>
-            </div>
+      <!-- Bento: 3 columns, first card spans 2 -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto;gap:16px;">
+
+        <div class="feat-card" style="grid-column:span 2;display:flex;gap:24px;align-items:flex-start;">
+          <div style="font-size:2.2rem;flex-shrink:0;margin-top:2px;">📈</div>
+          <div>
+            <h3 style="font-family:var(--v-serif);font-size:1.35rem;margin:0 0 10px;color:#f0f0fa;">Real-Time Market Data</h3>
+            <p style="color:#8888a8;line-height:1.7;font-size:0.875rem;margin:0;">Connect a free Finnhub API key and watch 500+ stock prices tick live every few seconds — candlestick charts, day range, volume, analyst ratings, all real.</p>
           </div>
         </div>
 
         <div class="feat-card">
-          <div style="font-size:2rem;margin-bottom:14px;">🏆</div>
-          <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;">Global Leaderboard</h3>
-          <p style="color:#b0b0c8;line-height:1.7;font-size:0.875rem;margin:0;">Compete with real traders worldwide. Weekly resets keep it fresh.</p>
+          <div style="font-size:1.8rem;margin-bottom:12px;">🏆</div>
+          <h3 style="font-family:var(--v-serif);font-size:1.15rem;margin:0 0 8px;color:#f0f0fa;">Global Leaderboard</h3>
+          <p style="color:#8888a8;line-height:1.65;font-size:0.85rem;margin:0;">Compete with traders worldwide. Rankings by total value, profit, and shares.</p>
         </div>
 
         <div class="feat-card">
-          <div style="font-size:2rem;margin-bottom:14px;">💼</div>
-          <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;">Portfolio Tracking</h3>
-          <p style="color:#b0b0c8;line-height:1.7;font-size:0.875rem;margin:0;">Realized & unrealized P&L, cost basis, sector allocation — just like a real brokerage.</p>
+          <div style="font-size:1.8rem;margin-bottom:12px;">⚡</div>
+          <h3 style="font-family:var(--v-serif);font-size:1.15rem;margin:0 0 8px;color:#f0f0fa;">Order Types</h3>
+          <p style="color:#8888a8;line-height:1.65;font-size:0.85rem;margin:0;">Market, limit, stop-loss, take-profit. Pending orders fill automatically.</p>
         </div>
 
         <div class="feat-card">
-          <div style="font-size:2rem;margin-bottom:14px;">⚡</div>
-          <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;">Multiple Order Types</h3>
-          <p style="color:#b0b0c8;line-height:1.7;font-size:0.875rem;margin:0;">Market, limit, stop-loss, take-profit. Practice advanced strategies risk-free.</p>
+          <div style="font-size:1.8rem;margin-bottom:12px;">💼</div>
+          <h3 style="font-family:var(--v-serif);font-size:1.15rem;margin:0 0 8px;color:#f0f0fa;">Portfolio Tracking</h3>
+          <p style="color:#8888a8;line-height:1.65;font-size:0.85rem;margin:0;">Realized & unrealized P&L, cost basis, sector allocation chart.</p>
         </div>
 
         <div class="feat-card">
-          <div style="font-size:2rem;margin-bottom:14px;">🎯</div>
-          <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;">Daily Quests</h3>
-          <p style="color:#b0b0c8;line-height:1.7;font-size:0.875rem;margin:0;">Daily challenges, streaks, and achievement badges build real discipline over time.</p>
+          <div style="font-size:1.8rem;margin-bottom:12px;">🎯</div>
+          <h3 style="font-family:var(--v-serif);font-size:1.15rem;margin:0 0 8px;color:#f0f0fa;">Quests & Streaks</h3>
+          <p style="color:#8888a8;line-height:1.65;font-size:0.85rem;margin:0;">Daily challenges, trading streaks, and achievement badges.</p>
         </div>
 
         <div class="feat-card">
-          <div style="font-size:2rem;margin-bottom:14px;">🔐</div>
-          <h3 style="font-family:var(--v-serif);font-size:1.3rem;margin:0 0 8px;">Your Account, Saved</h3>
-          <p style="color:#b0b0c8;line-height:1.7;font-size:0.875rem;margin:0;">Portfolio persists between sessions. Trade today, pick up tomorrow.</p>
+          <div style="font-size:1.8rem;margin-bottom:12px;">📓</div>
+          <h3 style="font-family:var(--v-serif);font-size:1.15rem;margin:0 0 8px;color:#f0f0fa;">Trade Journal</h3>
+          <p style="color:#8888a8;line-height:1.65;font-size:0.85rem;margin:0;">Log your reasoning on every trade. Review what worked and what didn't.</p>
         </div>
 
       </div>
     </div>
   </section>
 
-  <!-- HOW IT WORKS — horizontal timeline -->
-  <section id="how" style="padding:80px 48px;background:#0e0e18;">
-    <div style="max-width:1200px;margin:0 auto;">
-      <div style="text-align:center;margin-bottom:60px;">
-        <p style="color:var(--v-gold);font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin:0 0 12px;">Get Started in Minutes</p>
-        <h2 style="font-family:var(--v-serif);font-size:clamp(2rem,4vw,3rem);margin:0;color:#ffffff;">How Vestra Works</h2>
+  <!-- ═══ HOW IT WORKS — horizontal 4-step ═══ -->
+  <section id="how" style="padding:80px 48px;background:#0b0b14;">
+    <div style="max-width:1100px;margin:0 auto;">
+      <div style="text-align:center;margin-bottom:56px;">
+        <p style="color:var(--v-gold);font-size:0.7rem;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;margin:0 0 10px;">Up and running in minutes</p>
+        <h2 style="font-family:var(--v-serif);font-size:clamp(1.8rem,3.5vw,2.8rem);margin:0;color:#f0f0fa;">How Vestra Works</h2>
       </div>
-      <!-- 4-step horizontal row -->
-      <div id="howGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;">
-        <!-- Connecting line -->
-        <div style="position:absolute;top:24px;left:calc(12.5% + 12px);right:calc(12.5% + 12px);height:1px;background:linear-gradient(90deg,var(--v-gold),rgba(201,168,76,0.2));z-index:0;"></div>
 
-        <div style="text-align:center;padding:0 16px;position:relative;z-index:1;">
-          <div class="step-num" style="margin:0 auto 20px;">1</div>
-          <h3 style="font-family:var(--v-serif);font-size:1.1rem;margin:0 0 10px;color:#f0f0fa;">Create Account</h3>
-          <p style="color:#b0b0c8;font-size:0.85rem;line-height:1.65;margin:0;">Sign up in seconds. Get $100K virtual cash and full market access instantly.</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;">
+        <!-- Line connecting steps -->
+        <div style="position:absolute;top:22px;left:12.5%;right:12.5%;height:1px;background:linear-gradient(90deg,rgba(201,168,76,0.6),rgba(201,168,76,0.15));pointer-events:none;"></div>
+
+        <div style="text-align:center;padding:0 20px;position:relative;">
+          <div class="step-num" style="margin:0 auto 18px;">1</div>
+          <h3 style="font-family:var(--v-serif);font-size:1rem;margin:0 0 8px;color:#f0f0fa;">Create Account</h3>
+          <p style="color:#8080a8;font-size:0.82rem;line-height:1.6;margin:0;">Sign up in seconds. Instantly get $100K virtual cash.</p>
         </div>
-
-        <div style="text-align:center;padding:0 16px;position:relative;z-index:1;">
-          <div class="step-num" style="margin:0 auto 20px;">2</div>
-          <h3 style="font-family:var(--v-serif);font-size:1.1rem;margin:0 0 10px;color:#f0f0fa;">Add Live Data</h3>
-          <p style="color:#b0b0c8;font-size:0.85rem;line-height:1.65;margin:0;">Paste a free <a href="https://finnhub.io" target="_blank" style="color:var(--v-gold);">Finnhub</a> API key. Prices update live in seconds.</p>
+        <div style="text-align:center;padding:0 20px;position:relative;">
+          <div class="step-num" style="margin:0 auto 18px;">2</div>
+          <h3 style="font-family:var(--v-serif);font-size:1rem;margin:0 0 8px;color:#f0f0fa;">Add Live Data</h3>
+          <p style="color:#8080a8;font-size:0.82rem;line-height:1.6;margin:0;">Free <a href="https://finnhub.io" target="_blank" style="color:var(--v-gold);">Finnhub</a> key — prices go live instantly.</p>
         </div>
-
-        <div style="text-align:center;padding:0 16px;position:relative;z-index:1;">
-          <div class="step-num" style="margin:0 auto 20px;">3</div>
-          <h3 style="font-family:var(--v-serif);font-size:1.1rem;margin:0 0 10px;color:#f0f0fa;">Research & Trade</h3>
-          <p style="color:#b0b0c8;font-size:0.85rem;line-height:1.65;margin:0;">Study charts, place market or limit orders, track P&L — just like a real broker.</p>
+        <div style="text-align:center;padding:0 20px;position:relative;">
+          <div class="step-num" style="margin:0 auto 18px;">3</div>
+          <h3 style="font-family:var(--v-serif);font-size:1rem;margin:0 0 8px;color:#f0f0fa;">Research & Trade</h3>
+          <p style="color:#8080a8;font-size:0.82rem;line-height:1.6;margin:0;">Charts, analyst ratings, limit orders — the full toolkit.</p>
         </div>
-
-        <div style="text-align:center;padding:0 16px;position:relative;z-index:1;">
-          <div class="step-num" style="margin:0 auto 20px;">4</div>
-          <h3 style="font-family:var(--v-serif);font-size:1.1rem;margin:0 0 10px;color:#f0f0fa;">Climb the Ranks</h3>
-          <p style="color:#b0b0c8;font-size:0.85rem;line-height:1.65;margin:0;">Track your growth, beat the leaderboard, unlock achievements.</p>
+        <div style="text-align:center;padding:0 20px;position:relative;">
+          <div class="step-num" style="margin:0 auto 18px;">4</div>
+          <h3 style="font-family:var(--v-serif);font-size:1rem;margin:0 0 8px;color:#f0f0fa;">Climb the Ranks</h3>
+          <p style="color:#8080a8;font-size:0.82rem;line-height:1.6;margin:0;">Track P&L, beat the leaderboard, unlock achievements.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CTA BANNER -->
+  <!-- CTA -->
   <section style="padding:100px 48px;text-align:center;position:relative;overflow:hidden;">
-    <div class="orb" style="width:700px;height:700px;background:radial-gradient(circle,rgba(201,168,76,0.08),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);"></div>
-    <div style="max-width:680px;margin:0 auto;position:relative;z-index:1;">
-      <p style="color:var(--v-gold);font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin:0 0 16px;">No Credit Card. No Risk. Ever.</p>
-      <h2 style="font-family:var(--v-serif);font-size:clamp(2.2rem,5vw,3.8rem);margin:0 0 20px;color:#ffffff;line-height:1.1;">Ready to Start Your<br>Trading Journey?</h2>
-      <p style="color:#b0b0c8;font-size:1.05rem;line-height:1.7;margin:0 0 40px;">Join Vestra and start practicing with real market conditions. The only thing you'll lose is your fear of the market.</p>
-      <button class="nav-btn nav-btn-gold" style="padding:18px 52px;font-size:1.1rem;border-radius:14px;" onclick="showAuthFromHome('register')">
-        Create Free Account →
-      </button>
+    <div class="orb" style="width:600px;height:600px;background:radial-gradient(circle,rgba(201,168,76,0.08),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+    <div style="max-width:600px;margin:0 auto;position:relative;z-index:1;">
+      <p style="color:var(--v-gold);font-size:0.7rem;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;margin:0 0 14px;">No Credit Card. No Risk. Ever.</p>
+      <h2 style="font-family:var(--v-serif);font-size:clamp(2rem,5vw,3.6rem);margin:0 0 18px;color:#f0f0fa;line-height:1.1;">Ready to Start Your<br>Trading Journey?</h2>
+      <p style="color:#8080a8;font-size:1rem;line-height:1.75;margin:0 0 36px;">The only thing you'll lose is your fear of the market.</p>
+      <button class="nav-btn nav-btn-gold" style="padding:16px 48px;font-size:1rem;border-radius:12px;" onclick="showAuthFromHome('register')">Create Free Account →</button>
     </div>
   </section>
 
   <!-- FOOTER -->
-  <footer style="padding:52px 48px 36px;background:var(--v-surface);">
+  <footer style="padding:44px 48px 32px;background:var(--v-surface);">
     <div style="max-width:1200px;margin:0 auto;">
-      <div style="display:grid;grid-template-columns:2fr 1fr;gap:48px;align-items:start;margin-bottom:40px;">
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:40px;align-items:start;margin-bottom:32px;">
         <div>
-          <div class="logo" style="font-size:1.8rem;margin-bottom:10px;">Vestra</div>
-          <p style="color:#9090aa;font-size:0.875rem;line-height:1.7;max-width:380px;margin:0 0 20px;">Practice with real market data, build your skills, and compete with traders worldwide — all with virtual money. No risk, ever.</p>
-          <button class="nav-btn nav-btn-ghost" style="font-size:0.85rem;padding:9px 20px;" onclick="showAuthFromHome('register')">Start for Free →</button>
+          <div class="logo" style="font-size:1.7rem;margin-bottom:8px;">Vestra</div>
+          <p style="color:#6868a0;font-size:0.85rem;line-height:1.7;max-width:360px;margin:0 0 18px;">Practice with real market data, compete worldwide, and build your edge — all with virtual money.</p>
+          <button class="nav-btn nav-btn-ghost" style="font-size:0.82rem;padding:8px 18px;" onclick="showAuthFromHome('register')">Start for Free →</button>
         </div>
         <div>
-          <p style="color:#9090aa;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin:0 0 16px;">Connect</p>
-          <div style="display:flex;flex-direction:column;gap:6px;">
+          <p style="color:#6868a0;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin:0 0 14px;">Connect</p>
+          <div style="display:flex;flex-direction:column;gap:5px;">
             <a href="https://www.instagram.com/badeatorneto/?hl=en" target="_blank" rel="noopener noreferrer" class="social-link">
-              <div class="social-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>
+              <div class="social-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>
               <span>@badeatorneto</span>
             </a>
             <a href="https://www.snapchat.com/@guywholikesfifa" target="_blank" rel="noopener noreferrer" class="social-link">
-              <div class="social-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.5 2 6 4.5 6 8v.5c0 .5-.3.9-.7 1.1-.4.2-.3.7.1.8.6.2 1.1.4 1.4.9.1.2.1.4 0 .6-.3.5-1.1 1.3-1.1 2.2 0 1.1.9 1.9 2 1.9.3 0 .7-.1 1-.2.5-.2 1.1.1 1.3.6.5 1.1 1.8 1.6 3 1.6s2.5-.5 3-1.6c.2-.5.8-.8 1.3-.6.3.1.7.2 1 .2 1.1 0 2-.8 2-1.9 0-.9-.8-1.7-1.1-2.2-.1-.2-.1-.4 0-.6.3-.5.8-.7 1.4-.9.4-.1.5-.6.1-.8-.4-.2-.7-.6-.7-1.1V8c0-3.5-2.5-6-6-6z"/></svg></div>
+              <div class="social-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.5 2 6 4.5 6 8v.5c0 .5-.3.9-.7 1.1-.4.2-.3.7.1.8.6.2 1.1.4 1.4.9.1.2.1.4 0 .6-.3.5-1.1 1.3-1.1 2.2 0 1.1.9 1.9 2 1.9.3 0 .7-.1 1-.2.5-.2 1.1.1 1.3.6.5 1.1 1.8 1.6 3 1.6s2.5-.5 3-1.6c.2-.5.8-.8 1.3-.6.3.1.7.2 1 .2 1.1 0 2-.8 2-1.9 0-.9-.8-1.7-1.1-2.2-.1-.2-.1-.4 0-.6.3-.5.8-.7 1.4-.9.4-.1.5-.6.1-.8-.4-.2-.7-.6-.7-1.1V8c0-3.5-2.5-6-6-6z"/></svg></div>
               <span>@guywholikesfifa</span>
             </a>
             <a href="mailto:arush2011jain@gmail.com" class="social-link">
-              <div class="social-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+              <div class="social-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
               <span>arush2011jain@gmail.com</span>
             </a>
           </div>
         </div>
       </div>
-      <div class="gold-line" style="margin-bottom:24px;"></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
-        <p style="color:#6060a0;font-size:0.78rem;margin:0;">© 2026 Vestra. For educational purposes only — not financial advice.</p>
-        <button class="nav-btn nav-btn-ghost" style="font-size:0.78rem;padding:5px 14px;" onclick="showAuthFromHome('login')">Log In →</button>
+      <div class="gold-line" style="margin-bottom:20px;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <p style="color:#4a4a6a;font-size:0.75rem;margin:0;">© 2026 Vestra. Educational use only — not financial advice.</p>
+        <button class="nav-btn nav-btn-ghost" style="font-size:0.75rem;padding:4px 12px;" onclick="showAuthFromHome('login')">Log In →</button>
       </div>
     </div>
   </footer>
@@ -626,139 +630,177 @@
 </div>
 
 <header class="app-header">
-    <div class="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between gap-8">
-        <div class="flex items-center gap-3 min-w-[160px]">
-            <div>
-                <div class="vestra-brand text-2xl font-bold leading-none" style="color:var(--v-text)">Vestra</div>
-                <div style="font-size:9px;color:var(--v-gold);letter-spacing:0.15em;text-transform:uppercase;font-weight:600;">Trading With No Risk</div>
-            </div>
+    <div class="max-w-[1600px] mx-auto px-6 h-16 flex items-center gap-4" style="justify-content:space-between;">
+
+        <!-- Brand -->
+        <div style="flex-shrink:0;">
+            <div class="vestra-brand" style="font-size:1.5rem;font-weight:700;color:var(--v-text);line-height:1;">Vestra</div>
+            <div style="font-size:8px;color:var(--v-gold);letter-spacing:0.15em;text-transform:uppercase;font-weight:700;">No Risk Trading</div>
         </div>
-        <div id="searchWrap">
-            <div class="search-bar flex items-center px-4 h-11">
-                <svg class="w-4 h-4 mr-3" style="color:var(--v-muted)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                <input type="text" id="search" oninput="handleSearch(this.value)" onfocus="showSearchDropdown()" placeholder="Search stocks, ETFs & more" class="bg-transparent border-none outline-none w-full text-sm" autocomplete="off">
-                <button id="searchClear" onclick="clearSearch()" style="display:none;background:none;border:none;color:var(--v-muted);cursor:pointer;font-size:16px;padding:0 4px;">✕</button>
+
+        <!-- Search — takes all remaining space -->
+        <div id="searchWrap" style="flex:1;max-width:520px;">
+            <div class="search-bar flex items-center px-4 h-10">
+                <svg class="w-4 h-4 mr-2" style="color:var(--v-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input type="text" id="search" oninput="handleSearch(this.value)" onfocus="showSearchDropdown()" placeholder="Search 500+ stocks…" class="bg-transparent border-none outline-none w-full text-sm" autocomplete="off" style="color:var(--v-text);">
+                <button id="searchClear" onclick="clearSearch()" style="display:none;background:none;border:none;color:var(--v-muted);cursor:pointer;font-size:15px;padding:0 2px;flex-shrink:0;">✕</button>
             </div>
             <div id="searchDropdown" style="display:none;"></div>
         </div>
-        <div class="flex items-center gap-3">
-            <div class="flex items-center gap-2">
-                <div id="marketStatusDot" class="w-2 h-2 rounded-full bg-gray-400"></div>
-                <span id="marketStatusText" class="text-xs font-medium" style="color:var(--v-muted)">Market Closed</span>
-                <button onclick="openApiConfig()" id="liveDataBtn" style="font-size:11px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:var(--v-gold);padding:4px 10px;border-radius:6px;font-weight:700;cursor:pointer;">⚡ Live Data</button>
+
+        <!-- Market status + countdown -->
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+            <div id="marketStatusDot" class="w-2 h-2 rounded-full" style="background:#6b7280;flex-shrink:0;"></div>
+            <span id="marketStatusText" style="font-size:11px;font-weight:600;color:var(--v-muted);white-space:nowrap;">Closed</span>
+            <span style="color:var(--v-border);font-size:14px;">·</span>
+            <div id="marketCountdown" title="Time until market opens/closes" style="white-space:nowrap;"></div>
+        </div>
+
+        <!-- Action buttons -->
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+            <button onclick="openApiConfig()" id="liveDataBtn" style="font-size:11px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:var(--v-gold);padding:5px 10px;border-radius:6px;font-weight:700;cursor:pointer;white-space:nowrap;">⚡ Live</button>
+            <button onclick="openLeaderboard()" style="font-size:11px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);color:var(--v-gold);padding:5px 10px;border-radius:6px;font-weight:700;cursor:pointer;">🏆</button>
+            <button onclick="toggleTheme()" id="themeToggle" title="Toggle theme" style="background:rgba(255,255,255,0.06);border:1px solid var(--v-border);border-radius:6px;padding:5px 8px;cursor:pointer;font-size:13px;line-height:1;">🌙</button>
+
+            <!-- Overflow menu — export/import/tutorial/sync -->
+            <div style="position:relative;" id="moreMenuWrap">
+                <button onclick="toggleMoreMenu()" style="background:rgba(255,255,255,0.06);border:1px solid var(--v-border);border-radius:6px;padding:5px 9px;cursor:pointer;font-size:13px;color:var(--v-muted);">⋯</button>
+                <div id="moreMenu" style="display:none;position:absolute;right:0;top:calc(100%+6px);background:#1a1a24;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px;min-width:160px;z-index:999;box-shadow:0 16px 40px rgba(0,0,0,0.5);">
+                    <div id="syncBadge" style="font-size:11px;padding:6px 10px;color:var(--v-muted);border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:4px;">Sync: Local</div>
+                    <button onclick="exportPortfolioData();toggleMoreMenu()" style="width:100%;text-align:left;background:none;border:none;color:#c0c0d8;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">📤 Export Portfolio</button>
+                    <button onclick="document.getElementById('importFile').click();toggleMoreMenu()" style="width:100%;text-align:left;background:none;border:none;color:#c0c0d8;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">📥 Import Portfolio</button>
+                    <button onclick="startTutorial(true);toggleMoreMenu()" style="width:100%;text-align:left;background:none;border:none;color:#c0c0d8;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">🎓 Tutorial</button>
+                </div>
             </div>
-            <button onclick="openLeaderboard()" style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);color:var(--v-gold);padding:6px 14px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">🏆 Leaderboard</button>
-            <button onclick="exportPortfolioData()" class="btn-outline" style="padding:6px 12px;font-size:12px;">Export</button>
-            <button onclick="document.getElementById('importFile').click()" class="btn-outline" style="padding:6px 12px;font-size:12px;">Import</button>
-            <button onclick="startTutorial(true)" class="btn-outline" style="padding:6px 12px;font-size:12px;">Tutorial</button>
             <input id="importFile" type="file" accept="application/json" class="hidden" onchange="importPortfolioData(event)">
-            <div id="syncBadge" style="font-size:11px;padding:4px 8px;border-radius:6px;background:var(--v-card);color:var(--v-muted);border:1px solid var(--v-border);">Sync: Local</div>
-            <div id="marketCountdown" title="Time until market opens/closes"></div>
-            <button onclick="toggleTheme()" id="themeToggle" title="Toggle light/dark mode" style="background:rgba(255,255,255,0.06);border:1px solid var(--v-border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:15px;">🌙</button>
-            <div style="display:flex;align-items:center;gap:10px;border-left:1px solid var(--v-border);padding-left:14px;">
-                <div id="userAvatar" style="width:32px;height:32px;border-radius:50%;background:var(--v-gold);display:flex;align-items:center;justify-content:center;color:#0a0a0f;font-size:13px;font-weight:700;">?</div>
-                <div class="hidden md:block">
-                    <div id="userDisplayName" style="font-size:13px;font-weight:600;color:var(--v-text);">—</div>
-                    <button onclick="logOut()" style="font-size:11px;color:var(--v-muted);background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--v-muted)'">Sign out</button>
+
+            <!-- Avatar + name -->
+            <div style="display:flex;align-items:center;gap:8px;padding-left:10px;border-left:1px solid var(--v-border);">
+                <div id="userAvatar" style="width:30px;height:30px;border-radius:50%;background:var(--v-gold);display:flex;align-items:center;justify-content:center;color:#0a0a0f;font-size:12px;font-weight:700;flex-shrink:0;">?</div>
+                <div style="display:flex;flex-direction:column;">
+                    <div id="userDisplayName" style="font-size:12px;font-weight:600;color:var(--v-text);line-height:1.2;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</div>
+                    <button onclick="logOut()" style="font-size:10px;color:var(--v-muted);background:none;border:none;cursor:pointer;padding:0;text-align:left;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--v-muted)'">Sign out</button>
                 </div>
             </div>
         </div>
+
     </div>
 </header>
 
-<!-- News banner (added for volatility headlines) -->
-<div id="newsBanner" class="fixed top-16 left-0 right-0 z-40 hidden px-6 py-3 text-center font-medium text-white shadow-lg transition-all duration-400">
+<!-- News banner -->
+<div id="newsBanner" class="fixed top-16 left-0 right-0 z-40 hidden px-6 py-2.5 text-center font-medium text-white shadow-lg" style="font-size:13px;">
     <span id="newsHeadline"></span>
 </div>
-<main class="max-w-[1600px] mx-auto p-6 grid grid-cols-1 lg:grid-cols-4 gap-8" style="min-height:calc(100vh - 64px);">
-    
-    <div class="lg:col-span-3">
-        <div class="flex justify-between items-end mb-6">
-            <div>
-                <div style="font-size:11px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Market Trends</div>
-                <h2 style="font-size:1.5rem;font-weight:300;color:#f0f0fa;">Most active</h2>
-            </div>
 
-        <div id="grid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+<!-- ═══ MAIN TRADING LAYOUT ═══ -->
+<main style="max-width:1600px;margin:0 auto;padding:20px 24px 40px;display:grid;grid-template-columns:1fr 320px;gap:20px;min-height:calc(100vh - 64px);" id="appMain">
+
+    <!-- ── LEFT COLUMN: market grid + news ── -->
+    <div style="min-width:0;">
+
+        <!-- Toolbar row: label + filters + data badge -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.1em;">Market Trends</div>
+                <div style="font-size:1.25rem;font-weight:300;color:#f0f0fa;line-height:1.2;">Most Active</div>
             </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span id="dataSourceBadge" style="font-size:10px;font-weight:700;color:#8888a8;background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:5px;border:1px solid rgba(255,255,255,0.08);">SIM</span>
+            </div>
+        </div>
+
+        <!-- Stock grid — 2 cols on small, 3 on medium, 4 on wide, 5 on xl -->
+        <div id="grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:28px;"></div>
+
+        <!-- News section below grid -->
+        <div style="margin-top:4px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <div style="font-size:1rem;font-weight:600;color:#e0e0f5;">Market News</div>
+                <a href="https://finance.yahoo.com/news/" target="_blank" rel="noopener noreferrer" style="font-size:12px;color:var(--v-gold);font-weight:600;text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">More ↗</a>
+            </div>
+            <div id="newsFeed" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;"></div>
+        </div>
     </div>
 
-    <aside id="desktopSidebar" class="space-y-8">
-        
-        <div class="g-card p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h3 style="font-size:1rem;font-weight:600;color:#e0e0f5;">Your Portfolio</h3>
-                <span id="dataSourceBadge" style="font-size:11px;font-weight:700;color:#8888a8;background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);">SIM</span>
+    <!-- ── RIGHT SIDEBAR ── -->
+    <aside id="desktopSidebar" style="display:flex;flex-direction:column;gap:16px;min-width:0;">
+
+        <!-- Portfolio summary -->
+        <div class="g-card" style="padding:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                <div style="font-size:0.875rem;font-weight:700;color:#e0e0f5;letter-spacing:0.02em;">Portfolio</div>
+
             </div>
-            <div class="mb-6">
-                <div style="font-size:12px;color:#8888a8;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em;">Total Equity</div>
-                <div style="font-size:1.9rem;font-weight:300;color:#f5f5fa;font-family:var(--v-mono);">$<span id="netWorth">100,000.00</span></div>
-                <div id="plDisplay" style="font-size:0.875rem;font-weight:600;color:#4ade80;margin-top:4px;">+$0.00 (0.00%)</div>
+            <div style="margin-bottom:14px;">
+                <div style="font-size:10px;color:#8888a8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Total Equity</div>
+                <div style="font-size:1.75rem;font-weight:300;color:#f5f5fa;font-family:var(--v-mono);line-height:1;">$<span id="netWorth">100,000.00</span></div>
+                <div id="plDisplay" style="font-size:0.8rem;font-weight:600;color:#4ade80;margin-top:4px;">+$0.00 (0.00%)</div>
             </div>
-            <div id="portfolioList" class="space-y-0 mb-6 max-h-60 overflow-y-auto" style="border-top:1px solid rgba(255,255,255,0.06);">
-                <div style="font-size:13px;color:#8888a8;padding:16px 0;text-align:center;font-style:italic;">Your portfolio is empty.</div>
+            <div id="portfolioList" style="border-top:1px solid rgba(255,255,255,0.06);max-height:200px;overflow-y:auto;">
+                <div style="font-size:12px;color:#8888a8;padding:12px 0;text-align:center;font-style:italic;">No holdings yet.</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05);font-size:11px;color:#8888a8;">
+                <span>Realized P/L: <span id="realizedPL" style="color:#c0c0d8;font-weight:600;">$0.00</span></span>
+                <span>Unrealized: <span id="unrealizedPL" style="color:#c0c0d8;font-weight:600;">$0.00</span></span>
             </div>
         </div>
 
-        <div class="g-card p-6">
-            <div class="flex justify-between items-center mb-3">
-                <h3 style="font-size:1rem;font-weight:600;color:#e0e0f5;">Portfolio Performance</h3>
-                <div style="display:flex;gap:6px;">
-                    <button onclick="setPerfPeriod('1D',this)" class="perf-btn" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;border:1px solid var(--v-gold);background:rgba(212,168,75,0.15);color:var(--v-gold);cursor:pointer;">1D</button>
-                    <button onclick="setPerfPeriod('5D',this)" class="perf-btn" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8888a8;cursor:pointer;">5D</button>
-                    <button onclick="setPerfPeriod('1M',this)" class="perf-btn" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8888a8;cursor:pointer;">1M</button>
-                    <button onclick="setPerfPeriod('6M',this)" class="perf-btn" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8888a8;cursor:pointer;">6M</button>
-                    <button onclick="setPerfPeriod('1Y',this)" class="perf-btn" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8888a8;cursor:pointer;">1Y</button>
+        <!-- Performance chart card -->
+        <div class="g-card" style="padding:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <div style="font-size:0.875rem;font-weight:700;color:#e0e0f5;">Performance</div>
+                <div style="display:flex;gap:4px;">
+                    <button onclick="setPerfPeriod('1D',this)" class="perf-btn" style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid var(--v-gold);background:rgba(212,168,75,0.15);color:var(--v-gold);cursor:pointer;">1D</button>
+                    <button onclick="setPerfPeriod('5D',this)" class="perf-btn" style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8888a8;cursor:pointer;">5D</button>
+                    <button onclick="setPerfPeriod('1M',this)" class="perf-btn" style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8888a8;cursor:pointer;">1M</button>
+                    <button onclick="setPerfPeriod('6M',this)" class="perf-btn" style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8888a8;cursor:pointer;">6M</button>
+                    <button onclick="setPerfPeriod('1Y',this)" class="perf-btn" style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8888a8;cursor:pointer;">1Y</button>
                 </div>
             </div>
-            <div id="perfChartWrap"><canvas id="perfChart"></canvas></div>
-            <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
-                <h4 style="font-size:0.875rem;font-weight:600;color:#e0e0f5;margin:0 0 8px;">Allocation</h4>
-            </div>
-            <div class="h-36 mb-3"><canvas id="allocationChart"></canvas></div>
-            <div id="sectorExposure" class="space-y-1 mb-3" style="font-size:12px;color:#b0b0c8;"></div>
-            <div style="font-size:12px;color:#a0a0b8;margin-bottom:2px;">Realized P/L: <span id="realizedPL" style="font-weight:700;">$0.00</span></div>
-            <div style="font-size:12px;color:#a0a0b8;">Unrealized P/L: <span id="unrealizedPL" style="font-weight:700;">$0.00</span></div>
+            <div id="perfChartWrap" style="height:130px;"><canvas id="perfChart"></canvas></div>
         </div>
 
-        <div class="g-card p-6">
-            <div class="flex justify-between items-center mb-3">
-                <h3 style="font-size:1rem;font-weight:600;color:#e0e0f5;">Watchlist & Alerts</h3>
-                <button onclick="addCurrentToWatchlist()" style="font-size:12px;font-weight:600;color:var(--v-gold);background:none;border:none;cursor:pointer;">+ Current</button>
+        <!-- Allocation + sector -->
+        <div class="g-card" style="padding:20px;">
+            <div style="font-size:0.875rem;font-weight:700;color:#e0e0f5;margin-bottom:10px;">Allocation</div>
+            <div style="height:140px;"><canvas id="allocationChart"></canvas></div>
+            <div id="sectorExposure" style="margin-top:10px;font-size:11px;color:#b0b0c8;"></div>
+        </div>
+
+        <!-- Watchlist + Alerts -->
+        <div class="g-card" style="padding:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <div style="font-size:0.875rem;font-weight:700;color:#e0e0f5;">Watchlist</div>
+                <button onclick="addCurrentToWatchlist()" style="font-size:11px;font-weight:700;color:var(--v-gold);background:none;border:none;cursor:pointer;">+ Add</button>
             </div>
-            <div id="watchlistItems" class="space-y-2 mb-3" style="font-size:13px;color:#c0c0d8;"></div>
-            <div class="grid grid-cols-3 gap-2 mb-2">
-                <input id="alertSymbol" placeholder="SYM" style="background:#0f0f18;border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:6px 8px;font-size:12px;color:#e0e0f5;outline:none;">
-                <select id="alertType" style="background:#0f0f18;border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:6px 8px;font-size:12px;color:#e0e0f5;outline:none;">
+            <div id="watchlistItems" style="font-size:12px;color:#c0c0d8;margin-bottom:12px;"></div>
+            <div style="font-size:0.875rem;font-weight:700;color:#e0e0f5;margin-bottom:8px;">Price Alerts</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px;">
+                <input id="alertSymbol" placeholder="SYM" style="background:#0f0f18;border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:5px 7px;font-size:11px;color:#e0e0f5;outline:none;">
+                <select id="alertType" style="background:#0f0f18;border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:5px 7px;font-size:11px;color:#e0e0f5;outline:none;">
                     <option value="above">Above</option>
                     <option value="below">Below</option>
                     <option value="move">% Move</option>
                 </select>
-                <input id="alertValue" placeholder="Value" type="number" step="0.01" style="background:#0f0f18;border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:6px 8px;font-size:12px;color:#e0e0f5;outline:none;">
+                <input id="alertValue" placeholder="$" type="number" step="0.01" style="background:#0f0f18;border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:5px 7px;font-size:11px;color:#e0e0f5;outline:none;">
             </div>
-            <button onclick="createPriceAlert()" style="width:100%;background:rgba(212,168,75,0.1);color:var(--v-gold);border:1px solid rgba(212,168,75,0.25);border-radius:8px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='rgba(212,168,75,0.18)'" onmouseout="this.style.background='rgba(212,168,75,0.1)'">Create Alert</button>
-            <div id="alertsList" class="mt-3 space-y-1" style="font-size:12px;color:#a0a0b8;"></div>
-            <div id="alertFeed" class="mt-3 space-y-1" style="font-size:12px;"></div>
+            <button onclick="createPriceAlert()" style="width:100%;background:rgba(212,168,75,0.08);color:var(--v-gold);border:1px solid rgba(212,168,75,0.2);border-radius:7px;padding:7px;font-size:11px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='rgba(212,168,75,0.15)'" onmouseout="this.style.background='rgba(212,168,75,0.08)'">Set Alert</button>
+            <div id="alertsList" style="margin-top:8px;font-size:11px;color:#a0a0b8;"></div>
+            <div id="alertFeed" style="margin-top:6px;font-size:11px;"></div>
         </div>
 
-        <div class="g-card p-6">
-            <h3 style="font-size:1rem;font-weight:600;color:#e0e0f5;margin-bottom:12px;">Daily Quests & Achievements</h3>
-            <div id="questList" class="space-y-1 mb-3" style="font-size:13px;color:#c0c0d8;"></div>
-            <div style="font-size:12px;color:#8888a8;margin-bottom:8px;">Streak: <span id="tradeStreak" style="font-weight:700;color:#d4a84b;">0 days</span></div>
-            <div id="achievementList" class="flex flex-wrap gap-2"></div>
+        <!-- Quests + Achievements -->
+        <div class="g-card" style="padding:20px;">
+            <div style="font-size:0.875rem;font-weight:700;color:#e0e0f5;margin-bottom:10px;">Daily Quests</div>
+            <div id="questList" style="font-size:12px;color:#c0c0d8;margin-bottom:8px;"></div>
+            <div style="font-size:11px;color:#8888a8;margin-bottom:8px;">Streak: <span id="tradeStreak" style="font-weight:700;color:#d4a84b;">0 days</span></div>
+            <div id="achievementList" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
         </div>
 
-        <div class="g-card p-6">
-            <h3 style="font-size:1rem;font-weight:600;color:#e0e0f5;margin-bottom:12px;">Transaction History</h3>
-            <div id="historyList" class="space-y-2 max-h-44 overflow-y-auto" style="font-size:12px;color:#c0c0d8;"></div>
-        </div>
-
-        <div>
-            <div class="flex justify-between items-center mb-4">
-                <h3 style="font-size:1rem;font-weight:600;color:#e0e0f5;">Market News</h3>
-                <a href="https://finance.yahoo.com/news/" target="_blank" rel="noopener noreferrer" style="font-size:13px;color:var(--v-gold);font-weight:600;text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">More news ↗</a>
-            </div>
-            <div id="newsFeed" class="space-y-3"></div>
+        <!-- Transaction History -->
+        <div class="g-card" style="padding:20px;">
+            <div style="font-size:0.875rem;font-weight:700;color:#e0e0f5;margin-bottom:10px;">History</div>
+            <div id="historyList" style="font-size:11px;color:#c0c0d8;max-height:180px;overflow-y:auto;"></div>
         </div>
 
     </aside>
@@ -3120,6 +3162,18 @@ function startNewsEngine() {
     // ═══════════════════════════════════════════════════════
     //  FEATURE: DARK / LIGHT MODE TOGGLE
     // ═══════════════════════════════════════════════════════
+    function toggleMoreMenu() {
+        const m = document.getElementById('moreMenu');
+        if (m) m.style.display = m.style.display === 'none' ? 'block' : 'none';
+    }
+    document.addEventListener('click', e => {
+        const wrap = document.getElementById('moreMenuWrap');
+        if (wrap && !wrap.contains(e.target)) {
+            const m = document.getElementById('moreMenu');
+            if (m) m.style.display = 'none';
+        }
+    }, true);
+
     function toggleTheme() {
         const isLight = document.body.classList.toggle('light-mode');
         document.getElementById('themeToggle').textContent = isLight ? '🌙' : '☀️';
@@ -3168,6 +3222,12 @@ function startNewsEngine() {
             b.style.color = '#8888a8';
             b.style.borderColor = 'rgba(255,255,255,0.1)';
         });
+        // If btn not passed, find it by text
+        if (!btn) {
+            document.querySelectorAll('.perf-btn').forEach(b => {
+                if (b.textContent.trim() === p) btn = b;
+            });
+        }
         if (btn) {
             btn.style.background = 'rgba(212,168,75,0.15)';
             btn.style.color = 'var(--v-gold)';
@@ -3188,11 +3248,32 @@ function startNewsEngine() {
         const cutoff = now - (cutoffs[perfPeriod] || cutoffs['1D']);
         let data = perfHistory.filter(p => p.ts >= cutoff);
 
-        // Always include a starting point at $100k if no data
-        if (data.length === 0) {
-            data = [{ ts: now - 86400000, value: 100000 }, { ts: now, value: cash }];
-        } else if (data.length === 1) {
-            data = [{ ts: data[0].ts - 3600000, value: 100000 }, ...data];
+        // Seed simulated history if not enough real points
+        if (data.length < 3) {
+            const cutMs = cutoffs[perfPeriod] || 86400000;
+            const pts = perfPeriod === '1D' ? 24 : perfPeriod === '5D' ? 30 : perfPeriod === '1M' ? 30 : perfPeriod === '6M' ? 26 : 52;
+            const interval = cutMs / pts;
+            const startVal = 100000;
+            const endVal = cash + Object.keys(portfolio).reduce((s,sym) => { const st=getStockBySymbol(sym); return s+(st?st.price*portfolio[sym]:0); }, 0);
+            // Merge with real data
+            const seed2 = (currentUser?.username||'x').charCodeAt(0);
+            let v = startVal;
+            const generated = [];
+            for (let i = 0; i <= pts; i++) {
+                const t = now - cutMs + i * interval;
+                // only add if no real point nearby
+                const hasReal = perfHistory.some(p => Math.abs(p.ts - t) < interval * 0.8);
+                if (!hasReal) {
+                    const drift = (Math.sin(i * 0.7 + seed2) * 0.008) + ((endVal - startVal) / startVal / pts);
+                    v = Math.max(50000, v * (1 + drift));
+                    generated.push({ ts: t, value: v });
+                }
+            }
+            // Force the last real point to match current equity
+            generated.push({ ts: now, value: endVal });
+            // Merge and sort
+            data = [...perfHistory.filter(p => p.ts >= now - cutMs), ...generated]
+                .sort((a, b) => a.ts - b.ts);
         }
 
         const W = wrap.clientWidth || 260;
