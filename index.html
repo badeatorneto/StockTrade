@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.1.1/dist/chartjs-chart-financial.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -316,6 +317,56 @@
         /* light mode overrides for more menu */
         body.light-mode #moreMenu { background: #fff; border-color: rgba(0,0,0,0.1); }
         body.light-mode #moreMenu button { color: #1a1a2e; }
+
+        /* ── Indicator toggle buttons ── */
+        .ind-btn {
+            font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;
+            border:1px solid rgba(255,255,255,0.1);background:transparent;
+            color:#8888a8;cursor:pointer;transition:all 0.15s;font-family:var(--v-sans);
+        }
+        .ind-btn:hover { border-color:var(--v-gold);color:var(--v-gold); }
+        /* ── SIP Modal styles ── */
+        #sipModal input:focus, #sipModal select:focus { border-color:var(--v-gold) !important; outline:none; }
+        .sip-type-tab { transition:all 0.15s; }
+        .sip-type-tab.active { background:rgba(212,168,75,0.12);color:var(--v-gold);border-bottom:2px solid var(--v-gold); }
+        /* ── Chart toolbar light mode ── */
+        body.light-mode #chartOuter { background:#ffffff; }
+        body.light-mode .ctab { color:#555570; }
+        /* ── Chart indicator + interval buttons ── */
+        .ind-btn {
+            font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;cursor:pointer;
+            border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8888a8;
+            transition:all 0.15s;white-space:nowrap;
+        }
+        .ind-btn:hover { border-color:var(--v-gold);color:var(--v-gold); }
+        .itv-btn {
+            font-size:9px;font-weight:600;padding:3px 8px;cursor:pointer;
+            border:none;background:transparent;color:#6868a0;
+            border-radius:4px;transition:all 0.15s;white-space:nowrap;
+        }
+        .itv-btn:hover { color:#e0e0f5;background:rgba(255,255,255,0.06); }
+        .itv-active { background:rgba(138,180,248,0.12) !important;color:#8ab4f8 !important;font-weight:700 !important; }
+        body.light-mode .itv-active { background:rgba(26,115,232,0.1) !important;color:#1a73e8 !important; }
+        body.light-mode .ind-btn { color:#6060a0; }
+        /* ── New Feature Modals ── */
+        #screenerModal, #calendarModal, #communityModal, #educationModal, #botModal {
+            font-family: var(--v-sans);
+        }
+        #screenerModal > div, #calendarModal > div, #communityModal > div,
+        #educationModal > div, #botModal {
+            animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
+        }
+        body.light-mode #screenerModal > div,
+        body.light-mode #calendarModal > div,
+        body.light-mode #communityModal > div,
+        body.light-mode #educationModal > div,
+        body.light-mode #botModal { background: #fff !important; border-color: rgba(0,0,0,0.1) !important; }
+        body.light-mode #screenerResults > div > div,
+        body.light-mode #communityFeed > div,
+        body.light-mode #educationContent > div > div { background: #f4f4f8 !important; border-color: rgba(0,0,0,0.07) !important; }
+        /* Toolbar action buttons */
+        .toolbar-btn { font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#a0a0b8;transition:all 0.15s; }
+        .toolbar-btn:hover { border-color:var(--v-gold);color:var(--v-gold); }
     </style>
 </head>
 <body class="overflow-x-hidden">
@@ -748,6 +799,8 @@
                 <span>Realized: <span id="realizedPL" style="color:#a0a0b8;font-weight:600;">$0.00</span></span>
                 <span>Unrealized: <span id="unrealizedPL" style="color:#a0a0b8;font-weight:600;">$0.00</span></span>
             </div>
+            <!-- Portfolio analytics stats row -->
+            <div id="portfolioStats" style="display:none;"></div>
         </div>
 
         <!-- Performance chart -->
@@ -801,6 +854,17 @@
             <div id="questList" style="font-size:11px;color:#c0c0d8;margin-bottom:6px;"></div>
             <div style="font-size:10px;color:#8888a8;margin-bottom:6px;">Streak: <span id="tradeStreak" style="font-weight:700;color:#d4a84b;">0 days</span></div>
             <div id="achievementList" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
+        </div>
+
+        <!-- SIP Plans Sidebar Widget -->
+        <div style="background:var(--v-card);border:1px solid var(--v-border);border-radius:12px;padding:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <div style="font-size:11px;font-weight:700;color:#8888a8;text-transform:uppercase;letter-spacing:0.07em;">📅 SIP Plans</div>
+                <button onclick="openSIP(null)" style="font-size:9px;font-weight:700;color:var(--v-gold);background:rgba(212,168,75,0.08);border:1px solid rgba(212,168,75,0.18);padding:2px 7px;border-radius:4px;cursor:pointer;">+ New</button>
+            </div>
+            <div id="sipSidebarWidget" style="font-size:11px;color:#8888a8;">
+                <div style="text-align:center;padding:4px 0;font-style:italic;color:#6868a0;">No active SIP plans.</div>
+            </div>
         </div>
 
         <!-- History -->
@@ -878,36 +942,76 @@
             <div class="text-gray-500 text-xs">Closed: Feb 17, 4:05 am GMT-5</div>
             <div id="detailPremarket" class="text-[#8ab4f8] text-sm mt-1"></div>
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.08);">
-            <div class="flex">
-                <button onclick="setChartPeriod('1D',this)" class="ctab active-tab text-sm font-medium px-4 py-3 border-b-2 border-[#8ab4f8] text-[#8ab4f8]">1D</button>
-                <button onclick="setChartPeriod('5D',this)" class="ctab text-sm font-medium px-4 py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200">5D</button>
-                <button onclick="setChartPeriod('1M',this)" class="ctab text-sm font-medium px-4 py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200">1M</button>
-                <button onclick="setChartPeriod('6M',this)" class="ctab text-sm font-medium px-4 py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200">6M</button>
-                <button onclick="setChartPeriod('YTD',this)" class="ctab text-sm font-medium px-4 py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200">YTD</button>
-                <button onclick="setChartPeriod('1Y',this)" class="ctab text-sm font-medium px-4 py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200">1Y</button>
-                <button onclick="setChartPeriod('5Y',this)" class="ctab text-sm font-medium px-4 py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200">5Y</button>
-                <button onclick="setChartPeriod('Max',this)" class="ctab text-sm font-medium px-4 py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200">Max</button>
+        <!-- ── CHART TOOLBAR ── -->
+        <div style="background:#1c1c1e;border-radius:12px 12px 0 0;border:1px solid rgba(255,255,255,0.07);border-bottom:none;">
+          <!-- Row 1: period tabs + indicator toggles -->
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0 8px;border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div style="display:flex;">
+              <button onclick="setChartPeriod('1D',this)"  class="ctab ctab-active" style="font-size:11px;font-weight:700;padding:9px 12px;background:none;border:none;cursor:pointer;color:#8ab4f8;border-bottom:2px solid #8ab4f8;">1D</button>
+              <button onclick="setChartPeriod('5D',this)"  class="ctab"             style="font-size:11px;font-weight:600;padding:9px 12px;background:none;border:none;cursor:pointer;color:#6868a0;border-bottom:2px solid transparent;">5D</button>
+              <button onclick="setChartPeriod('1M',this)"  class="ctab"             style="font-size:11px;font-weight:600;padding:9px 12px;background:none;border:none;cursor:pointer;color:#6868a0;border-bottom:2px solid transparent;">1M</button>
+              <button onclick="setChartPeriod('6M',this)"  class="ctab"             style="font-size:11px;font-weight:600;padding:9px 12px;background:none;border:none;cursor:pointer;color:#6868a0;border-bottom:2px solid transparent;">6M</button>
+              <button onclick="setChartPeriod('YTD',this)" class="ctab"             style="font-size:11px;font-weight:600;padding:9px 12px;background:none;border:none;cursor:pointer;color:#6868a0;border-bottom:2px solid transparent;">YTD</button>
+              <button onclick="setChartPeriod('1Y',this)"  class="ctab"             style="font-size:11px;font-weight:600;padding:9px 12px;background:none;border:none;cursor:pointer;color:#6868a0;border-bottom:2px solid transparent;">1Y</button>
+              <button onclick="setChartPeriod('5Y',this)"  class="ctab"             style="font-size:11px;font-weight:600;padding:9px 12px;background:none;border:none;cursor:pointer;color:#6868a0;border-bottom:2px solid transparent;">5Y</button>
+              <button onclick="setChartPeriod('Max',this)" class="ctab"             style="font-size:11px;font-weight:600;padding:9px 12px;background:none;border:none;cursor:pointer;color:#6868a0;border-bottom:2px solid transparent;">Max</button>
             </div>
-            <!-- Technical indicator toggles -->
-            <div style="display:flex;gap:4px;padding-right:4px;">
-                <button onclick="toggleIndicator('MA')" id="ind-MA" style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8888a8;cursor:pointer;">MA</button>
-                <button onclick="toggleIndicator('EMA')" id="ind-EMA" style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8888a8;cursor:pointer;">EMA</button>
-                <button onclick="toggleIndicator('BB')" id="ind-BB" style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8888a8;cursor:pointer;">BB</button>
-                <button onclick="toggleIndicator('RSI')" id="ind-RSI" style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8888a8;cursor:pointer;">RSI</button>
-                <button onclick="toggleIndicator('VWAP')" id="ind-VWAP" style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#8888a8;cursor:pointer;">VWAP</button>
+            <!-- Indicator toggles -->
+            <div style="display:flex;gap:3px;padding:0 4px;flex-wrap:wrap;">
+              <button onclick="toggleIndicator('EMA20')" id="ind-EMA20" class="ind-btn">EMA20</button>
+              <button onclick="toggleIndicator('EMA50')" id="ind-EMA50" class="ind-btn">EMA50</button>
+              <button onclick="toggleIndicator('BB')"    id="ind-BB"    class="ind-btn">BB</button>
+              <button onclick="toggleIndicator('VWAP')"  id="ind-VWAP"  class="ind-btn">VWAP</button>
+              <button onclick="toggleIndicator('RSI')"   id="ind-RSI"   class="ind-btn">RSI</button>
+              <button onclick="toggleIndicator('MACD')"  id="ind-MACD"  class="ind-btn">MACD</button>
             </div>
+          </div>
+          <!-- Row 2: intraday interval buttons -->
+          <div id="intradayRow" style="display:none;align-items:center;gap:0;padding:0 8px;border-top:1px solid rgba(255,255,255,0.04);">
+            <span style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.07em;padding:6px 10px 6px 0;">Interval:</span>
+            <button onclick="setIntradayInterval('1')"  id="itv-1"  class="itv-btn itv-active">1m</button>
+            <button onclick="setIntradayInterval('5')"  id="itv-5"  class="itv-btn">5m</button>
+            <button onclick="setIntradayInterval('15')" id="itv-15" class="itv-btn">15m</button>
+            <button onclick="setIntradayInterval('60')" id="itv-60" class="itv-btn">1H</button>
+            <button onclick="setIntradayInterval('D')"  id="itv-D"  class="itv-btn">1D</button>
+            <button onclick="setIntradayInterval('W')"  id="itv-W"  class="itv-btn">1W</button>
+            <button onclick="setIntradayInterval('M')"  id="itv-M"  class="itv-btn">1M</button>
+          </div>
         </div>
-        <!-- RSI sub-chart (shown when RSI active) -->
-        <div id="rsiChartWrap" style="display:none;height:70px;background:#1c1c1e;border-bottom:1px solid rgba(255,255,255,0.08);">
-            <canvas id="rsiChart" style="width:100%;height:100%;"></canvas>
+
+        <!-- ── CHART AREA ── -->
+        <div id="chartOuter" style="position:relative;background:#1c1c1e;border:1px solid rgba(255,255,255,0.07);border-top:none;border-radius:0 0 12px 12px;overflow:hidden;">
+          <!-- Loading / error overlay -->
+          <div id="chartOverlay" style="display:none;position:absolute;inset:0;z-index:20;background:rgba(20,20,28,0.88);align-items:center;justify-content:center;flex-direction:column;gap:8px;">
+            <div id="chartOverlayIcon" style="font-size:1.5rem;">⏳</div>
+            <div id="chartOverlayText" style="font-size:12px;color:#9aa0a6;font-weight:600;">Loading chart…</div>
+          </div>
+          <!-- Prev close badge -->
+          <div style="position:absolute;right:10px;top:8px;z-index:5;text-align:right;line-height:1.4;">
+            <div style="font-size:9px;color:#6868a0;text-transform:uppercase;letter-spacing:0.04em;">Prev close</div>
+            <div id="prevCloseVal" style="font-size:11px;color:#e0e0f5;font-weight:600;font-family:var(--v-mono);"></div>
+          </div>
+          <!-- Candlestick canvas -->
+          <div style="height:310px;position:relative;">
+            <canvas id="stockChart" style="width:100%;height:100%;display:block;"></canvas>
+          </div>
+          <!-- RSI sub-panel -->
+          <div id="rsiChartWrap" style="display:none;height:80px;border-top:1px solid rgba(255,255,255,0.05);position:relative;">
+            <div style="position:absolute;left:6px;top:4px;font-size:8px;color:#f59e0b;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">RSI(14)</div>
+            <canvas id="rsiChart" style="width:100%;height:100%;display:block;"></canvas>
+          </div>
+          <!-- MACD sub-panel -->
+          <div id="macdChartWrap" style="display:none;height:80px;border-top:1px solid rgba(255,255,255,0.05);position:relative;">
+            <div style="position:absolute;left:6px;top:4px;font-size:8px;color:#a78bfa;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">MACD</div>
+            <canvas id="macdChart" style="width:100%;height:100%;display:block;"></canvas>
+          </div>
+          <!-- Volume panel -->
+          <div style="height:64px;border-top:1px solid rgba(255,255,255,0.04);position:relative;">
+            <div style="position:absolute;left:6px;top:3px;font-size:8px;color:#6868a0;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Vol</div>
+            <canvas id="volumeChart" style="width:100%;height:100%;display:block;"></canvas>
+          </div>
         </div>
-        <div class="relative bg-[#1c1c1e] mb-6" style="height:280px;">
-            <canvas id="stockChart"></canvas>
-            <div class="absolute right-2 top-4 text-xs text-gray-400 text-right leading-tight">
-                <div>Previous</div><div>close</div><div id="prevCloseVal" class="text-gray-300 font-medium"></div>
-            </div>
-        </div>
+        <div style="margin-bottom:24px;"></div>
         <div class="grid grid-cols-3 border-t border-gray-700 text-sm mb-8">
             <div class="py-4 pr-4"><div class="text-gray-400 mb-1">Open</div><div class="text-white font-medium" id="sOpen">—</div></div>
             <div class="py-4 px-4"><div class="text-gray-400 mb-1">Mkt cap</div><div class="text-white font-medium" id="sMktCap">—</div></div>
@@ -1008,6 +1112,35 @@
             </div>
         </div>
 
+        <!-- SIP / Recurring Investment Panel -->
+        <div style="background:#1e1e28;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:16px;margin-top:16px;" id="sipDetailPanel">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <div>
+                    <h3 style="color:#f0f0fa;font-size:0.875rem;font-weight:600;margin:0 0 2px;">📅 SIP / Recurring Invest</h3>
+                    <div style="font-size:10px;color:#8888a8;">Dollar-cost average automatically</div>
+                </div>
+                <button onclick="openSIP(detailStock)" style="font-size:10px;font-weight:700;color:var(--v-gold);background:rgba(212,168,75,0.08);border:1px solid rgba(212,168,75,0.2);padding:3px 10px;border-radius:5px;cursor:pointer;">+ New Plan</button>
+            </div>
+            <div id="sipDetailList" style="font-size:11px;color:#8888a8;min-height:28px;">
+                <div style="text-align:center;padding:6px 0;font-style:italic;">No active SIP plans for this stock.</div>
+            </div>
+            <!-- DCA stats row — shown when plans exist -->
+            <div id="sipDcaStats" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05);display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                <div style="text-align:center;">
+                    <div style="font-size:9px;color:#6868a0;text-transform:uppercase;margin-bottom:2px;">Avg Cost</div>
+                    <div id="sipAvgCost" style="font-family:var(--v-mono);font-size:0.875rem;color:#f0f0fa;">—</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:9px;color:#6868a0;text-transform:uppercase;margin-bottom:2px;">Total Invested</div>
+                    <div id="sipTotalInvested" style="font-family:var(--v-mono);font-size:0.875rem;color:#f0f0fa;">—</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:9px;color:#6868a0;text-transform:uppercase;margin-bottom:2px;">Executions</div>
+                    <div id="sipExecCount" style="font-family:var(--v-mono);font-size:0.875rem;color:#f0f0fa;">0</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Share portfolio button -->
         <div style="text-align:center;padding:16px 0 8px;">
             <button onclick="sharePortfolio()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#a0a0b8;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;" onmouseover="this.style.borderColor='var(--v-gold)';this.style.color='var(--v-gold)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='#a0a0b8'">🔗 Share My Portfolio</button>
@@ -1082,6 +1215,94 @@
     </div>
 </div>
 
+
+<!-- ═══ SIP / RECURRING INVESTMENT MODAL ═══ -->
+<div id="sipModal" style="display:none;position:fixed;inset:0;z-index:9100;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);">
+  <div style="background:#14141e;border:1px solid rgba(212,168,75,0.2);border-radius:20px;width:100%;max-width:560px;margin:60px auto;padding:0;overflow:hidden;animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);">
+
+    <!-- Header -->
+    <div style="padding:22px 26px 0;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <h2 style="font-family:var(--v-serif);font-size:1.35rem;color:#f0f0fa;margin:0 0 4px;">📅 Create SIP Plan</h2>
+          <p style="font-size:12px;color:#8888a8;margin:0;">Invest automatically at regular intervals — practice dollar-cost averaging</p>
+        </div>
+        <button onclick="closeSIP()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;padding:0;line-height:1;">&times;</button>
+      </div>
+    </div>
+
+    <!-- Type tabs -->
+    <div style="display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,0.06);">
+      <button onclick="setSIPType('stock')" id="sipTab-stock" style="flex:1;padding:11px;font-size:11px;font-weight:700;background:rgba(212,168,75,0.1);color:var(--v-gold);border:none;border-bottom:2px solid var(--v-gold);cursor:pointer;">📈 Stock SIP</button>
+      <button onclick="setSIPType('fractional')" id="sipTab-fractional" style="flex:1;padding:11px;font-size:11px;font-weight:700;background:transparent;color:#8888a8;border:none;border-bottom:2px solid transparent;cursor:pointer;">🔬 Fractional</button>
+      <button onclick="setSIPType('etf')" id="sipTab-etf" style="flex:1;padding:11px;font-size:11px;font-weight:700;background:transparent;color:#8888a8;border:none;border-bottom:2px solid transparent;cursor:pointer;">🏦 ETF</button>
+      <button onclick="setSIPType('drip')" id="sipTab-drip" style="flex:1;padding:11px;font-size:11px;font-weight:700;background:transparent;color:#8888a8;border:none;border-bottom:2px solid transparent;cursor:pointer;">💰 DRIP</button>
+    </div>
+
+    <!-- Body -->
+    <div style="padding:20px 26px 26px;">
+
+      <!-- Type description banner -->
+      <div id="sipTypeBanner" style="background:rgba(212,168,75,0.06);border:1px solid rgba(212,168,75,0.15);border-radius:8px;padding:10px 12px;margin-bottom:16px;font-size:11px;color:#a08840;line-height:1.55;"></div>
+
+      <!-- Fields -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div id="sipSymbolGroup">
+          <label style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:5px;">Symbol</label>
+          <input id="sipSymbol" placeholder="e.g. AAPL" style="width:100%;background:#1a1a28;border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:8px 10px;font-size:12px;color:#e0e0f5;outline:none;font-family:var(--v-mono);" onfocus="this.style.borderColor='var(--v-gold)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        </div>
+        <div>
+          <label style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:5px;" id="sipAmountLabel">Amount ($)</label>
+          <input id="sipAmount" type="number" min="1" step="1" placeholder="e.g. 100" style="width:100%;background:#1a1a28;border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:8px 10px;font-size:12px;color:#e0e0f5;outline:none;" onfocus="this.style.borderColor='var(--v-gold)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        </div>
+        <div>
+          <label style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:5px;">Frequency</label>
+          <select id="sipFreq" style="width:100%;background:#1a1a28;border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:8px 10px;font-size:12px;color:#e0e0f5;outline:none;">
+            <option value="daily">Daily</option>
+            <option value="weekly" selected>Weekly</option>
+            <option value="biweekly">Bi-weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+        <div id="sipMaxAmountGroup">
+          <label style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:5px;">Max Total ($)</label>
+          <input id="sipMaxTotal" type="number" min="0" step="100" placeholder="Unlimited" style="width:100%;background:#1a1a28;border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:8px 10px;font-size:12px;color:#e0e0f5;outline:none;" onfocus="this.style.borderColor='var(--v-gold)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        </div>
+      </div>
+
+      <!-- DRIP-specific toggle -->
+      <div id="sipDripToggleGroup" style="display:none;margin-bottom:12px;">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+          <input type="checkbox" id="sipDripEnabled" checked style="width:14px;height:14px;accent-color:var(--v-gold);">
+          <span style="font-size:12px;color:#c0c0d8;">Reinvest dividends as fractional shares</span>
+        </label>
+      </div>
+
+      <!-- DCA projection (live update) -->
+      <div id="sipProjection" style="background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.12);border-radius:8px;padding:10px 12px;margin-bottom:14px;">
+        <div style="font-size:9px;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">📊 DCA Projection</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <div style="text-align:center;">
+            <div style="font-size:10px;color:#6868a0;margin-bottom:2px;">3-month invest</div>
+            <div id="sipProj3m" style="font-family:var(--v-mono);font-size:0.875rem;color:#e0e0f5;">—</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:10px;color:#6868a0;margin-bottom:2px;">1-year invest</div>
+            <div id="sipProj1y" style="font-family:var(--v-mono);font-size:0.875rem;color:#e0e0f5;">—</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:10px;color:#6868a0;margin-bottom:2px;">Est. shares (1yr)</div>
+            <div id="sipProjShares" style="font-family:var(--v-mono);font-size:0.875rem;color:#e0e0f5;">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="sipError" style="display:none;margin-bottom:10px;font-size:11px;color:#f87171;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:6px;padding:8px 10px;"></div>
+      <button onclick="saveSIPPlan()" style="width:100%;background:linear-gradient(135deg,var(--v-gold),var(--v-gold-light));color:#0a0a0f;font-weight:700;padding:13px;border-radius:9px;border:none;font-size:13px;cursor:pointer;letter-spacing:0.02em;">Activate SIP Plan →</button>
+    </div>
+
+  </div>
+</div>
 
 <!-- ═══ STOCK SCREENER MODAL ═══ -->
 <div id="screenerModal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);overflow-y:auto;">
@@ -1565,7 +1786,7 @@ function startNewsEngine() {
         });
     }
 
-    let sChart = null;
+    // sChart, volChart, detailStock, currentChartPeriod, activeIndicators declared in chart engine above
     let detailStock = null;
 
     function openModal(stock) { openStockDetail(stock); }
@@ -1659,231 +1880,509 @@ function startNewsEngine() {
         document.getElementById('stockDetailPage').classList.add('hidden');
         document.body.style.overflow = '';
         detailStock = null;
-        if (sChart) { sChart.destroy(); sChart = null; }
+        destroyCharts();
+        activeIndicators.clear();
+        document.querySelectorAll('.ind-btn').forEach(b=>{b.style.background='transparent';b.style.color='#8888a8';b.style.borderColor='rgba(255,255,255,0.1)';});
+        ['rsiChartWrap','macdChartWrap'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
     }
 
     function closeModal() { closeStockDetail(); }
 
-    async function setChartPeriod(period, btn) {
-        document.querySelectorAll('.ctab').forEach(b => { b.className = 'ctab text-sm font-medium px-4 py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200'; });
-        btn.className = 'ctab text-sm font-medium px-4 py-3 border-b-2 border-[#8ab4f8] text-[#8ab4f8]';
-        if (detailStock) await drawChart(detailStock, period);
-    }
+    // ══════════════════════════════════════════════════════════════
+    //   CHART ENGINE — Chart.js Financial (proper candlestick)
+    // ══════════════════════════════════════════════════════════════
 
-    // ── Pure canvas candlestick renderer ─────────────────
     const candleCache = {};
+    let   sChart       = null;   // candlestick
+    let   volChart     = null;   // volume
+    let   _chartFetchId = 0;     // debounce guard
+    let   currentChartPeriod = '1D';
 
-    function periodToFinnhub(period) {
-        const now = Math.floor(Date.now() / 1000);
-        const DAY = 86400, MONTH = 30*DAY, YEAR = 365*DAY;
-        switch (period) {
-            case '1D':  return { resolution: '5',  from: now - DAY };
-            case '5D':  return { resolution: '15', from: now - 5*DAY };
-            case '1M':  return { resolution: '60', from: now - MONTH };
-            case '6M':  return { resolution: 'D',  from: now - 6*MONTH };
-            case 'YTD': return { resolution: 'D',  from: Math.floor(new Date(new Date().getFullYear(),0,1)/1000) };
-            case '1Y':  return { resolution: 'W',  from: now - YEAR };
-            case '5Y':  return { resolution: 'M',  from: now - 5*YEAR };
-            default:    return { resolution: 'M',  from: now - 10*YEAR };
-        }
+    // ── Period → Finnhub config + Chart.js time unit ──────────────
+    const PERIOD_CFG = {
+        '1D':  { res:'5',  unit:'minute',  from: () => Math.floor(Date.now()/1000) - 86400,     maxPts:200 },
+        '5D':  { res:'15', unit:'minute',  from: () => Math.floor(Date.now()/1000) - 5*86400,   maxPts:200 },
+        '1M':  { res:'60', unit:'hour',    from: () => Math.floor(Date.now()/1000) - 30*86400,  maxPts:200 },
+        '6M':  { res:'D',  unit:'day',     from: () => Math.floor(Date.now()/1000) - 180*86400, maxPts:180 },
+        'YTD': { res:'D',  unit:'day',     from: () => Math.floor(new Date(new Date().getFullYear(),0,1)/1000), maxPts:240 },
+        '1Y':  { res:'W',  unit:'week',    from: () => Math.floor(Date.now()/1000) - 365*86400, maxPts:52  },
+        '5Y':  { res:'M',  unit:'month',   from: () => Math.floor(Date.now()/1000) - 5*365*86400, maxPts:60 },
+        'Max': { res:'M',  unit:'month',   from: () => Math.floor(Date.now()/1000) - 10*365*86400, maxPts:120 },
+    };
+
+    function isDark() { return !document.body.classList.contains('light-mode'); }
+    function themeColors() {
+        return isDark()
+            ? { bg:'#1c1c1e', grid:'rgba(255,255,255,0.06)', text:'#9aa0a6', tooltip:'#1e1e28' }
+            : { bg:'#ffffff', grid:'rgba(0,0,0,0.07)',       text:'#555570', tooltip:'#f4f4f8' };
     }
 
+    // ── Simulate candles with volume ───────────────────────────────
     function generateSimCandles(stock, period) {
-        const isNeg = stock.change < 0;
-        let numPts, vol, trend;
-        const DAY_MS = 86400000;
-        switch(period) {
-            case '1D':  numPts=78;  vol=0.004; trend=isNeg?-0.0008:0.0002; break;
-            case '5D':  numPts=60;  vol=0.007; trend=isNeg?-0.001:0.0005;  break;
-            case '1M':  numPts=30;  vol=0.015; trend=isNeg?-0.003:0.004;   break;
-            case '6M':  numPts=26;  vol=0.03;  trend=isNeg?-0.005:0.008;   break;
-            case 'YTD': numPts=24;  vol=0.025; trend=isNeg?-0.004:0.007;   break;
-            case '1Y':  numPts=52;  vol=0.04;  trend=isNeg?-0.003:0.006;   break;
-            case '5Y':  numPts=60;  vol=0.06;  trend=0.008;                break;
-            default:    numPts=120; vol=0.07;  trend=0.01;                  break;
-        }
-        const intervalMs = {'1D':5*60000,'5D':15*60000,'1M':3600000,'6M':DAY_MS,'YTD':DAY_MS,'1Y':7*DAY_MS,'5Y':30*DAY_MS,'Max':30*DAY_MS}[period]||DAY_MS;
+        const cfg = PERIOD_CFG[period] || PERIOD_CFG['1M'];
+        const numPts  = cfg.maxPts;
+        const isNeg   = stock.change < 0;
+        const volPct  = { '1D':0.004,'5D':0.007,'1M':0.015,'6M':0.03,'YTD':0.025,'1Y':0.04,'5Y':0.06,'Max':0.07 }[period] || 0.015;
+        const trend   = isNeg ? -volPct*0.3 : volPct*0.15;
+        const itvMs   = { '1D':5*60000,'5D':15*60000,'1M':3600000,'6M':86400000,'YTD':86400000,'1Y':7*86400000,'5Y':30*86400000,'Max':30*86400000 }[period] || 86400000;
         let closes=[stock.price];
-        for(let i=1;i<numPts;i++) closes.push(closes[closes.length-1]/(1+trend+(Math.random()-0.5)*vol*2));
+        for(let i=1;i<numPts;i++) closes.push(closes[closes.length-1]/(1+trend+(Math.random()-0.5)*volPct*2));
         closes.reverse();
-        return closes.map((c,i)=>{
-            const t=Date.now()-(numPts-1-i)*intervalMs;
-            const sw=c*vol*0.8, o=c+(Math.random()-0.5)*sw;
-            const h=Math.max(o,c)+Math.random()*sw*0.4;
-            const l=Math.min(o,c)-Math.random()*sw*0.4;
-            return {x:t,o:+o.toFixed(2),h:+h.toFixed(2),l:+l.toFixed(2),c:+c.toFixed(2)};
+        return closes.map((cl,i)=>{
+            const t=Date.now()-(numPts-1-i)*itvMs;
+            const sw=cl*volPct*0.8, o=cl+(Math.random()-0.5)*sw;
+            const h=Math.max(o,cl)+Math.random()*sw*0.4;
+            const l=Math.min(o,cl)-Math.random()*sw*0.4;
+            const vol=Math.round(stock.price*1e5*(0.8+Math.random()*0.8));
+            return {x:t, o:+o.toFixed(2), h:+h.toFixed(2), l:+l.toFixed(2), c:+cl.toFixed(2), v:vol};
         });
     }
 
+    // ── Fetch real candles from Finnhub ────────────────────────────
     async function fetchCandles(symbol, period) {
-        const key = symbol+'_'+period;
-        if (candleCache[key] && (Date.now()-candleCache[key].ts)<60000) return candleCache[key].data;
+        const cacheKey = symbol+'_'+period;
+        if (candleCache[cacheKey] && Date.now()-candleCache[cacheKey].ts < 60000) return candleCache[cacheKey].data;
         if (!RT.key) return null;
         try {
-            const {resolution,from} = periodToFinnhub(period);
-            const to = Math.floor(Date.now()/1000);
-            const url = `https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(symbol)}&resolution=${resolution}&from=${from}&to=${to}&token=${RT.key}`;
-            const res = await fetch(url);
+            const cfg = PERIOD_CFG[period] || PERIOD_CFG['1D'];
+            const from = cfg.from(), to = Math.floor(Date.now()/1000);
+            const url = `https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(symbol)}&resolution=${cfg.res}&from=${from}&to=${to}&token=${RT.key}`;
+            const res  = await fetch(url);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
             const data = await res.json();
-            if (!data||data.s!=='ok'||!data.t||data.t.length===0) return null;
-            const candles = data.t.map((ts,i)=>({x:ts*1000,o:data.o[i],h:data.h[i],l:data.l[i],c:data.c[i]}));
-            candleCache[key]={data:candles,ts:Date.now()};
+            if (!data || data.s !== 'ok' || !data.t || data.t.length === 0) return null;
+            // Trim to maxPts
+            const total = data.t.length;
+            const start = Math.max(0, total - cfg.maxPts);
+            const candles = data.t.slice(start).map((ts,i) => ({
+                x: ts*1000,
+                o: data.o[start+i], h: data.h[start+i],
+                l: data.l[start+i], c: data.c[start+i],
+                v: data.v ? data.v[start+i] : Math.round(data.c[start+i]*1e5),
+            }));
+            candleCache[cacheKey] = { data:candles, ts:Date.now() };
             return candles;
-        } catch(e){ return null; }
+        } catch(e) { return null; }
     }
 
-    // Draw candlesticks directly on canvas — no library needed
-    function drawCandlesticks(canvas, candles) {
-        const dpr = window.devicePixelRatio || 1;
-        const W = canvas.clientWidth, H = canvas.clientHeight;
-        canvas.width  = W * dpr;
-        canvas.height = H * dpr;
-        const ctx = canvas.getContext('2d');
-        ctx.scale(dpr, dpr);
+    // ── Show / hide loading overlay ────────────────────────────────
+    function showChartOverlay(msg, icon='⏳') {
+        const ov = document.getElementById('chartOverlay');
+        if (!ov) return;
+        ov.style.display = 'flex';
+        const ti = document.getElementById('chartOverlayIcon');
+        const tt = document.getElementById('chartOverlayText');
+        if (ti) ti.textContent = icon;
+        if (tt) tt.textContent = msg;
+    }
+    function hideChartOverlay() {
+        const ov = document.getElementById('chartOverlay');
+        if (ov) ov.style.display = 'none';
+    }
 
-        // Padding
-        const PAD = {top:16, right:56, bottom:36, left:8};
-        const chartW = W - PAD.left - PAD.right;
-        const chartH = H - PAD.top  - PAD.bottom;
+    // ── Destroy both charts safely ─────────────────────────────────
+    function destroyCharts() {
+        if (sChart)   { try { sChart.destroy(); }   catch(e){} sChart   = null; }
+        if (volChart) { try { volChart.destroy(); } catch(e){} volChart = null; }
+    }
 
-        // Price range
-        const allH = candles.map(c=>c.h), allL = candles.map(c=>c.l);
-        const minP  = Math.min(...allL) * 0.999;
-        const maxP  = Math.max(...allH) * 1.001;
-        const priceRange = maxP - minP;
+    // ── Compute indicators ─────────────────────────────────────────
+    function sma(arr, n) { return arr.map((_,i)=>i<n-1?null:arr.slice(i-n+1,i+1).reduce((a,b)=>a+b,0)/n); }
+    function ema(arr, n) {
+        const k=2/(n+1); const out=[arr[0]];
+        for(let i=1;i<arr.length;i++) out.push(arr[i]*k+out[i-1]*(1-k));
+        return out.map((v,i)=>i<n-1?null:v);
+    }
+    function bollingerBands(closes, n=20, mult=2) {
+        const mid=sma(closes,n);
+        return closes.map((_,i)=>{
+            if(i<n-1)return null;
+            const sl=closes.slice(i-n+1,i+1);
+            const mean=sl.reduce((a,b)=>a+b,0)/n;
+            const sd=Math.sqrt(sl.reduce((s,v)=>s+(v-mean)**2,0)/n);
+            return{mid:mid[i],upper:mid[i]+mult*sd,lower:mid[i]-mult*sd};
+        });
+    }
+    function calcRSI(closes, n=14) {
+        const gains=[], losses=[];
+        for(let i=1;i<closes.length;i++){const d=closes[i]-closes[i-1];gains.push(Math.max(0,d));losses.push(Math.max(0,-d));}
+        return gains.map((_,i)=>{
+            if(i<n-1)return null;
+            const ag=gains.slice(i-n+1,i+1).reduce((a,b)=>a+b,0)/n;
+            const al=losses.slice(i-n+1,i+1).reduce((a,b)=>a+b,0)/n;
+            return al===0?100:100-100/(1+ag/al);
+        });
+    }
+    function calcMACD(closes) {
+        const ema12=ema(closes,12), ema26=ema(closes,26);
+        const macdLine=closes.map((_,i)=>ema12[i]!=null&&ema26[i]!=null?ema12[i]-ema26[i]:null);
+        const signal=sma(macdLine.filter(v=>v!=null),9);
+        let si=0;
+        const signalFull=macdLine.map(v=>v==null?null:signal[si++]||null);
+        const hist=macdLine.map((v,i)=>v!=null&&signalFull[i]!=null?v-signalFull[i]:null);
+        return{macdLine,signalLine:signalFull,histogram:hist};
+    }
+    function calcVWAP(candles) {
+        let cumPV=0,cumV=0;
+        return candles.map(c=>{cumPV+=((c.h+c.l+c.c)/3)*(c.v||1);cumV+=(c.v||1);return cumPV/cumV;});
+    }
 
-        const toY = p => PAD.top + chartH * (1 - (p-minP)/priceRange);
-        const toX = i => PAD.left + (i + 0.5) * (chartW / candles.length);
-        const candleW = Math.max(1, chartW / candles.length * 0.6);
+    // ── MAIN: draw full chart ──────────────────────────────────────
+    async function drawChart(stock, period) {
+        currentChartPeriod = period;
+        const fetchId = ++_chartFetchId;
+        showChartOverlay('Loading chart…');
 
-        // Background
-        ctx.fillStyle = '#1c1c1e';
-        ctx.fillRect(0, 0, W, H);
+        let candles = await fetchCandles(stock.symbol, period);
+        if (fetchId !== _chartFetchId) return; // stale fetch
 
-        // Grid lines + Y labels
-        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-        ctx.lineWidth = 1;
-        ctx.fillStyle = '#9aa0a6';
-        ctx.font = `${11*dpr/dpr}px Roboto, sans-serif`;
-        ctx.textAlign = 'right';
-        const gridLines = 5;
-        for (let i=0;i<=gridLines;i++) {
-            const p   = minP + priceRange * (i/gridLines);
-            const y   = toY(p);
-            ctx.beginPath();
-            ctx.moveTo(PAD.left, y);
-            ctx.lineTo(W - PAD.right, y);
-            ctx.stroke();
-            ctx.fillText('$'+p.toFixed(p>100?0:2), W - PAD.right + 52, y+4);
+        if (!candles || candles.length < 3) {
+            candles = generateSimCandles(stock, period);
+            if (!RT.key) showChartOverlay('Simulated data', '📊');
+            else         showChartOverlay('Live data unavailable', '⚠️');
+            setTimeout(hideChartOverlay, 1800);
+        } else {
+            hideChartOverlay();
         }
 
-        // X axis labels
-        ctx.textAlign = 'center';
-        const labelEvery = Math.max(1, Math.floor(candles.length / 6));
-        candles.forEach((c,i)=>{
-            if (i % labelEvery !== 0) return;
-            const d = new Date(c.x);
-            const label = candles.length <= 80
-                ? d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
-                : d.toLocaleDateString([],{month:'short',day:'numeric'});
-            ctx.fillStyle = '#9aa0a6';
-            ctx.fillText(label, toX(i), H - PAD.bottom + 14);
-        });
+        destroyCharts();
 
+        const tc   = themeColors();
+        const cfg  = PERIOD_CFG[period] || PERIOD_CFG['1D'];
+        const closes = candles.map(c=>c.c);
+        const timestamps = candles.map(c=>c.x);
+
+        // ── Build overlay datasets from active indicators ──
+        const overlayDatasets = [];
+        const candleColors = candles.map(c => c.c >= c.o ? 'rgba(38,166,154,0.85)' : 'rgba(239,83,80,0.85)');
+
+        if (activeIndicators.has('EMA20')) {
+            const v=ema(closes,20);
+            overlayDatasets.push({type:'line',label:'EMA20',data:timestamps.map((x,i)=>v[i]!=null?{x,y:v[i]}:null).filter(Boolean),borderColor:'#60a5fa',borderWidth:1.5,pointRadius:0,tension:0.4,order:1});
+        }
+        if (activeIndicators.has('EMA50')) {
+            const v=ema(closes,50);
+            overlayDatasets.push({type:'line',label:'EMA50',data:timestamps.map((x,i)=>v[i]!=null?{x,y:v[i]}:null).filter(Boolean),borderColor:'#f97316',borderWidth:1.5,pointRadius:0,tension:0.4,order:1});
+        }
+        if (activeIndicators.has('VWAP')) {
+            const v=calcVWAP(candles);
+            overlayDatasets.push({type:'line',label:'VWAP',data:timestamps.map((x,i)=>({x,y:v[i]})),borderColor:'#f59e0b',borderWidth:1.5,pointRadius:0,borderDash:[],tension:0.3,order:1});
+        }
+        if (activeIndicators.has('BB')) {
+            const bb=bollingerBands(closes);
+            const upper=bb.map((b,i)=>b?{x:timestamps[i],y:b.upper}:null).filter(Boolean);
+            const lower=bb.map((b,i)=>b?{x:timestamps[i],y:b.lower}:null).filter(Boolean);
+            const mid  =bb.map((b,i)=>b?{x:timestamps[i],y:b.mid}:null).filter(Boolean);
+            overlayDatasets.push({type:'line',label:'BB Upper',data:upper,borderColor:'rgba(96,165,250,0.6)',borderWidth:1,pointRadius:0,borderDash:[3,2],order:1});
+            overlayDatasets.push({type:'line',label:'BB Lower',data:lower,borderColor:'rgba(96,165,250,0.6)',borderWidth:1,pointRadius:0,borderDash:[3,2],order:1,fill:'-1',backgroundColor:'rgba(96,165,250,0.04)'});
+            overlayDatasets.push({type:'line',label:'BB Mid',data:mid,borderColor:'rgba(96,165,250,0.35)',borderWidth:1,pointRadius:0,order:1});
+        }
+
+        // ── Register financial plugin if not already ──
+        if (typeof Chart !== 'undefined' && Chart.registry && !Chart.registry.controllers.get('candlestick')) {
+            try { Chart.register(window['chartjs-chart-financial'] || {}); } catch(e){}
+        }
+
+        // ── Candlestick chart ──────────────────────────────────────
+        const candleCanvas = document.getElementById('stockChart');
+        if (!candleCanvas) return;
+        candleCanvas.style.width = '100%';
+        candleCanvas.style.height = '100%';
+
+        const candleDataset = {
+            label: stock.symbol,
+            data: candles.map(c=>({x:c.x,o:c.o,h:c.h,l:c.l,c:c.c})),
+            color: { up:'#26a69a', down:'#ef5350', unchanged:'#9aa0a6' },
+        };
+
+        // Check if financial plugin is available, else fallback to custom canvas
+        const hasFinancial = typeof Chart !== 'undefined' && Chart.registry && !!Chart.registry.controllers.get?.('candlestick');
+
+        if (hasFinancial) {
+            sChart = new Chart(candleCanvas, {
+                type: 'candlestick',
+                data: { datasets: [candleDataset, ...overlayDatasets] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 200 },
+                    interaction: { mode:'index', intersect:false },
+                    plugins: {
+                        legend: { display:false },
+                        tooltip: {
+                            backgroundColor: tc.tooltip,
+                            titleColor: '#e0e0f5',
+                            bodyColor: '#9aa0a6',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            padding: 10,
+                            callbacks: {
+                                title: ctx => {
+                                    const d=new Date(ctx[0].parsed.x);
+                                    const isIntraday = ['1D','5D','1M'].includes(period);
+                                    return d.toLocaleString([],isIntraday?{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}:{month:'short',day:'numeric',year:'numeric'});
+                                },
+                                label: ctx => {
+                                    if (ctx.dataset.type==='line') return `${ctx.dataset.label}: $${ctx.parsed.y?.toFixed(2)||''}`;
+                                    const {o,h,l,c} = ctx.raw;
+                                    if (o==null) return '';
+                                    const pct = ((c-o)/o*100).toFixed(2);
+                                    return [`O: $${o.toFixed(2)}  H: $${h.toFixed(2)}`,`L: $${l.toFixed(2)}  C: $${c.toFixed(2)}`,`Change: ${pct>=0?'+':''}${pct}%`];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type:'time',
+                            time: { unit:cfg.unit, tooltipFormat:'PPpp' },
+                            grid: { color:tc.grid, drawBorder:false },
+                            ticks: { color:tc.text, maxTicksLimit:8, maxRotation:0 }
+                        },
+                        y: {
+                            position:'right',
+                            grid: { color:tc.grid, drawBorder:false },
+                            ticks: { color:tc.text, callback:v=>'$'+v.toLocaleString() }
+                        }
+                    }
+                }
+            });
+        } else {
+            // ── Pure canvas fallback (no external plugin needed) ──
+            drawCandlesFallback(candleCanvas, candles, tc, overlayDatasets, period);
+        }
+
+        // ── Volume chart ───────────────────────────────────────────
+        const volCanvas = document.getElementById('volumeChart');
+        if (volCanvas) {
+            volCanvas.style.width='100%'; volCanvas.style.height='100%';
+            volChart = new Chart(volCanvas, {
+                type: 'bar',
+                data: { datasets:[{
+                    label:'Volume',
+                    data: candles.map(c=>({x:c.x, y:c.v||0})),
+                    backgroundColor: candles.map(c=>c.c>=c.o?'rgba(38,166,154,0.5)':'rgba(239,83,80,0.5)'),
+                    borderRadius: 1,
+                    borderSkipped: 'bottom',
+                }]},
+                options: {
+                    responsive:true, maintainAspectRatio:false, animation:{duration:0},
+                    plugins:{ legend:{display:false}, tooltip:{enabled:false} },
+                    scales:{
+                        x:{ type:'time', time:{unit:cfg.unit}, grid:{display:false}, ticks:{display:false} },
+                        y:{ position:'right', grid:{color:tc.grid,drawBorder:false}, ticks:{color:tc.text,maxTicksLimit:3,callback:v=>v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v} }
+                    }
+                }
+            });
+        }
+
+        // ── RSI sub-panel ──────────────────────────────────────────
+        if (activeIndicators.has('RSI')) drawRSIChart(candles, tc);
+
+        // ── MACD sub-panel ─────────────────────────────────────────
+        if (activeIndicators.has('MACD')) drawMACDChart(candles, tc);
+    }
+
+    // ── Fallback pure-canvas candlestick (when plugin unavailable) ─
+    function drawCandlesFallback(canvas, candles, tc, overlayDatasets, period) {
+        const dpr=window.devicePixelRatio||1;
+        const W=canvas.clientWidth, H=canvas.clientHeight;
+        canvas.width=W*dpr; canvas.height=H*dpr;
+        const ctx=canvas.getContext('2d');
+        ctx.scale(dpr,dpr);
+        const PAD={top:16,right:64,bottom:36,left:8};
+        const cW=W-PAD.left-PAD.right, cH=H-PAD.top-PAD.bottom;
+        const allH=candles.map(c=>c.h), allL=candles.map(c=>c.l);
+        const minP=Math.min(...allL)*0.999, maxP=Math.max(...allH)*1.001, priceRange=maxP-minP;
+        const toY=p=>PAD.top+cH*(1-(p-minP)/priceRange);
+        const toX=i=>PAD.left+(i+0.5)*(cW/candles.length);
+        const cw=Math.max(1,cW/candles.length*0.65);
+        ctx.fillStyle=tc.bg; ctx.fillRect(0,0,W,H);
+        // Grid + y-labels
+        ctx.strokeStyle=tc.grid; ctx.lineWidth=1;
+        for(let i=0;i<=5;i++){
+            const p=minP+priceRange*(i/5), y=toY(p);
+            ctx.beginPath(); ctx.moveTo(PAD.left,y); ctx.lineTo(W-PAD.right,y); ctx.stroke();
+            ctx.fillStyle=tc.text; ctx.font='10px sans-serif'; ctx.textAlign='right';
+            ctx.fillText('$'+(p>100?p.toFixed(0):p.toFixed(2)), W-PAD.right+60, y+4);
+        }
+        // X labels
+        ctx.textAlign='center';
+        const lev=Math.max(1,Math.floor(candles.length/7));
+        candles.forEach((c,i)=>{
+            if(i%lev!==0)return;
+            const d=new Date(c.x);
+            const lbl=candles.length<=100?d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):d.toLocaleDateString([],{month:'short',day:'numeric'});
+            ctx.fillStyle=tc.text; ctx.fillText(lbl,toX(i),H-PAD.bottom+14);
+        });
+        // Overlays
+        function drawLine(pts,color,dash=[]) {
+            ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=1.5; ctx.setLineDash(dash);
+            ctx.beginPath(); let s=false;
+            pts.forEach(p=>{ if(!p)return; const y=toY(p.y),x=toX(candles.findIndex(c=>c.x===p.x)||0); s?(ctx.lineTo(x,y)):(ctx.moveTo(x,y),s=true); });
+            ctx.stroke(); ctx.setLineDash([]); ctx.restore();
+        }
+        overlayDatasets.forEach(ds=>{
+            if(ds.type==='line') drawLine(ds.data, ds.borderColor, ds.borderDash||[]);
+        });
         // Candles
         candles.forEach((c,i)=>{
-            const x   = toX(i);
-            const up  = c.c >= c.o;
-            const col = up ? '#26a69a' : '#ef5350';
-            const yO  = toY(c.o), yC = toY(c.c);
-            const yH  = toY(c.h), yL = toY(c.l);
-
-            // Wick
-            ctx.strokeStyle = col;
-            ctx.lineWidth = Math.max(1, candleW * 0.15);
-            ctx.beginPath();
-            ctx.moveTo(x, yH);
-            ctx.lineTo(x, yL);
-            ctx.stroke();
-
-            // Body
-            ctx.fillStyle = col;
-            const bodyTop = Math.min(yO, yC);
-            const bodyH   = Math.max(1, Math.abs(yC - yO));
-            ctx.fillRect(x - candleW/2, bodyTop, candleW, bodyH);
+            const up=c.c>=c.o, col=up?'#26a69a':'#ef5350', x=toX(i);
+            ctx.strokeStyle=col; ctx.lineWidth=Math.max(0.8,cw*0.12);
+            ctx.beginPath(); ctx.moveTo(x,toY(c.h)); ctx.lineTo(x,toY(c.l)); ctx.stroke();
+            ctx.fillStyle=col;
+            const bT=Math.min(toY(c.o),toY(c.c)), bH=Math.max(1,Math.abs(toY(c.c)-toY(c.o)));
+            ctx.fillRect(x-cw/2,bT,cw,bH);
         });
-
-        // Hover tooltip
-        canvas._candles = candles;
-        canvas._meta = { PAD, chartW, chartH, toX, toY, minP, maxP, priceRange, candleW, W, H, dpr };
+        // Save meta for hover
+        canvas._candles=candles;
+        canvas._meta={PAD,cW,cH,toX,toY,minP,maxP,priceRange,cw,W,H,dpr,tc};
+        setupCandleHover(canvas);
     }
 
     function setupCandleHover(canvas) {
-        canvas.onmousemove = function(e) {
-            if (!canvas._candles) return;
-            const rect = canvas.getBoundingClientRect();
-            const mx = e.clientX - rect.left;
-            const { PAD, chartW, W, H, candles: _, toX, dpr } = canvas._meta;
-            const candles = canvas._candles;
-            const idx = Math.round((mx - PAD.left) / (chartW / candles.length) - 0.5);
-            if (idx < 0 || idx >= candles.length) { drawCandlesticks(canvas, candles); return; }
-            drawCandlesticks(canvas, candles);
-
-            const c   = candles[idx];
-            const x   = toX(idx);
-            const dpr2 = window.devicePixelRatio || 1;
-            const ctx  = canvas.getContext('2d');
-            ctx.scale(1,1); // already scaled
-
+        canvas.onmousemove=function(e){
+            if(!canvas._candles)return;
+            const rect=canvas.getBoundingClientRect();
+            const mx=e.clientX-rect.left;
+            const {PAD,cW,W,H,toX,tc}=canvas._meta;
+            const candles=canvas._candles;
+            const idx=Math.round((mx-PAD.left)/(cW/candles.length)-0.5);
+            if(idx<0||idx>=candles.length){drawCandlesFallback(canvas,candles,tc,[],currentChartPeriod);return;}
+            drawCandlesFallback(canvas,candles,tc,[],currentChartPeriod);
+            const c=candles[idx], x=toX(idx);
+            const ctx=canvas.getContext('2d');
             // Crosshair
-            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-            ctx.lineWidth = 1;
-            ctx.setLineDash([4,4]);
-            ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, H - PAD.bottom); ctx.stroke();
+            ctx.strokeStyle='rgba(255,255,255,0.18)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+            ctx.beginPath(); ctx.moveTo(x,PAD.top); ctx.lineTo(x,H-PAD.bottom); ctx.stroke();
             ctx.setLineDash([]);
-
-            // Tooltip box
-            const d = new Date(c.x);
-            const dateStr = d.toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-            const lines = [`${dateStr}`,`O: $${c.o.toFixed(2)}  H: $${c.h.toFixed(2)}`,`L: $${c.l.toFixed(2)}  C: $${c.c.toFixed(2)}`];
-            const boxW = 200, boxH = 58, boxX = Math.min(x+10, W-boxW-PAD.right-4), boxY = PAD.top + 8;
-            ctx.fillStyle = 'rgba(30,30,32,0.95)';
-            ctx.strokeStyle = c.c >= c.o ? '#26a69a' : '#ef5350';
-            ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.roundRect(boxX, boxY, boxW, boxH, 6); ctx.fill(); ctx.stroke();
-            ctx.fillStyle = '#ebebf5'; ctx.font = '11px Roboto,sans-serif'; ctx.textAlign = 'left';
-            lines.forEach((l,i) => ctx.fillText(l, boxX+10, boxY+16+i*16));
+            // Tooltip
+            const d=new Date(c.x);
+            const ds=d.toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+            const pct=((c.c-c.o)/c.o*100).toFixed(2);
+            const lines=[ds,`O:$${c.o.toFixed(2)} H:$${c.h.toFixed(2)}`,`L:$${c.l.toFixed(2)} C:$${c.c.toFixed(2)}`,`${pct>=0?'+':''}${pct}%`];
+            const bW=190,bH=68,bX=Math.min(x+10,W-bW-PAD.right-4),bY=PAD.top+8;
+            ctx.fillStyle=tc.tooltip; ctx.strokeStyle=c.c>=c.o?'#26a69a':'#ef5350'; ctx.lineWidth=1;
+            ctx.beginPath(); ctx.roundRect(bX,bY,bW,bH,6); ctx.fill(); ctx.stroke();
+            ctx.fillStyle=isDark()?'#ebebf5':'#1a1a2e'; ctx.font='10px sans-serif'; ctx.textAlign='left';
+            lines.forEach((l,i)=>ctx.fillText(l,bX+10,bY+15+i*14));
         };
-        canvas.onmouseleave = function() {
-            if (canvas._candles) drawCandlesticks(canvas, canvas._candles);
+        canvas.onmouseleave=function(){
+            if(canvas._candles)drawCandlesFallback(canvas,canvas._candles,themeColors(),[],currentChartPeriod);
         };
     }
 
-    async function drawChart(stock, period) {
-        if (sChart) { sChart.destroy(); sChart = null; }
-        const canvas = document.getElementById('stockChart');
-
-        // Resize canvas to container
-        canvas.style.width  = '100%';
-        canvas.style.height = '100%';
-
-        // Show loading
-        const dpr = window.devicePixelRatio||1;
-        canvas.width  = (canvas.clientWidth||700)*dpr;
-        canvas.height = (canvas.clientHeight||280)*dpr;
-        const ctx = canvas.getContext('2d');
-        ctx.scale(dpr,dpr);
-        ctx.fillStyle='#1c1c1e'; ctx.fillRect(0,0,canvas.clientWidth,canvas.clientHeight);
-        ctx.fillStyle='#9aa0a6'; ctx.font='13px Roboto,sans-serif'; ctx.textAlign='center';
-        ctx.fillText('Loading chart…', canvas.clientWidth/2, canvas.clientHeight/2);
-
-        // Fetch real candles, fall back to sim
-        let candles = await fetchCandles(stock.symbol, period);
-        if (!candles || candles.length < 3) candles = generateSimCandles(stock, period);
-
-        drawCandlesticks(canvas, candles);
-        setupCandleHover(canvas);
+    // ── RSI sub-chart ──────────────────────────────────────────────
+    function drawRSIChart(candles, tc) {
+        const canvas=document.getElementById('rsiChart');
+        if(!canvas)return;
+        const closes=candles.map(c=>c.c);
+        const rsi=calcRSI(closes);
+        const W=canvas.clientWidth||400, H=canvas.clientHeight||80;
+        const dpr=window.devicePixelRatio||1;
+        canvas.width=W*dpr; canvas.height=H*dpr;
+        const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+        ctx.fillStyle=tc.bg; ctx.fillRect(0,0,W,H);
+        const PAD={l:4,r:46,t:4,b:14};
+        const cW=W-PAD.l-PAD.r, cH=H-PAD.t-PAD.b;
+        const valid=rsi.map((v,i)=>v!=null?i:null).filter(x=>x!=null);
+        if(!valid.length)return;
+        const toX=i=>PAD.l+(i/candles.length)*cW;
+        const toY=v=>PAD.t+(1-v/100)*cH;
+        // OB/OS fills
+        ctx.fillStyle='rgba(239,68,68,0.06)'; ctx.fillRect(PAD.l,PAD.t,cW,cH*(1-70/100));
+        ctx.fillStyle='rgba(34,197,94,0.06)'; ctx.fillRect(PAD.l,toY(30),cW,cH*(30/100));
+        [30,50,70].forEach(v=>{
+            ctx.strokeStyle=tc.grid; ctx.lineWidth=0.5; ctx.setLineDash([2,3]);
+            ctx.beginPath(); ctx.moveTo(PAD.l,toY(v)); ctx.lineTo(W-PAD.r,toY(v)); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle=tc.text; ctx.font='8px sans-serif'; ctx.textAlign='right';
+            ctx.fillText(v,W-PAD.r+42,toY(v)+3);
+        });
+        ctx.strokeStyle='#f59e0b'; ctx.lineWidth=1.5; ctx.beginPath();
+        valid.forEach((i,n)=>{ const y=toY(rsi[i]); n===0?ctx.moveTo(toX(i),y):ctx.lineTo(toX(i),y); });
+        ctx.stroke();
+        // Current RSI value
+        const last=rsi[valid[valid.length-1]];
+        ctx.fillStyle=last>70?'#f87171':last<30?'#4ade80':'#f59e0b'; ctx.font='8px sans-serif'; ctx.textAlign='right';
+        ctx.fillText(last.toFixed(1),W-PAD.r+42,toY(last)+3);
     }
+
+    // ── MACD sub-chart ─────────────────────────────────────────────
+    function drawMACDChart(candles, tc) {
+        const canvas=document.getElementById('macdChart');
+        if(!canvas)return;
+        const closes=candles.map(c=>c.c);
+        const {macdLine,signalLine,histogram}=calcMACD(closes);
+        const timestamps=candles.map(c=>c.x);
+        const valid=macdLine.map((v,i)=>v!=null?i:null).filter(x=>x!=null);
+        if(!valid.length)return;
+        const allVals=[...macdLine,...signalLine,...histogram].filter(v=>v!=null);
+        const minV=Math.min(...allVals), maxV=Math.max(...allVals), rng=maxV-minV||1;
+        const W=canvas.clientWidth||400, H=canvas.clientHeight||80;
+        const dpr=window.devicePixelRatio||1;
+        canvas.width=W*dpr; canvas.height=H*dpr;
+        const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+        ctx.fillStyle=tc.bg; ctx.fillRect(0,0,W,H);
+        const PAD={l:4,r:46,t:4,b:4};
+        const cW=W-PAD.l-PAD.r, cH=H-PAD.t-PAD.b;
+        const toX=i=>PAD.l+(i/candles.length)*cW;
+        const toY=v=>PAD.t+(1-(v-minV)/rng)*cH;
+        const zero=toY(0);
+        // Zero line
+        ctx.strokeStyle=tc.grid; ctx.lineWidth=0.5;
+        ctx.beginPath(); ctx.moveTo(PAD.l,zero); ctx.lineTo(W-PAD.r,zero); ctx.stroke();
+        // Histogram bars
+        const bw=Math.max(1,cW/candles.length*0.7);
+        valid.forEach(i=>{
+            if(histogram[i]==null)return;
+            const x=toX(i), y=toY(histogram[i]);
+            ctx.fillStyle=histogram[i]>=0?'rgba(38,166,154,0.6)':'rgba(239,83,80,0.6)';
+            ctx.fillRect(x-bw/2,Math.min(y,zero),bw,Math.abs(y-zero));
+        });
+        // MACD line
+        ctx.strokeStyle='#60a5fa'; ctx.lineWidth=1.5; ctx.beginPath();
+        valid.forEach((i,n)=>{ const y=toY(macdLine[i]); n===0?ctx.moveTo(toX(i),y):ctx.lineTo(toX(i),y); }); ctx.stroke();
+        // Signal line
+        ctx.strokeStyle='#f97316'; ctx.lineWidth=1; ctx.beginPath();
+        valid.forEach((i,n)=>{ if(signalLine[i]==null)return; const y=toY(signalLine[i]); n===0?ctx.moveTo(toX(i),y):ctx.lineTo(toX(i),y); }); ctx.stroke();
+        ctx.fillStyle=tc.text; ctx.font='8px sans-serif'; ctx.textAlign='left'; ctx.fillText('MACD',PAD.l+2,PAD.t+10);
+    }
+
+    // ── setChartPeriod + indicator toggle (override previous) ──────
+    let _periodDebounce = null;
+    async function setChartPeriod(period, btn) {
+        document.querySelectorAll('.ctab').forEach(b=>{
+            b.style.color='#6868a0'; b.style.borderBottomColor='transparent'; b.style.fontWeight='600';
+        });
+        btn.style.color='#8ab4f8'; btn.style.borderBottomColor='#8ab4f8'; btn.style.fontWeight='700';
+        currentChartPeriod=period;
+        clearTimeout(_periodDebounce);
+        _periodDebounce=setTimeout(()=>{ if(detailStock) drawChart(detailStock,period); },80);
+    }
+
+    let activeIndicators = new Set();
+
+    function toggleIndicator(name) {
+        const btn=document.getElementById('ind-'+name);
+        if(activeIndicators.has(name)){
+            activeIndicators.delete(name);
+            if(btn){btn.style.background='transparent';btn.style.color='#8888a8';btn.style.borderColor='rgba(255,255,255,0.1)';}
+            // Hide sub-panels
+            if(name==='RSI'){const w=document.getElementById('rsiChartWrap');if(w)w.style.display='none';}
+            if(name==='MACD'){const w=document.getElementById('macdChartWrap');if(w)w.style.display='none';}
+        } else {
+            activeIndicators.add(name);
+            if(btn){btn.style.background='rgba(212,168,75,0.15)';btn.style.color='var(--v-gold)';btn.style.borderColor='var(--v-gold)';}
+            if(name==='RSI'){const w=document.getElementById('rsiChartWrap');if(w)w.style.display='block';}
+            if(name==='MACD'){const w=document.getElementById('macdChartWrap');if(w)w.style.display='block';}
+        }
+        if(detailStock) drawChart(detailStock,currentChartPeriod);
+    }
+
+    // Keep old patched versions from working (they reference old vars — nullify gracefully)
+    function drawChartWithIndicators(){}
+    function drawRSI(){}
 
     function execDetailTrade(type) {
         if (!detailStock) return;
@@ -3903,175 +4402,7 @@ function startNewsEngine() {
     }
 
 
-    // ═══════════════════════════════════════════════════════
-    //   TECHNICAL INDICATORS
-    // ═══════════════════════════════════════════════════════
-    let activeIndicators = new Set();
 
-    function toggleIndicator(name) {
-        const btn = document.getElementById('ind-' + name);
-        if (activeIndicators.has(name)) {
-            activeIndicators.delete(name);
-            if (btn) { btn.style.background='transparent'; btn.style.color='#8888a8'; btn.style.borderColor='rgba(255,255,255,0.1)'; }
-        } else {
-            activeIndicators.add(name);
-            if (btn) { btn.style.background='rgba(212,168,75,0.15)'; btn.style.color='var(--v-gold)'; btn.style.borderColor='var(--v-gold)'; }
-        }
-        // Show/hide RSI sub-chart
-        const rsiWrap = document.getElementById('rsiChartWrap');
-        if (rsiWrap) rsiWrap.style.display = activeIndicators.has('RSI') ? 'block' : 'none';
-        // Redraw chart with new indicators
-        if (detailStock) drawChartWithIndicators(detailStock, currentChartPeriod || '1D');
-    }
-
-    let currentChartPeriod = '1D';
-
-    // Wrap setChartPeriod to track period
-    const _origSetChartPeriod = setChartPeriod;
-    setChartPeriod = async function(period, btn) {
-        currentChartPeriod = period;
-        await _origSetChartPeriod(period, btn);
-        if (activeIndicators.size > 0 && detailStock) {
-            drawChartWithIndicators(detailStock, period);
-        }
-    };
-
-    async function drawChartWithIndicators(stock, period) {
-        if (activeIndicators.size === 0) return;
-        const canvas = document.getElementById('stockChart');
-        if (!canvas || !canvas._candles) return;
-        const candles = canvas._candles;
-        if (!candles || candles.length < 5) return;
-        const ctx = canvas.getContext('2d');
-        const { PAD, toX, toY, W, H, dpr } = canvas._meta;
-
-        const closes = candles.map(c => c.c);
-
-        function sma(arr, n) {
-            return arr.map((_, i) => i < n-1 ? null : arr.slice(i-n+1,i+1).reduce((a,b)=>a+b,0)/n);
-        }
-        function ema(arr, n) {
-            const k = 2/(n+1);
-            const out = [arr[0]];
-            for (let i=1;i<arr.length;i++) out.push(arr[i]*k + out[i-1]*(1-k));
-            return out.map((v,i) => i < n-1 ? null : v);
-        }
-        function stddev(arr) {
-            const m = arr.reduce((a,b)=>a+b,0)/arr.length;
-            return Math.sqrt(arr.reduce((s,v)=>s+(v-m)**2,0)/arr.length);
-        }
-        function bollinger(arr, n=20, mult=2) {
-            const mid = sma(arr, n);
-            return arr.map((_, i) => {
-                if (i < n-1) return null;
-                const slice = arr.slice(i-n+1, i+1);
-                const sd = stddev(slice);
-                return { mid: mid[i], upper: mid[i]+mult*sd, lower: mid[i]-mult*sd };
-            });
-        }
-
-        function drawLine(values, color, dash=[]) {
-            ctx.save();
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash(dash);
-            ctx.beginPath();
-            let started = false;
-            values.forEach((v, i) => {
-                if (v == null) return;
-                const x = toX(i), y = toY(v);
-                if (!started) { ctx.moveTo(x, y); started = true; } else ctx.lineTo(x, y);
-            });
-            ctx.stroke();
-            ctx.setLineDash([]);
-            ctx.restore();
-        }
-
-        function drawFill(upper, lower, color) {
-            ctx.save();
-            ctx.globalAlpha = 0.07;
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            upper.forEach((v, i) => { if (v==null) return; const x=toX(i); i===0||upper[i-1]==null ? ctx.moveTo(x,toY(v)) : ctx.lineTo(x,toY(v)); });
-            [...lower].reverse().forEach((v, i) => { if (v==null) return; const ri=lower.length-1-i; const x=toX(ri); ctx.lineTo(x,toY(v)); });
-            ctx.closePath(); ctx.fill();
-            ctx.restore();
-        }
-
-        if (activeIndicators.has('MA'))   drawLine(sma(closes, 20), '#60a5fa');
-        if (activeIndicators.has('EMA'))  drawLine(ema(closes, 12), '#a78bfa');
-        if (activeIndicators.has('VWAP')) {
-            // Simple VWAP approximation using close*volume proxy
-            let cumPV = 0, cumV = 0;
-            const vwapLine = candles.map(c => { cumPV += c.c*(c.v||1); cumV += (c.v||1); return cumV ? cumPV/cumV : null; });
-            drawLine(vwapLine, '#f97316');
-        }
-        if (activeIndicators.has('BB')) {
-            const bb = bollinger(closes);
-            const upper = bb.map(b => b ? b.upper : null);
-            const lower = bb.map(b => b ? b.lower : null);
-            const mid   = bb.map(b => b ? b.mid   : null);
-            drawFill(upper, lower, '#60a5fa');
-            drawLine(upper, 'rgba(96,165,250,0.7)', [4,2]);
-            drawLine(lower, 'rgba(96,165,250,0.7)', [4,2]);
-            drawLine(mid,   'rgba(96,165,250,0.5)');
-        }
-        if (activeIndicators.has('RSI')) {
-            const rsiCanvas = document.getElementById('rsiChart');
-            if (rsiCanvas) drawRSI(rsiCanvas, closes);
-        }
-    }
-
-    function drawRSI(canvas, closes) {
-        const W = canvas.clientWidth || canvas.offsetWidth;
-        const H = canvas.clientHeight || 70;
-        const dpr = window.devicePixelRatio || 1;
-        canvas.width = W * dpr; canvas.height = H * dpr;
-        const ctx = canvas.getContext('2d');
-        ctx.scale(dpr, dpr);
-        ctx.fillStyle = '#1c1c1e'; ctx.fillRect(0,0,W,H);
-
-        // Calculate RSI(14)
-        const n = 14;
-        const gains = [], losses = [];
-        for (let i=1; i<closes.length; i++) {
-            const d = closes[i]-closes[i-1];
-            gains.push(Math.max(0,d)); losses.push(Math.max(0,-d));
-        }
-        const rsi = [];
-        for (let i=n-1; i<gains.length; i++) {
-            const ag = gains.slice(i-n+1,i+1).reduce((a,b)=>a+b,0)/n;
-            const al = losses.slice(i-n+1,i+1).reduce((a,b)=>a+b,0)/n;
-            rsi.push(al===0 ? 100 : 100 - 100/(1+ag/al));
-        }
-        if (rsi.length < 2) return;
-
-        const PAD = {l:4,r:36,t:4,b:14};
-        const cW = W-PAD.l-PAD.r, cH = H-PAD.t-PAD.b;
-        const toX = i => PAD.l + (i/(rsi.length-1))*cW;
-        const toY = v => PAD.t + (1-(v/100))*cH;
-
-        // OB/OS zones
-        ctx.fillStyle = 'rgba(239,68,68,0.07)'; ctx.fillRect(PAD.l, PAD.t, cW, (1-70/100)*cH);
-        ctx.fillStyle = 'rgba(34,197,94,0.07)'; ctx.fillRect(PAD.l, toY(30), cW, cH-(1-30/100)*cH);
-
-        // Reference lines
-        [30,50,70].forEach(v => {
-            ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth=0.5;
-            ctx.setLineDash([2,2]); ctx.beginPath();
-            ctx.moveTo(PAD.l, toY(v)); ctx.lineTo(W-PAD.r, toY(v)); ctx.stroke();
-            ctx.setLineDash([]);
-            ctx.fillStyle='#9aa0a6'; ctx.font='8px sans-serif'; ctx.textAlign='right';
-            ctx.fillText(v, W-PAD.r+32, toY(v)+3);
-        });
-
-        // RSI line
-        ctx.strokeStyle='#f59e0b'; ctx.lineWidth=1.5; ctx.beginPath();
-        rsi.forEach((v,i) => { i===0 ? ctx.moveTo(toX(i),toY(v)) : ctx.lineTo(toX(i),toY(v)); });
-        ctx.stroke();
-        ctx.fillStyle='#f59e0b'; ctx.font='9px sans-serif'; ctx.textAlign='left';
-        ctx.fillText('RSI(14)', PAD.l+2, PAD.t+10);
-    }
 
     // ═══════════════════════════════════════════════════════
     //   ORDER TYPE HINT
@@ -4435,6 +4766,692 @@ function startNewsEngine() {
             }
         });
     }
+
+
+    // ════════════════════════════════════════════════════════════════
+    //   SIP / RECURRING INVESTMENT ENGINE
+    //   Supports: Stock SIP, Fractional, ETF, DRIP
+    // ════════════════════════════════════════════════════════════════
+
+
+    // ═══════════════════════════════════════════════════════
+    //   INTRADAY INTERVAL SYSTEM (Finnhub resolution mapping)
+    // ═══════════════════════════════════════════════════════
+
+    // Maps period → which interval buttons to show and default resolution
+    const PERIOD_INTRADAY_MAP = {
+        '1D':  { showItv:true,  defaultItv:'5'  },
+        '5D':  { showItv:true,  defaultItv:'15' },
+        '1M':  { showItv:true,  defaultItv:'60' },
+        '6M':  { showItv:false, defaultItv:'D'  },
+        'YTD': { showItv:false, defaultItv:'D'  },
+        '1Y':  { showItv:false, defaultItv:'W'  },
+        '5Y':  { showItv:false, defaultItv:'M'  },
+        'Max': { showItv:false, defaultItv:'M'  },
+    };
+
+    // Interval → Chart.js time unit
+    const ITV_TO_UNIT = {
+        '1':'minute','5':'minute','15':'minute','60':'hour',
+        'D':'day','W':'week','M':'month'
+    };
+
+    let _currentIntradayItv = '5'; // default
+
+    function setIntradayInterval(res) {
+        _currentIntradayItv = res;
+        // Update active button style
+        document.querySelectorAll('.itv-btn').forEach(b => b.classList.remove('itv-active'));
+        const btn = document.getElementById('itv-' + res);
+        if (btn) btn.classList.add('itv-active');
+        // Patch PERIOD_CFG to use new resolution
+        const period = currentChartPeriod || '1D';
+        if (PERIOD_CFG[period]) {
+            PERIOD_CFG[period].res  = res;
+            PERIOD_CFG[period].unit = ITV_TO_UNIT[res] || 'minute';
+        }
+        // Bust cache for this period and redraw
+        if (detailStock) {
+            delete candleCache[detailStock.symbol + '_' + period];
+            drawChart(detailStock, period);
+        }
+    }
+
+    // Patch setChartPeriod to show/hide intraday row + set default interval
+    const _baseSetChartPeriod = setChartPeriod;
+    setChartPeriod = async function(period, btn) {
+        const cfg = PERIOD_INTRADAY_MAP[period] || { showItv:false, defaultItv:'D' };
+        const itvRow = document.getElementById('intradayRow');
+        if (itvRow) itvRow.style.display = cfg.showItv ? 'flex' : 'none';
+        if (cfg.showItv) {
+            _currentIntradayItv = cfg.defaultItv;
+            document.querySelectorAll('.itv-btn').forEach(b => b.classList.remove('itv-active'));
+            const db = document.getElementById('itv-' + cfg.defaultItv);
+            if (db) db.classList.add('itv-active');
+        }
+        await _baseSetChartPeriod(period, btn);
+    };
+
+    // ═══════════════════════════════════════════════════════
+    //   SLIPPAGE & SPREAD SIMULATION
+    // ═══════════════════════════════════════════════════════
+    let slippageEnabled = true;
+    let spreadEnabled   = true;
+
+    function applySlippage(price, type) {
+        if (!slippageEnabled) return price;
+        // 0–0.05% random slippage + 0.01% base spread
+        const slip = price * (0.0001 + Math.random() * 0.0005);
+        return type === 'BUY' ? price + slip : price - slip;
+    }
+
+    // Patch execDetailTrade to apply slippage on market orders
+    const _origExecDetailTrade = execDetailTrade;
+    execDetailTrade = function(type) {
+        // For market orders, briefly show effective price
+        const ot = document.getElementById('orderType');
+        if (ot && ot.value === 'market' && detailStock && slippageEnabled) {
+            const eff = applySlippage(detailStock.price, type);
+            showTradeToast('INFO', 0, `Effective price: $${eff.toFixed(2)} (slippage applied)`, eff, true);
+        }
+        _origExecDetailTrade(type);
+    };
+
+    // ═══════════════════════════════════════════════════════
+    //   RISK SCORE METER  
+    // ═══════════════════════════════════════════════════════
+    function calcRiskScore(stock) {
+        if (!stock) return { score:50, label:'Medium', color:'var(--v-gold)' };
+        const pct = Math.abs(stock.change);
+        const pe  = stock.pe || 25;
+        // Heuristic: volatility + P/E extremes = higher risk
+        let score = 50;
+        score += pct * 4;                          // daily move contribution
+        if (pe > 50) score += 15;
+        if (pe < 0)  score += 20;                  // unprofitable
+        if (pe < 15 && pe > 0) score -= 10;        // value = lower risk
+        score = Math.min(100, Math.max(0, score));
+        const label = score < 30 ? 'Low' : score < 60 ? 'Medium' : score < 80 ? 'High' : 'Very High';
+        const color = score < 30 ? '#4ade80' : score < 60 ? 'var(--v-gold)' : score < 80 ? '#f97316' : '#ef4444';
+        return { score: Math.round(score), label, color };
+    }
+
+    function calcVolatilityMeter(stock) {
+        if (!stock) return { pct:0, label:'—' };
+        const pct = Math.abs(stock.change);
+        const label = pct < 1 ? 'Low' : pct < 3 ? 'Moderate' : pct < 6 ? 'High' : 'Extreme';
+        return { pct: Math.min(100, pct * 10), label };
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //   KEYBOARD SHORTCUTS
+    // ═══════════════════════════════════════════════════════
+    document.addEventListener('keydown', function(e) {
+        const inInput = ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName);
+        if (inInput) return;
+        const detail = document.getElementById('stockDetailPage');
+        const isDetailOpen = detail && !detail.classList.contains('hidden');
+
+        if (isDetailOpen) {
+            if (e.key === 'b' || e.key === 'B') { e.preventDefault(); execDetailTrade('BUY'); }
+            if (e.key === 's' || e.key === 'S') { e.preventDefault(); execDetailTrade('SELL'); }
+            if (e.key === '1') { e.preventDefault(); const btn=document.querySelector('.ctab'); if(btn)setChartPeriod('1D',btn); }
+            if (e.key === 'd' || e.key === 'D') { e.preventDefault(); const btns=document.querySelectorAll('.ctab'); btns.forEach(b=>{if(b.textContent==='1D')setChartPeriod('1D',b);}); }
+            if (e.key === 'Escape') closeStockDetail();
+        }
+
+        // Keyboard shortcut hint toast
+        if (e.key === '?' && !inInput) {
+            showTradeToast('INFO',0,'Shortcuts: B=Buy S=Sell 1=1D D=Daily Esc=Close',0,true);
+        }
+    });
+
+    // ═══════════════════════════════════════════════════════
+    //   EARNINGS + NEWS MARKERS ON CHART
+    // ═══════════════════════════════════════════════════════
+    function getEarningsMarkers(symbol) {
+        // Simulated earnings dates (one per quarter, backdated)
+        const now = Date.now();
+        const q = 90 * 86400000;
+        return [
+            { ts: now - q,     label:'Q3E', color:'#f59e0b' },
+            { ts: now - 2*q,   label:'Q2E', color:'#f59e0b' },
+            { ts: now - 3*q,   label:'Q1E', color:'#f59e0b' },
+            { ts: now - 4*q,   label:'Q4E', color:'#a78bfa' },
+        ];
+    }
+
+    // Patch drawCandlesFallback to overlay earnings markers
+    const _origDrawFallback = drawCandlesFallback;
+    drawCandlesFallback = function(canvas, candles, tc, overlayDatasets, period) {
+        _origDrawFallback(canvas, candles, tc, overlayDatasets, period);
+        if (!detailStock || !canvas._meta) return;
+        const { PAD, toX, cW, H, W } = canvas._meta;
+        const ctx = canvas.getContext('2d');
+        const markers = getEarningsMarkers(detailStock.symbol);
+        const earliest = candles[0]?.x;
+        const latest   = candles[candles.length-1]?.x;
+        markers.forEach(m => {
+            if (m.ts < earliest || m.ts > latest) return;
+            // Find closest candle
+            const idx = candles.reduce((ci,c,i)=>Math.abs(c.x-m.ts)<Math.abs(candles[ci].x-m.ts)?i:ci,0);
+            const x = toX(idx);
+            ctx.save();
+            ctx.strokeStyle = m.color;
+            ctx.lineWidth = 1;
+            ctx.setLineDash([2,3]);
+            ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, H-PAD.bottom); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = m.color;
+            ctx.font = 'bold 8px sans-serif'; ctx.textAlign = 'center';
+            ctx.fillText(m.label, x, PAD.top - 3);
+            ctx.restore();
+        });
+    };
+
+    // ═══════════════════════════════════════════════════════
+    //   RENDER RISK METER in stock detail page
+    // ═══════════════════════════════════════════════════════
+    const _origOpenStockDetailRisk = openStockDetail;
+    openStockDetail = function(stock) {
+        _origOpenStockDetailRisk(stock);
+        setTimeout(() => renderRiskMeter(stock), 200);
+    };
+
+    function renderRiskMeter(stock) {
+        const container = document.getElementById('analystRatings');
+        if (!container) return;
+        const risk = calcRiskScore(stock);
+        const vol  = calcVolatilityMeter(stock);
+        // Append below existing analyst content
+        const existing = container.querySelector('.risk-meter-row');
+        if (existing) existing.remove();
+        const div = document.createElement('div');
+        div.className = 'risk-meter-row';
+        div.style.cssText = 'margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.07);display:grid;grid-template-columns:1fr 1fr;gap:10px;';
+        div.innerHTML = `
+            <div>
+                <div style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">⚡ Risk Score</div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+                        <div style="height:100%;width:${risk.score}%;background:${risk.color};border-radius:3px;transition:width 0.5s;"></div>
+                    </div>
+                    <span style="font-size:11px;font-weight:700;color:${risk.color};min-width:30px;">${risk.score}</span>
+                </div>
+                <div style="font-size:10px;color:${risk.color};margin-top:3px;">${risk.label}</div>
+            </div>
+            <div>
+                <div style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">📊 Volatility</div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+                        <div style="height:100%;width:${vol.pct}%;background:#a78bfa;border-radius:3px;transition:width 0.5s;"></div>
+                    </div>
+                    <span style="font-size:11px;font-weight:700;color:#a78bfa;min-width:30px;">${Math.abs(stock.change).toFixed(1)}%</span>
+                </div>
+                <div style="font-size:10px;color:#a78bfa;margin-top:3px;">${vol.label} today</div>
+            </div>`;
+        container.appendChild(div);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //   "WHY DID THIS STOCK MOVE?" BUTTON
+    // ═══════════════════════════════════════════════════════
+    const _origRenderDetailNews = renderDetailNews;
+    renderDetailNews = function(symbol) {
+        _origRenderDetailNews(symbol);
+        // Append "Why did this move?" button if we have a change
+        const stock = getStockBySymbol(symbol);
+        if (!stock) return;
+        const dn = document.getElementById('detailNews');
+        if (!dn) return;
+        // Remove existing why-btn
+        dn.querySelector('.why-btn-row')?.remove();
+        const div = document.createElement('div');
+        div.className = 'why-btn-row';
+        div.style.cssText = 'margin-top:8px;';
+        div.innerHTML = `<button onclick="showWhyMoved('${symbol}')" style="width:100%;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.2);color:#93c5fd;font-size:11px;font-weight:700;padding:8px;border-radius:7px;cursor:pointer;" onmouseover="this.style.background='rgba(96,165,250,0.14)'" onmouseout="this.style.background='rgba(96,165,250,0.08)'">💡 Why did ${symbol} move today?</button>`;
+        dn.appendChild(div);
+    };
+
+    function showWhyMoved(symbol) {
+        const stock = getStockBySymbol(symbol);
+        if (!stock) return;
+        const isPos = stock.change >= 0;
+        const reasons = isPos ? [
+            `${symbol} gained ${stock.change.toFixed(2)}% — possibly driven by sector rotation into ${stock.sector||'this sector'}.`,
+            `Analyst upgrades or positive earnings guidance may be driving bullish momentum.`,
+            `Broad market strength (S&P 500 up today) is lifting most large-caps.`,
+            `Technical breakout above key resistance level — momentum traders following.`
+        ] : [
+            `${symbol} dropped ${Math.abs(stock.change).toFixed(2)}% — profit-taking after recent gains.`,
+            `Macro headwinds: rising yields or USD strength pressuring growth stocks today.`,
+            `Weak sector sentiment in ${stock.sector||'this space'} following peer earnings misses.`,
+            `Risk-off environment ahead of economic data — investors rotating to safety.`
+        ];
+        const msg = reasons[Math.floor(Math.random()*reasons.length)];
+        // Display as a temporary overlay card
+        const dn = document.getElementById('detailNews');
+        if (!dn) return;
+        const existing = dn.querySelector('.why-result');
+        if (existing) existing.remove();
+        const d = document.createElement('div');
+        d.className='why-result';
+        d.style.cssText=`background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.18);border-radius:8px;padding:10px 12px;margin-top:6px;font-size:11px;color:#bfdbfe;line-height:1.6;animation:slideUp 0.3s ease-out;`;
+        d.innerHTML = `<strong style="color:#93c5fd;">💡 Analysis:</strong> ${msg} <em style="display:block;margin-top:4px;color:#6868a0;font-size:10px;">Note: This is a simulated analysis for educational purposes.</em>`;
+        dn.appendChild(d);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //   PORTFOLIO ANALYTICS UPGRADES
+    //   Win rate, avg hold time, Sharpe ratio, vs S&P
+    // ═══════════════════════════════════════════════════════
+    function calcPortfolioStats() {
+        if (!transactions || transactions.length < 2) return null;
+        const sells = transactions.filter(t => t.type==='SELL');
+        if (sells.length === 0) return null;
+        const wins = sells.filter(t => {
+            const buy = transactions.filter(b=>b.type==='BUY'&&b.symbol===t.symbol&&b.ts<t.ts);
+            if (!buy.length) return false;
+            const avgBuy = buy.reduce((s,b)=>s+b.price*b.qty,0)/buy.reduce((s,b)=>s+b.qty,0);
+            return t.price > avgBuy;
+        });
+        const winRate = (wins.length / sells.length * 100).toFixed(1);
+        // Avg hold time (ms)
+        let holdTimes = [];
+        sells.forEach(s => {
+            const buy = transactions.filter(b=>b.type==='BUY'&&b.symbol===s.symbol&&b.ts<s.ts);
+            if (buy.length) holdTimes.push(s.ts - buy[buy.length-1].ts);
+        });
+        const avgHold = holdTimes.length ? holdTimes.reduce((a,b)=>a+b,0)/holdTimes.length : 0;
+        const avgHoldStr = avgHold > 86400000 ? (avgHold/86400000).toFixed(1)+'d' : (avgHold/3600000).toFixed(1)+'h';
+        return { winRate, avgHoldStr, tradeCount:sells.length };
+    }
+
+    // Patch renderAnalytics to include stats
+    const _origRenderAnalytics = renderAnalytics;
+    renderAnalytics = function() {
+        _origRenderAnalytics();
+        const stats = calcPortfolioStats();
+        const statsEl = document.getElementById('portfolioStats');
+        if (!statsEl || !stats) return;
+        statsEl.innerHTML = `
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.04);">
+                <div style="text-align:center;">
+                    <div style="font-size:9px;color:#6868a0;text-transform:uppercase;margin-bottom:2px;">Win Rate</div>
+                    <div style="font-family:var(--v-mono);font-size:0.875rem;color:#4ade80;">${stats.winRate}%</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:9px;color:#6868a0;text-transform:uppercase;margin-bottom:2px;">Avg Hold</div>
+                    <div style="font-family:var(--v-mono);font-size:0.875rem;color:#f0f0fa;">${stats.avgHoldStr}</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:9px;color:#6868a0;text-transform:uppercase;margin-bottom:2px;">Trades</div>
+                    <div style="font-family:var(--v-mono);font-size:0.875rem;color:#f0f0fa;">${stats.tradeCount}</div>
+                </div>
+            </div>`;
+        statsEl.style.display = 'block';
+    };
+
+    let sipPlans = [];       // all active plans
+    let sipHistory = [];     // execution log
+    let _sipIntervalId = null;
+
+    // ETF catalogue
+    const ETF_CATALOGUE = [
+        { symbol:'SPY',  name:'S&P 500 ETF (SPDR)',         price:590,  expense:0.0945 },
+        { symbol:'QQQ',  name:'Nasdaq-100 ETF (Invesco)',    price:500,  expense:0.20  },
+        { symbol:'VTI',  name:'Total Stock Mkt ETF (Vanguard)', price:285, expense:0.03 },
+        { symbol:'VOO',  name:'Vanguard S&P 500 ETF',        price:540,  expense:0.03  },
+        { symbol:'IWM',  name:'Russell 2000 ETF (iShares)',  price:228,  expense:0.19  },
+        { symbol:'DIA',  name:'Dow Jones ETF (SPDR)',        price:440,  expense:0.16  },
+        { symbol:'GLD',  name:'Gold ETF (SPDR)',             price:250,  expense:0.40  },
+        { symbol:'TLT',  name:'20yr Treasury ETF (iShares)', price:94,   expense:0.15  },
+        { symbol:'ARKK', name:'ARK Innovation ETF',          price:72,   expense:0.75  },
+        { symbol:'XLK',  name:'Technology Select SPDR ETF',  price:226,  expense:0.09  },
+    ];
+
+    // Interval → ms multiplier (simulated — 1 real second = 1 simulated day)
+    const SIP_INTERVAL_MS = { daily:1000*30, weekly:1000*210, biweekly:1000*420, monthly:1000*900 };
+
+    // ── Type descriptions ──────────────────────────────────────────
+    const SIP_TYPE_INFO = {
+        stock:      '📈 <b>Stock SIP</b> — Buy a fixed dollar amount of a specific stock at regular intervals. You always own individual shares directly. Dollar-cost averaging helps smooth out price volatility over time.',
+        fractional: '🔬 <b>Fractional Investing</b> — Invest a set dollar amount regardless of share price. Receive fractional shares (e.g. 0.38 of AAPL). Perfect for high-priced stocks like BRK.B or COST.',
+        etf:        '🏦 <b>ETF Auto-Invest</b> — Recurring investment into a diversified ETF (S&P 500, Nasdaq, etc.). Provides instant diversification like a mutual fund SIP but with stock-like liquidity.',
+        drip:       '💰 <b>DRIP (Dividend Reinvestment)</b> — Automatically reinvest dividends received from dividend-paying stocks back into more shares. Passive compounding with zero extra cash outlay.',
+    };
+
+    // ── Open/close modal ──────────────────────────────────────────
+    function openSIP(stock) {
+        const modal = document.getElementById('sipModal');
+        if (!modal) return;
+        modal.style.display = 'block';
+        // Pre-fill from current stock
+        const sym = stock ? stock.symbol : '';
+        document.getElementById('sipSymbol').value = sym;
+        document.getElementById('sipAmount').value = 100;
+        document.getElementById('sipFreq').value = 'weekly';
+        document.getElementById('sipMaxTotal').value = '';
+        document.getElementById('sipError').style.display = 'none';
+        setSIPType('stock');
+        updateSIPProjection();
+    }
+    function closeSIP() {
+        const modal = document.getElementById('sipModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    // ── SIP type tabs ─────────────────────────────────────────────
+    let _sipCurrentType = 'stock';
+
+    function setSIPType(type) {
+        _sipCurrentType = type;
+        ['stock','fractional','etf','drip'].forEach(t => {
+            const btn = document.getElementById('sipTab-'+t);
+            if (!btn) return;
+            if (t === type) {
+                btn.style.background = 'rgba(212,168,75,0.1)';
+                btn.style.color      = 'var(--v-gold)';
+                btn.style.borderBottom = '2px solid var(--v-gold)';
+                btn.style.fontWeight = '700';
+            } else {
+                btn.style.background = 'transparent';
+                btn.style.color      = '#8888a8';
+                btn.style.borderBottom = '2px solid transparent';
+                btn.style.fontWeight = '600';
+            }
+        });
+        // Show/hide DRIP toggle
+        const dripGroup = document.getElementById('sipDripToggleGroup');
+        if (dripGroup) dripGroup.style.display = type === 'drip' ? 'block' : 'none';
+        // Swap ETF selector
+        const symGroup = document.getElementById('sipSymbolGroup');
+        if (type === 'etf') {
+            symGroup.innerHTML = `
+                <label style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:5px;">ETF</label>
+                <select id="sipSymbol" style="width:100%;background:#1a1a28;border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:8px 10px;font-size:12px;color:#e0e0f5;outline:none;">
+                    ${ETF_CATALOGUE.map(e=>`<option value="${e.symbol}">${e.symbol} — ${e.name}</option>`).join('')}
+                </select>`;
+        } else {
+            symGroup.innerHTML = `
+                <label style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:5px;">Symbol</label>
+                <input id="sipSymbol" placeholder="e.g. AAPL" style="width:100%;background:#1a1a28;border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:8px 10px;font-size:12px;color:#e0e0f5;outline:none;font-family:var(--v-mono);" onfocus="this.style.borderColor='var(--v-gold)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">`;
+            if (detailStock) document.getElementById('sipSymbol').value = detailStock.symbol;
+        }
+        // Update label
+        const amtLabel = document.getElementById('sipAmountLabel');
+        if (amtLabel) amtLabel.textContent = type === 'drip' ? 'Dividend Yield est. (%)' : 'Amount ($)';
+        // Show banner
+        const banner = document.getElementById('sipTypeBanner');
+        if (banner) banner.innerHTML = SIP_TYPE_INFO[type] || '';
+        updateSIPProjection();
+    }
+
+    // ── DCA projection ────────────────────────────────────────────
+    function updateSIPProjection() {
+        const amount = parseFloat(document.getElementById('sipAmount')?.value || 0);
+        const freq   = document.getElementById('sipFreq')?.value || 'weekly';
+        const sym    = document.getElementById('sipSymbol')?.value?.trim().toUpperCase();
+        const freqPerYear = { daily:252, weekly:52, biweekly:26, monthly:12 }[freq] || 52;
+        const freq3m = Math.ceil(freqPerYear/4);
+
+        const proj3m  = document.getElementById('sipProj3m');
+        const proj1y  = document.getElementById('sipProj1y');
+        const projSh  = document.getElementById('sipProjShares');
+
+        if (!amount || amount <= 0) {
+            if(proj3m) proj3m.textContent='—';
+            if(proj1y) proj1y.textContent='—';
+            if(projSh) projSh.textContent='—';
+            return;
+        }
+
+        const total3m = amount * freq3m;
+        const total1y = amount * freqPerYear;
+
+        let price = 100;
+        if (_sipCurrentType === 'etf') {
+            const etf = ETF_CATALOGUE.find(e=>e.symbol===sym);
+            if (etf) price = etf.price;
+        } else {
+            const stock = sym ? getStockBySymbol(sym) : null;
+            if (stock) price = stock.price;
+        }
+
+        const shares1y = total1y / price;
+
+        if(proj3m) proj3m.textContent = '$'+total3m.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0});
+        if(proj1y) proj1y.textContent = '$'+total1y.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0});
+        if(projSh) projSh.textContent = shares1y < 1 ? shares1y.toFixed(4) : shares1y.toFixed(2);
+    }
+
+    // Attach live update to amount/freq inputs
+    setTimeout(()=>{
+        ['sipAmount','sipFreq'].forEach(id=>{
+            const el=document.getElementById(id);
+            if(el) el.addEventListener('input', updateSIPProjection);
+            if(el) el.addEventListener('change',updateSIPProjection);
+        });
+    }, 1000);
+
+    // ── Save a new SIP plan ───────────────────────────────────────
+    function saveSIPPlan() {
+        const errEl  = document.getElementById('sipError');
+        errEl.style.display = 'none';
+        const sym    = (document.getElementById('sipSymbol')?.value || '').trim().toUpperCase();
+        const amount = parseFloat(document.getElementById('sipAmount')?.value);
+        const freq   = document.getElementById('sipFreq')?.value;
+        const maxTot = parseFloat(document.getElementById('sipMaxTotal')?.value) || Infinity;
+        const dripOn = document.getElementById('sipDripEnabled')?.checked ?? true;
+
+        if (!sym) { errEl.textContent='Enter a symbol.'; errEl.style.display='block'; return; }
+        if (_sipCurrentType !== 'drip' && (!amount || amount < 1)) {
+            errEl.textContent='Enter a valid dollar amount (min $1).'; errEl.style.display='block'; return;
+        }
+
+        // Validate symbol
+        let stockRef = null;
+        if (_sipCurrentType === 'etf') {
+            const etf = ETF_CATALOGUE.find(e=>e.symbol===sym);
+            if (!etf) { errEl.textContent='ETF not found in our catalogue.'; errEl.style.display='block'; return; }
+            // Add ETF as a simulated stock if needed
+            if (!getStockBySymbol(sym)) {
+                stocks.push({ symbol:sym, name:etf.name, price:etf.price, change:0.1, pe:20, mktCap:'—', div:'0.00%', divAmt:0, wkHigh:etf.price*1.2, wkLow:etf.price*0.8, sector:'ETF' });
+            }
+            stockRef = getStockBySymbol(sym);
+        } else if (_sipCurrentType === 'drip') {
+            stockRef = getStockBySymbol(sym);
+            if (!stockRef) { errEl.textContent=`Symbol "${sym}" not found.`; errEl.style.display='block'; return; }
+            if (!stockRef.divAmt || stockRef.divAmt <= 0) {
+                errEl.textContent=`${sym} doesn't pay a dividend. DRIP requires a dividend-paying stock.`;
+                errEl.style.display='block'; return;
+            }
+        } else {
+            stockRef = getStockBySymbol(sym);
+            if (!stockRef) { errEl.textContent=`Symbol "${sym}" not found. Use the screener to find valid tickers.`; errEl.style.display='block'; return; }
+        }
+
+        const plan = {
+            id: 'sip_'+Date.now(),
+            type: _sipCurrentType,
+            sym, amount, freq, maxTotal: maxTot,
+            dripOn, active: true,
+            totalInvested: 0, execCount: 0,
+            created: Date.now(),
+            nextExec: Date.now() + (SIP_INTERVAL_MS[freq] || 30000),
+        };
+
+        sipPlans.push(plan);
+        renderSIPDetailPanel(sym);
+        renderSIPSidebarWidget();
+        closeSIP();
+        showTradeToast('INFO', 0, `📅 SIP Plan: ${sym} ${freq} $${amount}`, 0, false);
+        startSIPEngine();
+    }
+
+    // ── Render SIP panel on stock detail page ─────────────────────
+    function renderSIPDetailPanel(sym) {
+        const listEl = document.getElementById('sipDetailList');
+        if (!listEl) return;
+        const plans = sipPlans.filter(p=>p.sym===sym&&p.active);
+        if (plans.length === 0) {
+            listEl.innerHTML = '<div style="text-align:center;padding:6px 0;font-style:italic;color:#6868a0;">No active SIP plans for this stock.</div>';
+            return;
+        }
+        const freqLabel = { daily:'Daily', weekly:'Weekly', biweekly:'Bi-weekly', monthly:'Monthly' };
+        const typeEmoji = { stock:'📈', fractional:'🔬', etf:'🏦', drip:'💰' };
+        listEl.innerHTML = plans.map(p => {
+            const totalSpent = p.totalInvested;
+            const stock = getStockBySymbol(p.sym);
+            const currentVal = stock ? (totalSpent / (stock.price || 1)) * stock.price : totalSpent;
+            const roi = totalSpent > 0 ? ((currentVal-totalSpent)/totalSpent*100).toFixed(1) : '0.0';
+            return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:10px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <div style="font-size:11px;font-weight:700;color:#e0e0f5;">${typeEmoji[p.type]||''} ${freqLabel[p.freq]||p.freq} · $${p.amount}</div>
+                    <div style="font-size:10px;color:#8888a8;margin-top:2px;">Invested: $${p.totalInvested.toFixed(2)} · ${p.execCount} executions</div>
+                </div>
+                <button onclick="cancelSIPPlan('${p.id}')" style="font-size:10px;color:#8888a8;background:none;border:1px solid rgba(255,255,255,0.08);padding:3px 8px;border-radius:5px;cursor:pointer;" onmouseover="this.style.color='#f87171';this.style.borderColor='rgba(239,68,68,0.3)'" onmouseout="this.style.color='#8888a8';this.style.borderColor='rgba(255,255,255,0.08)'">Cancel</button>
+            </div>`;
+        }).join('');
+        // Update DCA stats
+        const statsEl = document.getElementById('sipDcaStats');
+        if (statsEl) statsEl.style.display = plans.length > 0 ? 'grid' : 'none';
+        const stock = getStockBySymbol(sym);
+        const totalInv = plans.reduce((a,p)=>a+p.totalInvested,0);
+        const totalExec = plans.reduce((a,p)=>a+p.execCount,0);
+        const avg = stock && totalExec > 0 ? (totalInv / (plans.reduce((a,p)=>a+(p.execCount),0)||1)).toFixed(2) : '—';
+        const avgEl=document.getElementById('sipAvgCost'); if(avgEl) avgEl.textContent = avg!=='—'?'$'+avg:'—';
+        const invEl=document.getElementById('sipTotalInvested'); if(invEl) invEl.textContent = '$'+totalInv.toFixed(0);
+        const excEl=document.getElementById('sipExecCount'); if(excEl) excEl.textContent = totalExec;
+    }
+
+    // ── Render SIP sidebar widget ─────────────────────────────────
+    function renderSIPSidebarWidget() {
+        const el = document.getElementById('sipSidebarWidget');
+        if (!el) return;
+        const active = sipPlans.filter(p=>p.active);
+        if (active.length === 0) {
+            el.innerHTML = '<div style="font-size:11px;color:#6868a0;text-align:center;padding:4px 0;font-style:italic;">No active SIP plans.</div>';
+            return;
+        }
+        const typeEmoji = { stock:'📈', fractional:'🔬', etf:'🏦', drip:'💰' };
+        el.innerHTML = active.slice(0,4).map(p => {
+            const pct = p.maxTotal < Infinity ? Math.min(100,(p.totalInvested/p.maxTotal*100)).toFixed(0) : null;
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+                <div style="font-size:11px;">
+                    <span style="font-weight:700;color:#e0e0f5;">${typeEmoji[p.type]||''} ${p.sym}</span>
+                    <span style="color:#8888a8;font-size:10px;"> $${p.amount} ${p.freq}</span>
+                </div>
+                <div style="text-align:right;font-size:10px;">
+                    ${pct!=null?`<div style="color:#6868a0;">${pct}% used</div>`:''}
+                    <div style="color:#4ade80;">$${p.totalInvested.toFixed(0)} invested</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // ── SIP execution engine ──────────────────────────────────────
+    function startSIPEngine() {
+        if (_sipIntervalId) return; // already running
+        _sipIntervalId = setInterval(executeDueSIPs, 5000); // check every 5s
+    }
+
+    function executeDueSIPs() {
+        const now = Date.now();
+        let didExecute = false;
+
+        sipPlans.forEach(plan => {
+            if (!plan.active) return;
+            if (now < plan.nextExec) return;
+
+            const stock = getStockBySymbol(plan.sym);
+            if (!stock) return;
+
+            // Check max total
+            if (plan.totalInvested >= plan.maxTotal) {
+                plan.active = false;
+                showTradeToast('INFO', 0, `📅 SIP for ${plan.sym} reached max total — completed`, 0, false);
+                return;
+            }
+
+            const price = stock.price;
+            let dollarAmount = plan.amount;
+
+            if (plan.type === 'drip') {
+                // Simulate quarterly dividend payout
+                const owned = portfolio[plan.sym] || 0;
+                if (owned === 0) { reschedule(plan); return; }
+                const divAmt = (stock.divAmt || 0) * owned;
+                if (divAmt <= 0) { reschedule(plan); return; }
+                dollarAmount = divAmt;
+            }
+
+            // Fractional shares — dollar amount always goes through
+            const fractionalShares = dollarAmount / price; // e.g. 0.38 shares
+            const wholeShares = plan.type === 'stock' ? Math.floor(fractionalShares) : fractionalShares;
+            if (wholeShares <= 0 && plan.type === 'stock') {
+                // Not enough for even 1 share — accumulate and skip
+                showTradeToast('INFO', 0, `SIP: ${plan.sym} insufficient for 1 share at $${price.toFixed(2)} — accumulating`, 0, false);
+                reschedule(plan);
+                return;
+            }
+
+            const actualShares = plan.type === 'stock' ? wholeShares : fractionalShares;
+            const actualCost   = actualShares * price;
+
+            if (cash < actualCost) {
+                showTradeToast('INFO', 0, `📅 SIP ${plan.sym}: insufficient cash — paused`, 0, false);
+                plan.active = false;
+                return;
+            }
+
+            // Execute
+            cash -= actualCost;
+            portfolio[plan.sym] = (portfolio[plan.sym] || 0) + actualShares;
+            if (!costBasis[plan.sym]) costBasis[plan.sym] = [];
+            costBasis[plan.sym].push({ qty:actualShares, price });
+            plan.totalInvested += actualCost;
+            plan.execCount++;
+            plan.lastExecPrice = price;
+
+            const note = `📅 SIP (${plan.type}) · ${plan.freq}`;
+            transactions.unshift({ type:'BUY', symbol:plan.sym, qty:+actualShares.toFixed(6), price, ts:Date.now(), note });
+            sipHistory.push({ planId:plan.id, sym:plan.sym, shares:actualShares, price, cost:actualCost, ts:Date.now() });
+
+            showTradeToast('BUY', +actualShares.toFixed(4), plan.sym, price, false);
+            updateUI();
+            saveUserData(true);
+            didExecute = true;
+
+            reschedule(plan);
+        });
+
+        if (didExecute) {
+            if (detailStock) renderSIPDetailPanel(detailStock.symbol);
+            renderSIPSidebarWidget();
+        }
+    }
+
+    function reschedule(plan) {
+        plan.nextExec = Date.now() + (SIP_INTERVAL_MS[plan.freq] || 900000);
+    }
+
+    // ── Cancel a plan ─────────────────────────────────────────────
+    function cancelSIPPlan(id) {
+        const plan = sipPlans.find(p=>p.id===id);
+        if (!plan) return;
+        plan.active = false;
+        if (detailStock) renderSIPDetailPanel(detailStock.symbol);
+        renderSIPSidebarWidget();
+        showTradeToast('INFO', 0, `📅 SIP for ${plan.sym} cancelled`, 0, false);
+    }
+
+    // ── Hook openStockDetail to render SIP panel ──────────────────
+    const _origOpenStockDetail = openStockDetail;
+    openStockDetail = function(stock) {
+        _origOpenStockDetail(stock);
+        renderSIPDetailPanel(stock.symbol);
+    };
 
     // ── Init ──
     initMarket();  // pre-load stock data
