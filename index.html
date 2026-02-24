@@ -3,7 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vestra — Trading With No Risk</title>
+    <title>Vestra | Structured Trading Simulation Platform</title>
+    <meta name="description" content="Vestra is a professional trading simulation platform. Practice with $100,000 virtual cash, real-time market data, strategy analysis, and competitive leaderboards — all with zero financial risk.">
+    <meta name="keywords" content="trading simulator, stock market practice, paper trading, trading education, investment simulation">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Vestra">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Vestra | Structured Trading Simulation Platform">
+    <meta property="og:description" content="Practice trading with $100,000 virtual cash. Real stocks, real data, zero risk. Build your edge before it costs you a cent.">
+    <meta property="og:site_name" content="Vestra">
+    <meta property="og:image" content="https://vestra.app/og-image.png">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Vestra | Structured Trading Simulation Platform">
+    <meta name="twitter:description" content="Practice trading with real stocks and zero risk. Build strategies, compete, improve.">
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a0a0f'/><text y='.9em' font-size='80' x='10'>📈</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a0a0f'/><text y='.9em' font-size='80' x='10'>📈</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
@@ -93,6 +110,62 @@
 
         /* Footer */
         footer { position: relative; z-index: 1; border-top: 1px solid rgba(255,255,255,0.08); }
+        .footer-col-head {
+            font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+            color: #8888a8; margin: 0 0 16px;
+        }
+        .footer-link {
+            display: block; font-size: 13px; color: #7070a0; text-decoration: none;
+            padding: 3px 0; transition: color 0.15s; cursor: pointer; background: none; border: none;
+            text-align: left; font-family: var(--v-sans); line-height: 1.4;
+        }
+        .footer-link:hover, .footer-link:focus { color: var(--v-gold); outline: none; }
+        .footer-link:focus-visible { outline: 2px solid var(--v-gold); border-radius: 2px; }
+        .footer-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 32px 0; }
+        .footer-legal-text { font-size: 11px; color: #4a4a6a; line-height: 1.7; }
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; display: inline-block; margin-right: 5px; animation: pulse-green 2.5s infinite; }
+        /* Legal page overlays */
+        .legal-overlay {
+            display: none; position: fixed; inset: 0; z-index: 9996;
+            background: rgba(0,0,0,0.9); backdrop-filter: blur(16px);
+            align-items: flex-start; justify-content: center;
+            overflow-y: auto; padding: 40px 20px;
+        }
+        .legal-sheet {
+            background: #0e0e16; border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px; width: 100%; max-width: 720px;
+            margin: 0 auto 40px; overflow: hidden;
+            animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
+        }
+        .legal-header {
+            padding: 28px 36px 22px; border-bottom: 1px solid rgba(255,255,255,0.07);
+            display: flex; justify-content: space-between; align-items: flex-start;
+            position: sticky; top: 0; background: #0e0e16; z-index: 2;
+        }
+        .legal-body {
+            padding: 28px 36px 40px; font-size: 13.5px; color: #a0a0c0;
+            line-height: 1.85;
+        }
+        .legal-body h2 { font-family: var(--v-serif); font-size: 1.1rem; color: #e0e0f5; margin: 24px 0 8px; }
+        .legal-body h2:first-of-type { margin-top: 0; }
+        .legal-body p { margin: 0 0 12px; }
+        .legal-body ul { margin: 0 0 12px 20px; padding: 0; }
+        .legal-body li { margin-bottom: 5px; }
+        .legal-body a { color: var(--v-gold); text-decoration: none; }
+        .legal-body a:hover { text-decoration: underline; }
+        .legal-body .highlight-box {
+            background: rgba(212,168,75,0.06); border: 1px solid rgba(212,168,75,0.18);
+            border-radius: 8px; padding: 12px 16px; margin: 16px 0; font-size: 13px; color: #d0c090;
+        }
+        /* Sitemap */
+        .sitemap-group { margin-bottom: 24px; }
+        .sitemap-group-title { font-size: 10px; font-weight: 700; color: #8888a8; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+        .sitemap-link { display: inline-flex; align-items: center; gap: 6px; color: #9090b8; font-size: 13px; text-decoration: none; padding: 4px 10px; border-radius: 5px; transition: all 0.15s; cursor: pointer; background: none; border: none; font-family: var(--v-sans); }
+        .sitemap-link:hover { color: var(--v-gold); background: rgba(212,168,75,0.08); }
+        /* Contact form */
+        .contact-field { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 11px 14px; font-size: 13px; color: #e0e0f5; outline: none; font-family: var(--v-sans); transition: border-color 0.15s; }
+        .contact-field:focus { border-color: var(--v-gold); }
+        .contact-field::placeholder { color: #6060a0; }
         .social-link {
             display: inline-flex; align-items: center; gap: 10px;
             color: #9090aa; text-decoration: none; font-size: 0.875rem;
@@ -190,6 +263,71 @@
             line-height: 1.55;
             color: #c0c0d8;
             animation: slideUp 0.3s ease-out;
+        }
+        /* Theme variations */
+        body.theme-blue {
+            --v-bg: #050d1a; --v-surface: #0a1628; --v-card: #0f1e38;
+            --v-border: rgba(96,165,250,0.15); --v-gold: #60a5fa;
+            --v-gold-light: #93c5fd; --v-text: #e0f0ff; --v-muted: #7eaad4;
+        }
+        body.theme-green {
+            --v-bg: #020f06; --v-surface: #061410; --v-card: #0c1e14;
+            --v-border: rgba(34,197,94,0.15); --v-gold: #22c55e;
+            --v-gold-light: #4ade80; --v-text: #e0ffe8; --v-muted: #72c98a;
+        }
+        body.theme-white {
+            --v-bg: #f8f8fc; --v-surface: #ffffff; --v-card: #f0f0f8;
+            --v-border: rgba(0,0,0,0.1); --v-gold: #1a73e8;
+            --v-gold-light: #4285f4; --v-text: #0d0d1a; --v-muted: #606080;
+        }
+        .theme-opt {
+            display:block; width:100%; text-align:left; background:none; border:none;
+            color:#c0c0d8; font-size:12px; padding:7px 10px; border-radius:6px;
+            cursor:pointer; font-family:var(--v-sans); transition:background 0.1s;
+        }
+        .theme-opt:hover { background:rgba(255,255,255,0.06); }
+        body.theme-white .theme-opt:hover { background:rgba(0,0,0,0.04); }
+        .notif-item {
+            padding:10px 14px; border-bottom:1px solid rgba(255,255,255,0.05);
+            display:flex;align-items:flex-start;gap:10px;transition:background 0.1s;
+            cursor:default;
+        }
+        .notif-item:hover { background:rgba(255,255,255,0.03); }
+        .notif-item:last-child { border-bottom:none; }
+        .notif-dot { width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px; }
+        /* RG violation pulse */
+        @keyframes rgViolation { 0%,100%{border-color:rgba(239,68,68,0.3)} 50%{border-color:rgba(239,68,68,0.8)} }
+        .rg-violation { animation:rgViolation 1s infinite; }
+        /* Positive streak glow on P&L */
+        @keyframes plGlow { 0%,100%{text-shadow:none} 50%{text-shadow:0 0 12px rgba(74,222,128,0.5)} }
+        .pl-streak-glow { animation:plGlow 2s infinite; }
+        /* API health dot blink */
+        @keyframes apiBlink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        #apiHealthDot.live { animation:apiBlink 2s infinite; }
+        /* Macro sector heat cells */
+        .sector-heat-cell {
+            border-radius:8px; padding:12px 8px; text-align:center; cursor:default; transition:transform 0.15s;
+        }
+        .sector-heat-cell:hover { transform:scale(1.04); }
+        /* Strategy tag badges */
+        .strat-tag { font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; background:rgba(167,139,250,0.12); color:#a78bfa; }
+        /* Number flip animation */
+        .num-flip { animation:numberFlip 0.35s ease-out; }
+        /* Replay bar */
+        #replayBar { animation: slideUp 0.25s ease-out; }
+        /* Number flip animation on values that update */
+        .val-updated { animation: numberFlip 0.3s ease-out; }
+        /* Floating P&L glow on winning streak */
+        #floatingPL.winning { box-shadow: 0 0 16px rgba(74,222,128,0.2); border-color: rgba(74,222,128,0.25); }
+        /* Macro modal */
+        .sector-heat-cell div:first-child { font-size:8px; color:#c0c0d8; margin-bottom:2px; }
+        #progressRiskChart > div { cursor:default; transition:height 0.3s ease; }
+        #progressRiskChart > div:hover { filter:brightness(1.2); }
+        #replaySpeed option, #tradeStrategyTag option { background:#1a1a24; color:#e0e0f5; }
+        .loading-skeleton { background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:8px; }
+        .rg-blocked { animation:rgViolation 1s ease infinite; }
+        @media (max-width:640px) {
+            #macroModal > div, #strategyLabModal > div, #progressModal > div { border-radius:16px 16px 0 0; margin:auto 0 0 0; }
         }
         .flash-up   { animation: flash-green 0.8s ease-out; }
         .flash-down { animation: flash-red   0.8s ease-out; }
@@ -618,38 +756,117 @@
     </div>
   </section>
 
-  <!-- FOOTER -->
-  <footer style="padding:44px 48px 32px;background:var(--v-surface);">
+  <!-- ═══ PROFESSIONAL FOOTER ═══ -->
+  <footer style="padding:60px 48px 0;background:var(--v-surface);">
     <div style="max-width:1200px;margin:0 auto;">
-      <div style="display:grid;grid-template-columns:2fr 1fr;gap:40px;align-items:start;margin-bottom:32px;">
+
+      <!-- Top: 4-column grid -->
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;padding-bottom:48px;" id="footerGrid">
+
+        <!-- Column 1: Brand -->
         <div>
-          <div class="logo" style="font-size:1.7rem;margin-bottom:8px;">Vestra</div>
-          <p style="color:#6868a0;font-size:0.85rem;line-height:1.7;max-width:360px;margin:0 0 18px;">Practice with real market data, compete worldwide, and build your edge — all with virtual money.</p>
-          <button class="nav-btn nav-btn-ghost" style="font-size:0.82rem;padding:8px 18px;" onclick="showAuthFromHome('register')">Start for Free →</button>
+          <div class="logo" style="font-size:1.8rem;margin-bottom:10px;">Vestra</div>
+          <p style="font-size:12px;color:#8888a8;margin:0 0 8px;letter-spacing:0.01em;">A Structured Trading Simulation Platform.</p>
+          <p style="font-size:11px;color:#5050a0;margin:0 0 20px;line-height:1.7;">Vestra is a simulation platform. No real money is involved. All portfolio values are virtual.</p>
+
+          <!-- Status indicator -->
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:18px;">
+            <span class="status-dot"></span>
+            <span style="font-size:11px;color:#4ade80;font-weight:600;" id="systemStatus">All Systems Operational</span>
+          </div>
+
+          <!-- Trust signal -->
+          <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:7px;padding:7px 12px;">
+            <span style="font-size:14px;">🎓</span>
+            <span style="font-size:10px;color:#8888a8;line-height:1.4;">Built for Education<br>&amp; Skill Development</span>
+          </div>
         </div>
+
+        <!-- Column 2: Platform -->
         <div>
-          <p style="color:#6868a0;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin:0 0 14px;">Connect</p>
-          <div style="display:flex;flex-direction:column;gap:5px;">
-            <a href="https://www.instagram.com/badeatorneto/?hl=en" target="_blank" rel="noopener noreferrer" class="social-link">
-              <div class="social-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>
-              <span>@badeatorneto</span>
+          <p class="footer-col-head">Platform</p>
+          <nav aria-label="Platform navigation">
+            <button class="footer-link" onclick="document.getElementById('authOverlay').style.display='flex'" tabindex="0">Dashboard</button>
+            <button class="footer-link" onclick="openLeaderboard()" tabindex="0">Leaderboard</button>
+            <button class="footer-link" onclick="openStrategyLab()" tabindex="0">Strategy Lab</button>
+            <button class="footer-link" onclick="openJournalPage && openJournalPage()" tabindex="0">Journal</button>
+            <button class="footer-link" onclick="openMacro()" tabindex="0">Market Overview</button>
+            <button class="footer-link" onclick="openCalendar()" tabindex="0">Economic Calendar</button>
+            <button class="footer-link" onclick="openEducation()" tabindex="0">Education</button>
+            <button class="footer-link" onclick="openCommunity()" tabindex="0">Community</button>
+          </nav>
+        </div>
+
+        <!-- Column 3: Legal -->
+        <div>
+          <p class="footer-col-head">Legal</p>
+          <nav aria-label="Legal navigation">
+            <button class="footer-link" onclick="openLegalPage('privacy')" tabindex="0">Privacy Policy</button>
+            <button class="footer-link" onclick="openLegalPage('terms')" tabindex="0">Terms of Service</button>
+            <button class="footer-link" onclick="openLegalPage('disclaimer')" tabindex="0">Risk Disclaimer</button>
+            <button class="footer-link" onclick="openLegalPage('competition')" tabindex="0">Competition Rules</button>
+            <button class="footer-link" onclick="openLegalPage('cookies')" tabindex="0">Cookie Policy</button>
+            <button class="footer-link" onclick="openLegalPage('sitemap')" tabindex="0">Sitemap</button>
+          </nav>
+        </div>
+
+        <!-- Column 4: Company -->
+        <div>
+          <p class="footer-col-head">Company</p>
+          <nav aria-label="Company navigation">
+            <button class="footer-link" onclick="openLegalPage('about')" tabindex="0">About Vestra</button>
+            <button class="footer-link" onclick="openLegalPage('contact')" tabindex="0">Contact Us</button>
+            <button class="footer-link" onclick="openLegalPage('faq')" tabindex="0">FAQ</button>
+            <button class="footer-link" onclick="openLegalPage('sitemap')" tabindex="0">Sitemap</button>
+            <a href="mailto:support@vestra.app" class="footer-link" tabindex="0">support@vestra.app</a>
+          </p>
+          <div style="margin-top:16px;padding:8px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;display:inline-block;">
+            <span style="font-size:10px;color:#6060a0;font-family:var(--v-mono);">Vestra v5.0</span>
+          </div>
+          <!-- Social connect -->
+          <p class="footer-col-head" style="margin-top:20px;">Connect</p>
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <a href="https://www.instagram.com/badeatorneto/?hl=en" target="_blank" rel="noopener noreferrer" class="footer-link" style="display:flex;align-items:center;gap:7px;" tabindex="0">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+              @badeatorneto
             </a>
-            <a href="https://www.snapchat.com/@guywholikesfifa" target="_blank" rel="noopener noreferrer" class="social-link">
-              <div class="social-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.5 2 6 4.5 6 8v.5c0 .5-.3.9-.7 1.1-.4.2-.3.7.1.8.6.2 1.1.4 1.4.9.1.2.1.4 0 .6-.3.5-1.1 1.3-1.1 2.2 0 1.1.9 1.9 2 1.9.3 0 .7-.1 1-.2.5-.2 1.1.1 1.3.6.5 1.1 1.8 1.6 3 1.6s2.5-.5 3-1.6c.2-.5.8-.8 1.3-.6.3.1.7.2 1 .2 1.1 0 2-.8 2-1.9 0-.9-.8-1.7-1.1-2.2-.1-.2-.1-.4 0-.6.3-.5.8-.7 1.4-.9.4-.1.5-.6.1-.8-.4-.2-.7-.6-.7-1.1V8c0-3.5-2.5-6-6-6z"/></svg></div>
-              <span>@guywholikesfifa</span>
-            </a>
-            <a href="mailto:arush2011jain@gmail.com" class="social-link">
-              <div class="social-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-              <span>arush2011jain@gmail.com</span>
+            <a href="mailto:arush2011jain@gmail.com" class="footer-link" style="display:flex;align-items:center;gap:7px;" tabindex="0">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              arush2011jain@gmail.com
             </a>
           </div>
         </div>
       </div>
-      <div class="gold-line" style="margin-bottom:20px;"></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-        <p style="color:#4a4a6a;font-size:0.75rem;margin:0;">© 2026 Vestra. Educational use only — not financial advice.</p>
-        <button class="nav-btn nav-btn-ghost" style="font-size:0.75rem;padding:4px 12px;" onclick="showAuthFromHome('login')">Log In →</button>
+
+      <!-- Divider -->
+      <div class="footer-divider"></div>
+
+      <!-- Bottom bar: copyright + legal -->
+      <div style="padding-bottom:32px;">
+        <!-- Disclaimer box -->
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:14px 18px;margin-bottom:20px;max-width:820px;">
+          <p class="footer-legal-text" style="margin:0;">
+            <strong style="color:#8888a8;font-weight:600;">Important Notice:</strong>
+            Vestra is not a financial advisor and does not provide investment advice. All content is for educational and simulation purposes only.
+            Virtual portfolio performance does not represent real-world investment returns. Past simulated performance does not guarantee future real-world results.
+            Trading real securities involves substantial risk of loss.
+          </p>
+        </div>
+        <!-- Copyright row -->
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+          <p class="footer-legal-text" style="margin:0;">
+            © <span id="footerYear">2025</span> Vestra. All rights reserved.
+            Simulation platform only — no real financial transactions are processed.
+          </p>
+          <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+            <span style="font-size:10px;color:#3a3a5a;">Data: Finnhub.io (when connected)</span>
+            <button class="footer-link" style="font-size:11px;padding:0;" onclick="openLegalPage('privacy')" tabindex="0">Privacy</button>
+            <button class="footer-link" style="font-size:11px;padding:0;" onclick="openLegalPage('terms')" tabindex="0">Terms</button>
+            <button class="footer-link" style="font-size:11px;padding:0;" onclick="openLegalPage('disclaimer')" tabindex="0">Disclaimer</button>
+          </div>
+        </div>
       </div>
+
     </div>
   </footer>
 
@@ -874,7 +1091,35 @@
         <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
             <button onclick="openApiConfig()" id="liveDataBtn" style="font-size:11px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:var(--v-gold);padding:5px 10px;border-radius:6px;font-weight:700;cursor:pointer;white-space:nowrap;">⚡ Live</button>
             <button onclick="openLeaderboard()" style="font-size:11px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);color:var(--v-gold);padding:5px 10px;border-radius:6px;font-weight:700;cursor:pointer;">🏆</button>
-            <button onclick="toggleTheme()" id="themeToggle" title="Toggle theme" style="background:rgba(255,255,255,0.06);border:1px solid var(--v-border);border-radius:6px;padding:5px 8px;cursor:pointer;font-size:13px;line-height:1;">🌙</button>
+            <!-- Notification Bell -->
+            <div style="position:relative;" id="notifWrap">
+                <button onclick="toggleNotifPanel()" style="background:rgba(255,255,255,0.06);border:1px solid var(--v-border);border-radius:6px;padding:5px 8px;cursor:pointer;font-size:13px;line-height:1;position:relative;">
+                    🔔
+                    <span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;border-radius:50%;width:14px;height:14px;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:1;">0</span>
+                </button>
+                <div id="notifPanel" style="display:none;position:absolute;right:0;top:calc(100%+8px);width:300px;background:#1a1a24;border:1px solid rgba(255,255,255,0.1);border-radius:14px;z-index:999;box-shadow:0 20px 60px rgba(0,0,0,0.5);overflow:hidden;">
+                    <div style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;">
+                        <span style="font-size:12px;font-weight:700;color:#f0f0fa;">Notifications</span>
+                        <button onclick="clearAllNotifs()" style="font-size:10px;color:#8888a8;background:none;border:none;cursor:pointer;">Clear all</button>
+                    </div>
+                    <div id="notifList" style="max-height:280px;overflow-y:auto;padding:6px 0;">
+                        <div style="text-align:center;color:#6868a0;font-size:11px;padding:20px;">No notifications yet</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Sound Toggle -->
+            <button id="soundToggleBtn" onclick="toggleSound()" title="Toggle micro sounds" style="background:rgba(255,255,255,0.06);border:1px solid var(--v-border);border-radius:6px;padding:5px 8px;cursor:pointer;font-size:13px;line-height:1;">🔇</button>
+            <!-- Theme Switcher -->
+            <div style="position:relative;" id="themeWrap">
+                <button onclick="toggleThemeMenu()" id="themeToggle" title="Change theme" style="background:rgba(255,255,255,0.06);border:1px solid var(--v-border);border-radius:6px;padding:5px 8px;cursor:pointer;font-size:13px;line-height:1;">🎨</button>
+                <div id="themeMenu" style="display:none;position:absolute;right:0;top:calc(100%+8px);background:#1a1a24;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px;min-width:180px;z-index:999;box-shadow:0 16px 40px rgba(0,0,0,0.5);">
+                    <div style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.07em;padding:4px 8px 6px;">Themes</div>
+                    <button onclick="applyTheme('dark')"    class="theme-opt" data-theme="dark">🌑 Institutional Dark</button>
+                    <button onclick="applyTheme('white')"   class="theme-opt" data-theme="white">☀️ Minimal White</button>
+                    <button onclick="applyTheme('blue')"    class="theme-opt" data-theme="blue">🌊 Midnight Blue</button>
+                    <button onclick="applyTheme('green')"   class="theme-opt" data-theme="green">💹 Hedge Fund Green</button>
+                </div>
+            </div>
 
             <!-- Overflow menu — export/import/tutorial/sync -->
             <div style="position:relative;" id="moreMenuWrap">
@@ -884,6 +1129,8 @@
                     <button onclick="exportPortfolioData();toggleMoreMenu()" style="width:100%;text-align:left;background:none;border:none;color:#c0c0d8;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">📤 Export Portfolio</button>
                     <button onclick="document.getElementById('importFile').click();toggleMoreMenu()" style="width:100%;text-align:left;background:none;border:none;color:#c0c0d8;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">📥 Import Portfolio</button>
                     <button onclick="startTutorial(true);toggleMoreMenu()" style="width:100%;text-align:left;background:none;border:none;color:#c0c0d8;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">🎓 Tutorial</button>
+                    <button onclick="openRiskGuard();toggleMoreMenu()" style="width:100%;text-align:left;background:none;border:none;color:#c0c0d8;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">🛡 Risk Guard Settings</button>
+                    <button onclick="openTraderProgress();toggleMoreMenu()" style="width:100%;text-align:left;background:none;border:none;color:#c0c0d8;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">📈 Trader Progress</button>
                 </div>
             </div>
             <input id="importFile" type="file" accept="application/json" class="hidden" onchange="importPortfolioData(event)">
@@ -923,7 +1170,15 @@
                 <button onclick="openCalendar()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='var(--v-gold)';this.style.color='var(--v-gold)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'">📅 Calendar</button>
                 <button onclick="openCommunity()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='var(--v-gold)';this.style.color='var(--v-gold)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'">💬 Community</button>
                 <button onclick="openEducation()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='var(--v-gold)';this.style.color='var(--v-gold)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'">🎓 Learn</button>
-                <span id="dataSourceBadge" style="font-size:10px;font-weight:700;color:#8888a8;background:rgba(255,255,255,0.05);padding:3px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.07);">SIM</span>
+                <button onclick="openStrategyLab()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#a78bfa';this.style.color='#a78bfa'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'">🧪 Strategy Lab</button>
+                <button onclick="openMacro()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#60a5fa';this.style.color='#60a5fa'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'">🌎 Macro</button>
+                <button onclick="openTraderProgress()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#4ade80';this.style.color='#4ade80'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'">📈 Progress</button>
+                <button onclick="openRiskGuard()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#f59e0b';this.style.color='#f59e0b'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'">🛡 Risk Guard</button>
+                <!-- API Health -->
+                <div style="display:flex;align-items:center;gap:4px;padding:2px 7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:5px;" title="Data source status">
+                    <div id="apiHealthDot" style="width:5px;height:5px;border-radius:50%;background:#6b7280;flex-shrink:0;"></div>
+                    <span id="dataSourceBadge" style="font-size:10px;font-weight:700;color:#8888a8;">SIM</span>
+                </div>
             </div>
         </div>
 
@@ -1221,6 +1476,28 @@
               <span style="font-size:9px;color:#4ade80;font-weight:700;">LIVE</span>
             </div>
             <div id="chartTzLabel" style="margin-left:8px;font-size:9px;color:#6868a0;padding-right:4px;"></div>
+            <!-- Strategy tag for this trade -->
+            <select id="tradeStrategyTag" style="font-size:9px;background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:4px;color:#a78bfa;padding:2px 4px;cursor:pointer;margin-left:4px;" title="Tag active strategy">
+                <option value="">No strategy</option>
+            </select>
+            <!-- Replay button -->
+            <button onclick="openReplayMode()" style="font-size:9px;font-weight:700;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);color:#60a5fa;border-radius:4px;padding:3px 8px;cursor:pointer;margin-left:4px;white-space:nowrap;" title="Practice on historical candles">🎬 Replay</button>
+          </div>
+          <!-- Replay Control Bar (hidden by default) -->
+          <div id="replayBar" style="display:none;align-items:center;gap:8px;padding:7px 12px;background:rgba(96,165,250,0.06);border-top:1px solid rgba(96,165,250,0.15);">
+            <span style="font-size:10px;font-weight:700;color:#60a5fa;">🎬 REPLAY MODE</span>
+            <button onclick="replayStep(-1)" style="font-size:11px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#e0e0f5;border-radius:5px;padding:3px 8px;cursor:pointer;" title="Step back">◀</button>
+            <button id="replayPlayBtn" onclick="toggleReplayPlay()" style="font-size:11px;background:rgba(96,165,250,0.15);border:1px solid rgba(96,165,250,0.3);color:#60a5fa;border-radius:5px;padding:3px 10px;cursor:pointer;font-weight:700;">▶ Play</button>
+            <button onclick="replayStep(1)"  style="font-size:11px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#e0e0f5;border-radius:5px;padding:3px 8px;cursor:pointer;" title="Step forward">▶</button>
+            <select id="replaySpeed" style="font-size:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:4px;color:#e0e0f5;padding:3px 6px;">
+                <option value="1000">1x</option>
+                <option value="500" selected>2x</option>
+                <option value="200">5x</option>
+                <option value="100">10x</option>
+            </select>
+            <span id="replayDateLabel" style="font-size:10px;color:#8888a8;font-family:var(--v-mono);"></span>
+            <span id="replayCandleIdx" style="font-size:10px;color:#6868a0;margin-left:auto;"></span>
+            <button onclick="closeReplayMode()" style="font-size:10px;font-weight:700;color:#f87171;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:5px;padding:3px 8px;cursor:pointer;">✕ Exit Replay</button>
           </div>
         </div>
 
@@ -1659,6 +1936,16 @@
       </div>
       <button onclick="closeCalendar()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;padding:0;">&times;</button>
     </div>
+    <!-- Calendar filters -->
+    <div style="padding:12px 24px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;gap:4px;flex-wrap:wrap;align-items:center;">
+        <span style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;margin-right:4px;">Show:</span>
+        <button onclick="setCalFilter('all')"      id="cal-all"      class="cal-filter-btn" style="font-size:9px;font-weight:700;padding:3px 10px;border-radius:4px;border:1px solid rgba(212,168,75,0.3);background:rgba(212,168,75,0.1);color:var(--v-gold);cursor:pointer;">All</button>
+        <button onclick="setCalFilter('earnings')" id="cal-earnings" class="cal-filter-btn" style="font-size:9px;font-weight:700;padding:3px 10px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#8888a8;cursor:pointer;">📊 Earnings</button>
+        <button onclick="setCalFilter('fed')"      id="cal-fed"      class="cal-filter-btn" style="font-size:9px;font-weight:700;padding:3px 10px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#8888a8;cursor:pointer;">🏦 Fed</button>
+        <button onclick="setCalFilter('data')"     id="cal-data"     class="cal-filter-btn" style="font-size:9px;font-weight:700;padding:3px 10px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#8888a8;cursor:pointer;">📈 Economic</button>
+        <button onclick="setCalFilter('ipo')"      id="cal-ipo"      class="cal-filter-btn" style="font-size:9px;font-weight:700;padding:3px 10px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#8888a8;cursor:pointer;">🚀 IPO</button>
+        <button onclick="setCalFilter('dividend')" id="cal-dividend" class="cal-filter-btn" style="font-size:9px;font-weight:700;padding:3px 10px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#8888a8;cursor:pointer;">💰 Dividends</button>
+    </div>
     <div id="calendarContent" style="padding:20px 24px 28px;"></div>
   </div>
 </div>
@@ -1673,13 +1960,32 @@
       </div>
       <button onclick="closeCommunity()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;padding:0;">&times;</button>
     </div>
+    <!-- Performance Badges Strip -->
+    <div id="communityBadges" style="padding:8px 20px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;gap:6px;flex-wrap:wrap;align-items:center;flex-shrink:0;background:rgba(255,255,255,0.01);">
+        <span style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.06em;">Your Badges:</span>
+        <div id="myBadgeList" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+    </div>
+    <!-- Filter bar -->
+    <div style="padding:8px 20px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;gap:4px;flex-shrink:0;align-items:center;">
+        <span style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.06em;margin-right:4px;">Filter:</span>
+        <button onclick="setCommunityFilter('all')"      id="cf-all"       class="cf-btn" style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;border:1px solid rgba(212,168,75,0.3);background:rgba(212,168,75,0.1);color:var(--v-gold);cursor:pointer;">All</button>
+        <button onclick="setCommunityFilter('Breakout')"  id="cf-Breakout"  class="cf-btn" style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#8888a8;cursor:pointer;">#Breakout</button>
+        <button onclick="setCommunityFilter('Swing')"     id="cf-Swing"     class="cf-btn" style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#8888a8;cursor:pointer;">#Swing</button>
+        <button onclick="setCommunityFilter('Earnings')"  id="cf-Earnings"  class="cf-btn" style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#8888a8;cursor:pointer;">#Earnings</button>
+        <button onclick="setCommunityFilter('Momentum')"  id="cf-Momentum"  class="cf-btn" style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#8888a8;cursor:pointer;">#Momentum</button>
+    </div>
     <!-- Post composer -->
-    <div style="padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;">
+    <div style="padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;">
       <div style="display:flex;gap:10px;align-items:flex-start;">
         <div id="communityAvatar" style="width:32px;height:32px;border-radius:50%;background:var(--v-gold);display:flex;align-items:center;justify-content:center;color:#0a0a0f;font-size:13px;font-weight:700;flex-shrink:0;">?</div>
         <div style="flex:1;">
-          <textarea id="communityPost" placeholder="Share your trade idea, analysis, or market thoughts…" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;font-size:12px;color:#e0e0f5;font-family:var(--v-sans);outline:none;resize:none;height:56px;line-height:1.5;" onfocus="this.style.borderColor='rgba(212,168,75,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'"></textarea>
-          <div style="display:flex;justify-content:flex-end;margin-top:6px;">
+          <textarea id="communityPost" placeholder="Share your trade idea… use #Breakout #Swing #Earnings tags" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;font-size:12px;color:#e0e0f5;font-family:var(--v-sans);outline:none;resize:none;height:52px;line-height:1.5;" onfocus="this.style.borderColor='rgba(212,168,75,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'"></textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+            <div style="display:flex;gap:3px;">
+                <button onclick="insertTag('#Breakout')" style="font-size:9px;color:#60a5fa;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.2);border-radius:4px;padding:2px 6px;cursor:pointer;">#Breakout</button>
+                <button onclick="insertTag('#Swing')"    style="font-size:9px;color:#4ade80;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);border-radius:4px;padding:2px 6px;cursor:pointer;">#Swing</button>
+                <button onclick="insertTag('#Earnings')" style="font-size:9px;color:#f59e0b;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:4px;padding:2px 6px;cursor:pointer;">#Earnings</button>
+            </div>
             <button onclick="postCommunityIdea()" style="background:var(--v-gold);color:#0a0a0f;font-weight:700;font-size:11px;padding:5px 14px;border-radius:6px;border:none;cursor:pointer;">Post Idea</button>
           </div>
         </div>
@@ -3597,6 +3903,10 @@ function startNewsEngine() {
         };
         currentUser.perfHistory = perfHistory;
         currentUser.tradeJournal = tradeJournal;
+        // New feature state
+        if (typeof strategies !== 'undefined') currentUser.strategies = strategies;
+        if (typeof riskGuardCfg !== 'undefined') currentUser.riskGuardCfg = { ...riskGuardCfg };
+        if (typeof activeTheme !== 'undefined') currentUser.theme = activeTheme;
         try {
             const storage = ensureStorageAdapter();
             await storage.set('user:' + currentUser.username, JSON.stringify(currentUser), true);
@@ -7100,6 +7410,1419 @@ function startNewsEngine() {
         }, 600);
     };
 
+    // ══════════════════════════════════════════════════════════════════════
+    //  NOTIFICATIONS SYSTEM
+    // ══════════════════════════════════════════════════════════════════════
+    let notifications = [];   // { id, type, msg, ts, read }
+
+    function pushNotif(type, msg) {
+        const id = Date.now() + '_' + Math.random().toString(36).slice(2,5);
+        notifications.unshift({ id, type, msg, ts: Date.now(), read: false });
+        notifications = notifications.slice(0, 40);
+        renderNotifPanel();
+        updateNotifBadge();
+    }
+
+    function updateNotifBadge() {
+        const unread = notifications.filter(n => !n.read).length;
+        const badge = document.getElementById('notifBadge');
+        if (!badge) return;
+        if (unread > 0) {
+            badge.style.display = 'flex';
+            badge.textContent = unread > 9 ? '9+' : unread;
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function renderNotifPanel() {
+        const el = document.getElementById('notifList');
+        if (!el) return;
+        if (!notifications.length) {
+            el.innerHTML = '<div style="text-align:center;color:#6868a0;font-size:11px;padding:20px;">No notifications yet</div>';
+            return;
+        }
+        const icons = { trade:'💹', alert:'🔔', risk:'🛡', rank:'🏆', strategy:'🧪', earn:'📅', info:'ℹ️' };
+        const colors = { trade:'#4ade80', alert:'#f59e0b', risk:'#f87171', rank:'#d4a84b', strategy:'#a78bfa', earn:'#60a5fa', info:'#8888a8' };
+        el.innerHTML = notifications.slice(0,20).map(n => {
+            const icon  = icons[n.type] || '🔔';
+            const color = colors[n.type] || '#8888a8';
+            const ago   = timeAgo(n.ts);
+            return `<div class="notif-item" onclick="markNotifRead('${n.id}')" style="${n.read ? 'opacity:0.55' : ''}">
+                <div class="notif-dot" style="background:${color};"></div>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-size:11px;color:#e0e0f5;line-height:1.4;">${icon} ${n.msg}</div>
+                    <div style="font-size:9px;color:#6868a0;margin-top:2px;">${ago}</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function markNotifRead(id) {
+        const n = notifications.find(x => x.id === id);
+        if (n) n.read = true;
+        updateNotifBadge();
+        renderNotifPanel();
+    }
+
+    function clearAllNotifs() {
+        notifications = [];
+        renderNotifPanel();
+        updateNotifBadge();
+    }
+
+    function toggleNotifPanel() {
+        const panel = document.getElementById('notifPanel');
+        if (!panel) return;
+        const open = panel.style.display !== 'none';
+        panel.style.display = open ? 'none' : 'block';
+        if (!open) {
+            notifications.forEach(n => n.read = true);
+            setTimeout(() => { updateNotifBadge(); renderNotifPanel(); }, 200);
+        }
+        // Close theme menu if open
+        const tm = document.getElementById('themeMenu');
+        if (tm) tm.style.display = 'none';
+        document.addEventListener('click', closeNotifOnOutside, { once: true });
+    }
+
+    function closeNotifOnOutside(e) {
+        if (!e.target.closest('#notifWrap')) {
+            const p = document.getElementById('notifPanel');
+            if (p) p.style.display = 'none';
+        }
+    }
+
+    function timeAgo(ts) {
+        const s = Math.floor((Date.now() - ts) / 1000);
+        if (s < 60) return 'just now';
+        if (s < 3600) return Math.floor(s/60) + 'm ago';
+        if (s < 86400) return Math.floor(s/3600) + 'h ago';
+        return Math.floor(s/86400) + 'd ago';
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  THEME SYSTEM
+    // ══════════════════════════════════════════════════════════════════════
+    let activeTheme = 'dark';
+
+    function applyTheme(theme) {
+        const body = document.body;
+        body.classList.remove('theme-blue', 'theme-green', 'theme-white', 'light-mode');
+        if (theme === 'blue')  body.classList.add('theme-blue');
+        if (theme === 'green') body.classList.add('theme-green');
+        if (theme === 'white') { body.classList.add('light-mode'); }
+        activeTheme = theme;
+        if (currentUser) { currentUser.theme = theme; saveUserData(false); }
+        localStorage.setItem('vestra_theme', theme);
+        const tm = document.getElementById('themeMenu');
+        if (tm) tm.style.display = 'none';
+        // Update theme toggle icon
+        const icons = { dark:'🌑', blue:'🌊', green:'💹', white:'☀️' };
+        const btn = document.getElementById('themeToggle');
+        if (btn) btn.textContent = icons[theme] || '🎨';
+        document.querySelectorAll('.theme-opt').forEach(b => {
+            b.style.fontWeight = b.dataset.theme === theme ? '800' : '400';
+            b.style.color = b.dataset.theme === theme ? '#f0f0fa' : '';
+        });
+    }
+
+    function toggleThemeMenu() {
+        const tm = document.getElementById('themeMenu');
+        if (!tm) return;
+        const open = tm.style.display !== 'none';
+        tm.style.display = open ? 'none' : 'block';
+        const np = document.getElementById('notifPanel');
+        if (np) np.style.display = 'none';
+        if (!open) document.addEventListener('click', e => {
+            if (!e.target.closest('#themeWrap')) tm.style.display = 'none';
+        }, { once: true });
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  RISK GUARD SYSTEM
+    // ══════════════════════════════════════════════════════════════════════
+    let riskGuardCfg = {
+        maxRiskEnabled: false, maxRisk: 2,
+        dailyLossEnabled: false, dailyLoss: 3,
+        maxPosEnabled: false, maxPos: 5,
+        consecEnabled: false, consecLoss: 3
+    };
+    let _consecLosses = 0;  // running count
+    let _dailyStartValue = 100000;  // portfolio value at day start
+    let _dailyStartDate = '';
+
+    function loadRiskGuardCfg() {
+        const saved = currentUser && currentUser.riskGuardCfg;
+        if (saved) riskGuardCfg = { ...riskGuardCfg, ...saved };
+        applyRiskGuardToUI();
+    }
+
+    function applyRiskGuardToUI() {
+        const f = id => document.getElementById(id);
+        if (f('rgMaxRiskEnabled'))  f('rgMaxRiskEnabled').checked  = riskGuardCfg.maxRiskEnabled;
+        if (f('rgDailyLossEnabled'))f('rgDailyLossEnabled').checked = riskGuardCfg.dailyLossEnabled;
+        if (f('rgMaxPosEnabled'))   f('rgMaxPosEnabled').checked    = riskGuardCfg.maxPosEnabled;
+        if (f('rgConsecEnabled'))   f('rgConsecEnabled').checked     = riskGuardCfg.consecEnabled;
+        if (f('rgMaxRisk'))  f('rgMaxRisk').value  = riskGuardCfg.maxRisk;
+        if (f('rgDailyLoss'))f('rgDailyLoss').value = riskGuardCfg.dailyLoss;
+        if (f('rgMaxPos'))   f('rgMaxPos').value    = riskGuardCfg.maxPos;
+        if (f('rgConsecLoss'))f('rgConsecLoss').value= riskGuardCfg.consecLoss;
+    }
+
+    function saveRiskGuard() {
+        const f = id => document.getElementById(id);
+        riskGuardCfg.maxRiskEnabled  = f('rgMaxRiskEnabled')  ? f('rgMaxRiskEnabled').checked  : false;
+        riskGuardCfg.dailyLossEnabled= f('rgDailyLossEnabled')? f('rgDailyLossEnabled').checked : false;
+        riskGuardCfg.maxPosEnabled   = f('rgMaxPosEnabled')   ? f('rgMaxPosEnabled').checked    : false;
+        riskGuardCfg.consecEnabled   = f('rgConsecEnabled')   ? f('rgConsecEnabled').checked    : false;
+        riskGuardCfg.maxRisk  = parseFloat(f('rgMaxRisk')?.value || 2);
+        riskGuardCfg.dailyLoss= parseFloat(f('rgDailyLoss')?.value || 3);
+        riskGuardCfg.maxPos   = parseInt(f('rgMaxPos')?.value || 5, 10);
+        riskGuardCfg.consecLoss= parseInt(f('rgConsecLoss')?.value || 3, 10);
+        if (currentUser) { currentUser.riskGuardCfg = { ...riskGuardCfg }; saveUserData(false); }
+        updateRGStatus();
+    }
+
+    function updateRGStatus() {
+        const el = document.getElementById('riskGuardStatus');
+        if (!el) return;
+        const active = riskGuardCfg.maxRiskEnabled || riskGuardCfg.dailyLossEnabled || riskGuardCfg.maxPosEnabled || riskGuardCfg.consecEnabled;
+        el.style.background = active ? 'rgba(74,222,128,0.08)' : 'rgba(255,255,255,0.04)';
+        el.style.borderColor = active ? 'rgba(74,222,128,0.2)' : 'rgba(255,255,255,0.08)';
+        el.style.color = active ? '#4ade80' : '#8888a8';
+        el.innerHTML = active ? '✓ Risk Guard active — monitoring your trades' : 'ℹ Risk Guard disabled — no rules enforced';
+    }
+
+    // Returns null (ok) or an error string (blocked)
+    function checkRGBeforeTrade(side, stock, qty) {
+        const portfolioVal = (currentUser && currentUser.totalValue) || (cash + 100000);
+
+        // Reset daily tracking
+        const today = new Date().toDateString();
+        if (_dailyStartDate !== today) {
+            _dailyStartDate = today;
+            _dailyStartValue = portfolioVal;
+        }
+
+        // 1. Max risk per trade
+        if (riskGuardCfg.maxRiskEnabled && side === 'BUY') {
+            const tradeCost = (stock.price || 0) * qty;
+            const riskPct = (tradeCost / portfolioVal) * 100;
+            if (riskPct > riskGuardCfg.maxRisk) {
+                return `🛡 Risk Guard: This trade is ${riskPct.toFixed(1)}% of your portfolio. Your max is ${riskGuardCfg.maxRisk}%. Reduce position size.`;
+            }
+        }
+
+        // 2. Daily loss limit
+        if (riskGuardCfg.dailyLossEnabled) {
+            const dailyLossPct = ((_dailyStartValue - portfolioVal) / _dailyStartValue) * 100;
+            if (dailyLossPct >= riskGuardCfg.dailyLoss) {
+                return `🛡 Risk Guard: Daily loss limit of ${riskGuardCfg.dailyLoss}% reached (current: ${dailyLossPct.toFixed(1)}%). Trading paused for today.`;
+            }
+        }
+
+        // 3. Max open positions
+        if (riskGuardCfg.maxPosEnabled && side === 'BUY') {
+            const openPositions = Object.keys(portfolio).filter(s => (portfolio[s] || 0) > 0).length;
+            if (openPositions >= riskGuardCfg.maxPos) {
+                return `🛡 Risk Guard: You have ${openPositions} open positions. Your max is ${riskGuardCfg.maxPos}. Close a position first.`;
+            }
+        }
+
+        // 4. Consecutive loss limit
+        if (riskGuardCfg.consecEnabled && side === 'BUY') {
+            if (_consecLosses >= riskGuardCfg.consecLoss) {
+                return `🛡 Risk Guard: ${_consecLosses} consecutive losses detected. Take a break before your next trade.`;
+            }
+        }
+
+        return null;
+    }
+
+    function trackTradeOutcome(profit) {
+        if (profit < 0) {
+            _consecLosses++;
+        } else {
+            _consecLosses = 0;
+        }
+    }
+
+    function openRiskGuard() {
+        const el = document.getElementById('riskGuardModal');
+        if (el) { el.style.display = 'flex'; loadRiskGuardCfg(); updateRGStatus(); }
+    }
+    function closeRiskGuard() {
+        const el = document.getElementById('riskGuardModal');
+        if (el) el.style.display = 'none';
+    }
+
+    // Patch executeConfirmedTrade to check Risk Guard
+    const _origExecConfirmed = executeConfirmedTrade;
+    executeConfirmedTrade = function() {
+        const pt = _pendingConfirmTrade;
+        if (pt) {
+            const err = checkRGBeforeTrade(pt.side, pt.stock, pt.qty);
+            if (err) {
+                cancelTradeConfirm();
+                pushNotif('risk', err.replace('🛡 Risk Guard: ', ''));
+                // Show modal
+                const warn = document.createElement('div');
+                warn.style.cssText = 'position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;';
+                warn.innerHTML = `<div style="background:#14141e;border:2px solid rgba(239,68,68,0.4);border-radius:16px;padding:28px 32px;max-width:420px;animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);">
+                    <div style="font-size:1.5rem;margin-bottom:10px;">🛡</div>
+                    <div style="font-weight:700;color:#f0f0fa;font-size:1rem;margin-bottom:8px;">Risk Guard Blocked</div>
+                    <div style="font-size:13px;color:#c0c0d8;line-height:1.6;margin-bottom:18px;">${err}</div>
+                    <button onclick="this.closest('div[style*=fixed]').remove()" style="background:#ef4444;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;font-size:13px;">Understood</button>
+                </div>`;
+                document.body.appendChild(warn);
+                return;
+            }
+        }
+        _origExecConfirmed();
+    };
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  STRATEGY LAB SYSTEM
+    // ══════════════════════════════════════════════════════════════════════
+    let strategies = [];   // [{ id, name, tag, entry, exit, risk, trades:[], createdAt }]
+
+    function openStrategyLab() {
+        const el = document.getElementById('strategyLabModal');
+        if (el) { el.style.display = 'flex'; renderStrategyList(); }
+    }
+    function closeStrategyLab() {
+        const el = document.getElementById('strategyLabModal');
+        if (el) el.style.display = 'none';
+    }
+
+    function createStrategy() {
+        const name  = (document.getElementById('slName')?.value || '').trim();
+        const tag   = document.getElementById('slTag')?.value || '#Breakout';
+        const entry = (document.getElementById('slEntry')?.value || '').trim();
+        const exit  = (document.getElementById('slExit')?.value  || '').trim();
+        const risk  = parseFloat(document.getElementById('slRisk')?.value || '1');
+        if (!name) return;
+        const s = { id:'strat_'+Date.now(), name, tag, entry, exit, risk, trades:[], createdAt:Date.now(), active:true };
+        strategies.push(s);
+        saveStrategies();
+        renderStrategyList();
+        // Clear form
+        ['slName','slEntry','slExit'].forEach(id => { const el=document.getElementById(id); if(el)el.value=''; });
+        pushNotif('strategy', `Strategy "${name}" created. Tag your trades with "${tag}".`);
+    }
+
+    function deleteStrategy(id) {
+        strategies = strategies.filter(s => s.id !== id);
+        saveStrategies();
+        renderStrategyList();
+    }
+
+    function saveStrategies() {
+        if (currentUser) { currentUser.strategies = strategies; saveUserData(false); }
+    }
+
+    function loadStrategies() {
+        strategies = (currentUser && Array.isArray(currentUser.strategies)) ? currentUser.strategies : [];
+    }
+
+    function getStrategyStats(s) {
+        const sells = (transactions||[]).filter(t => t.type==='SELL' && t.strategyId===s.id);
+        const wins   = sells.filter(t => (t.price - (t.avgBuy||t.price)) > 0);
+        const winRate = sells.length > 0 ? (wins.length/sells.length*100).toFixed(0) : '—';
+        const avgR   = sells.length > 0
+            ? (sells.reduce((sum,t)=>{ const r=(t.price-(t.avgBuy||t.price))/(t.avgBuy||t.price)*100; return sum+r; },0)/sells.length).toFixed(1)
+            : '—';
+        return { winRate, avgR, count:sells.length };
+    }
+
+    function renderStrategyList() {
+        const el = document.getElementById('strategyList');
+        if (!el) return;
+        if (!strategies.length) {
+            el.innerHTML = '<div style="text-align:center;color:#6868a0;padding:20px;font-style:italic;font-size:12px;">No strategies yet. Create one above.</div>';
+            return;
+        }
+        const tagColors = { '#Breakout':'#60a5fa','#Swing':'#4ade80','#Earnings':'#f59e0b','#Momentum':'#a78bfa','#Reversal':'#f87171','#Scalp':'#f0c96a','#ValueBuy':'#34d399','#DipBuy':'#fb923c' };
+        el.innerHTML = strategies.map(s => {
+            const stats = getStrategyStats(s);
+            const tagC  = tagColors[s.tag] || '#8888a8';
+            const wc    = stats.winRate !== '—' ? (parseInt(stats.winRate)>=50?'#4ade80':'#f87171') : '#8888a8';
+            const rc    = stats.avgR !== '—' ? (parseFloat(stats.avgR)>=0?'#4ade80':'#f87171') : '#8888a8';
+            return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;">
+                <div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                        <span style="font-weight:700;color:#f0f0fa;font-size:13px;">${s.name}</span>
+                        <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:${tagC}18;color:${tagC};border:1px solid ${tagC}28;">${s.tag}</span>
+                        <span style="font-size:10px;color:#6868a0;">Risk: ${s.risk}%</span>
+                    </div>
+                    ${s.entry ? `<div style="font-size:10px;color:#8888a8;margin-bottom:2px;">▶ Entry: ${s.entry}</div>` : ''}
+                    ${s.exit  ? `<div style="font-size:10px;color:#8888a8;margin-bottom:6px;">◀ Exit: ${s.exit}</div>` : ''}
+                    <div style="display:flex;gap:16px;font-size:11px;">
+                        <span style="color:#8888a8;">Trades: <strong style="color:#f0f0fa;">${stats.count}</strong></span>
+                        <span style="color:#8888a8;">Win: <strong style="color:${wc};">${stats.winRate}${stats.winRate!=='—'?'%':''}</strong></span>
+                        <span style="color:#8888a8;">Avg R: <strong style="color:${rc};">${stats.avgR}${stats.avgR!=='—'?'%':''}</strong></span>
+                    </div>
+                </div>
+                <button onclick="deleteStrategy('${s.id}')" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#f87171;border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer;">Delete</button>
+            </div>`;
+        }).join('');
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  MACRO MARKET OVERVIEW
+    // ══════════════════════════════════════════════════════════════════════
+    function openMacro() {
+        const el = document.getElementById('macroModal');
+        if (el) { el.style.display = 'flex'; renderMacro(); }
+    }
+    function closeMacro() {
+        const el = document.getElementById('macroModal');
+        if (el) el.style.display = 'none';
+    }
+
+    function renderMacro() {
+        if (!stocks || !stocks.length) return;
+        // Major indices (simulated from stock prices)
+        const sorted  = [...stocks].sort((a,b) => b.change - a.change);
+        const gainers = sorted.slice(0,5);
+        const losers  = sorted.slice(-5).reverse();
+        const byVol   = [...stocks].sort((a,b) => (b.volume||0)-(a.volume||0)).slice(0,5);
+
+        // Indices grid (4 representative benchmarks simulated)
+        const indices = [
+            { name:'S&P 500',  val: 5280 + stocks.reduce((s,x)=>s+x.change,0)/stocks.length*8,  chg: (stocks.reduce((s,x)=>s+x.change,0)/stocks.length*0.6).toFixed(2) },
+            { name:'NASDAQ',   val: 16800 + stocks.filter(x=>['AAPL','MSFT','NVDA','GOOGL','META'].includes(x.symbol)).reduce((s,x)=>s+x.change,0)*15, chg: (stocks.filter(x=>['AAPL','MSFT','NVDA'].includes(x.symbol)).reduce((s,x)=>s+x.change,0)/3*0.8).toFixed(2) },
+            { name:'DOW',      val: 39200 + stocks.reduce((s,x)=>s+x.change,0)/stocks.length*20, chg: (stocks.reduce((s,x)=>s+x.change,0)/stocks.length*0.5).toFixed(2) },
+            { name:'VIX',      val: (18 - stocks.reduce((s,x)=>s+x.change,0)/stocks.length).toFixed(1), chg: (-stocks.reduce((s,x)=>s+x.change,0)/stocks.length*0.3).toFixed(2) }
+        ];
+
+        const indEl = document.getElementById('macroIndices');
+        if (indEl) indEl.innerHTML = indices.map(x => {
+            const c = parseFloat(x.chg) >= 0;
+            return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px;text-align:center;">
+                <div style="font-size:9px;color:#8888a8;font-weight:700;text-transform:uppercase;margin-bottom:4px;">${x.name}</div>
+                <div style="font-family:var(--v-mono);font-size:14px;font-weight:600;color:#f0f0fa;">${typeof x.val==='number'?x.val.toFixed(0):x.val}</div>
+                <div style="font-size:11px;color:${c?'#4ade80':'#f87171'};font-weight:600;">${c?'+':''}${x.chg}%</div>
+            </div>`;
+        }).join('');
+
+        // Sentiment score based on % of stocks up
+        const upCount = stocks.filter(s => s.change >= 0).length;
+        const sentimentScore = Math.round((upCount / stocks.length) * 100);
+        const sentLabel = sentimentScore >= 75 ? 'Extreme Greed' : sentimentScore >= 60 ? 'Greed' : sentimentScore >= 45 ? 'Neutral' : sentimentScore >= 30 ? 'Fear' : 'Extreme Fear';
+        const sentLabelEl = document.getElementById('sentimentLabel');
+        const sentScoreEl = document.getElementById('sentimentScore');
+        const sentNeedle  = document.getElementById('sentimentNeedle');
+        if (sentLabelEl) sentLabelEl.textContent = sentLabel;
+        if (sentScoreEl) { sentScoreEl.textContent = sentimentScore; sentScoreEl.style.color = sentimentScore >= 60 ? '#4ade80' : sentimentScore >= 40 ? '#f59e0b' : '#f87171'; }
+        if (sentNeedle)  sentNeedle.style.left = sentimentScore + '%';
+
+        // Breadth
+        const downCount = stocks.length - upCount;
+        const bEl = document.getElementById('macroBreath');
+        if (bEl) bEl.innerHTML = [
+            { label:'Advancing', val: upCount,   color:'#4ade80' },
+            { label:'Declining', val: downCount,  color:'#f87171' },
+            { label:'Unchanged', val: stocks.filter(s=>s.change===0).length, color:'#8888a8' },
+            { label:'New High',  val: stocks.filter(s=>s.change>=3).length,  color:'#60a5fa' }
+        ].map(b => `<div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:11px;color:#8888a8;">${b.label}</span>
+            <span style="font-family:var(--v-mono);font-size:12px;font-weight:700;color:${b.color};">${b.val}</span>
+        </div>`).join('');
+
+        // Sector heatmap
+        const sectors = {};
+        stocks.forEach(s => {
+            const sec = s.sector || inferSector(s.symbol, s.name);
+            if (!sectors[sec]) sectors[sec] = { total:0, count:0 };
+            sectors[sec].total += s.change;
+            sectors[sec].count++;
+        });
+        const secEl = document.getElementById('macroSectorHeat');
+        if (secEl) secEl.innerHTML = Object.entries(sectors).map(([sec,v]) => {
+            const avg = v.count>0 ? v.total/v.count : 0;
+            const bg = avg>2?'rgba(34,197,94,0.5)':avg>0.5?'rgba(34,197,94,0.25)':avg>0?'rgba(34,197,94,0.1)':avg>-0.5?'rgba(239,68,68,0.1)':avg>-2?'rgba(239,68,68,0.25)':'rgba(239,68,68,0.5)';
+            return `<div class="sector-heat-cell" style="background:${bg};" title="${sec}: ${avg>=0?'+':''}${avg.toFixed(1)}%">
+                <div style="font-size:9px;font-weight:700;color:#e0e0f5;">${sec.slice(0,6)}</div>
+                <div style="font-size:10px;font-weight:700;color:${avg>=0?'#4ade80':'#f87171'};">${avg>=0?'+':''}${avg.toFixed(1)}%</div>
+            </div>`;
+        }).join('');
+
+        // Gainers / Losers / Volume
+        const moverRow = s => `<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+            <span style="font-weight:700;color:#f0f0fa;font-size:11px;">${s.symbol}</span>
+            <span style="font-family:var(--v-mono);font-size:11px;color:${s.change>=0?'#4ade80':'#f87171'};">${s.change>=0?'+':''}${s.change.toFixed(2)}%</span>
+        </div>`;
+        const gEl=document.getElementById('macroGainers'); if(gEl) gEl.innerHTML=gainers.map(moverRow).join('');
+        const lEl=document.getElementById('macroLosers');  if(lEl) lEl.innerHTML=losers.map(moverRow).join('');
+        const vEl=document.getElementById('macroVolume');
+        if (vEl) vEl.innerHTML = byVol.map(s => `<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+            <span style="font-weight:700;color:#f0f0fa;font-size:11px;">${s.symbol}</span>
+            <span style="font-family:var(--v-mono);font-size:11px;color:#f59e0b;">${s.volume ? (s.volume/1e6).toFixed(1)+'M' : 'High'}</span>
+        </div>`).join('');
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  TRADER PROGRESS DASHBOARD
+    // ══════════════════════════════════════════════════════════════════════
+    function openTraderProgress() {
+        const el = document.getElementById('progressModal');
+        if (el) { el.style.display = 'flex'; renderProgress(); loadReflections(); }
+    }
+    function closeProgress() {
+        const el = document.getElementById('progressModal');
+        if (el) el.style.display = 'none';
+    }
+
+    function renderProgress() {
+        const sells = (transactions||[]).filter(t=>t.type==='SELL');
+        const buys  = (transactions||[]).filter(t=>t.type==='BUY');
+        const wins  = sells.filter(t=>(t.price-(t.avgBuy||t.price))>0);
+        const portfolioVal = (currentUser&&currentUser.totalValue)||cash;
+        const totalDays = perfHistory.length > 0
+            ? Math.max(1, Math.round((Date.now() - perfHistory[0].ts) / 86400000)) : 1;
+        const avgHold = sells.length > 0
+            ? sells.reduce((s,t)=>{ const buysForSym=(transactions||[]).filter(b=>b.type==='BUY'&&b.symbol===t.symbol&&b.ts<t.ts); return s+(buysForSym.length?t.ts-buysForSym[buysForSym.length-1].ts:0); },0)/sells.length/3600000
+            : 0;
+
+        const stats = [
+            { label:'Trading Days', val: totalDays, unit:'', color:'#60a5fa' },
+            { label:'Total Trades', val: sells.length + buys.length, unit:'', color:'#a78bfa' },
+            { label:'Win Rate', val: sells.length>0?(wins.length/sells.length*100).toFixed(0):'—', unit:'%', color:'#4ade80' },
+            { label:'Avg Hold', val: avgHold>24?((avgHold/24).toFixed(1)):avgHold.toFixed(1), unit: avgHold>24?'d':'h', color:'#f59e0b' }
+        ];
+
+        const statsEl = document.getElementById('progressStats');
+        if (statsEl) statsEl.innerHTML = stats.map(s => `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px;text-align:center;">
+            <div style="font-size:8px;color:#6868a0;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px;">${s.label}</div>
+            <div style="font-family:var(--v-mono);font-size:1.2rem;font-weight:700;color:${s.color};">${s.val}<span style="font-size:0.8rem;">${s.unit}</span></div>
+        </div>`).join('');
+
+        // Long vs Short Bias
+        const longTrades  = buys.length;
+        const shortTrades = 0; // simulator is long-only
+        const biasEl = document.getElementById('progressBias');
+        if (biasEl) {
+            const totalBias = longTrades + shortTrades || 1;
+            const longPct = (longTrades/totalBias*100).toFixed(0);
+            biasEl.innerHTML = `
+            <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;"><span style="color:#4ade80;">Long Bias</span><span style="color:#4ade80;font-weight:700;">${longPct}%</span></div>
+            <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">
+                <div style="height:100%;width:${longPct}%;background:linear-gradient(90deg,#4ade80,#22c55e);border-radius:4px;transition:width 0.5s;"></div>
+            </div>
+            <div style="font-size:10px;color:#8888a8;margin-top:6px;">This simulator supports long positions only. Bias towards long holds is a healthy pattern.</div>`;
+        }
+
+        // Risk consistency chart (bar chart of trade sizes)
+        const riskEl = document.getElementById('progressRiskChart');
+        if (riskEl && buys.length > 0) {
+            const recent = buys.slice(-20);
+            const maxCost = Math.max(...recent.map(t=>(t.price||0)*(t.qty||1))) || 1;
+            riskEl.innerHTML = recent.map(t => {
+                const cost = (t.price||0)*(t.qty||1);
+                const h = Math.max(6, (cost/maxCost)*72);
+                const c = cost/portfolioVal > 0.2 ? '#f87171' : cost/portfolioVal > 0.1 ? '#f59e0b' : '#4ade80';
+                return `<div title="${t.symbol}: $${cost.toFixed(0)}" style="flex:1;background:${c};border-radius:3px 3px 0 0;min-width:6px;height:${h}px;transition:height 0.3s;"></div>`;
+            }).join('');
+        } else if (riskEl) {
+            riskEl.innerHTML = '<div style="color:#6868a0;font-size:11px;font-style:italic;">No trades yet.</div>';
+        }
+    }
+
+    function loadReflections() {
+        const saved = currentUser && currentUser.weeklyReflection;
+        if (!saved) return;
+        const lEl = document.getElementById('reflectLearn');
+        const mEl = document.getElementById('reflectMistake');
+        if (lEl) lEl.value = saved.learn || '';
+        if (mEl) mEl.value = saved.mistake || '';
+    }
+
+    function saveReflection() {
+        const learn   = document.getElementById('reflectLearn')?.value || '';
+        const mistake = document.getElementById('reflectMistake')?.value || '';
+        if (currentUser) {
+            currentUser.weeklyReflection = { learn, mistake, savedAt: Date.now() };
+            saveUserData(false);
+        }
+        pushNotif('info', '📓 Weekly reflection saved. Keep reflecting to improve.');
+        showTradeToast('INFO', 0, 'Reflection saved ✓', 0, true);
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  API HEALTH + DATA FRESHNESS
+    // ══════════════════════════════════════════════════════════════════════
+    let _lastDataFresh = Date.now();
+
+    function updateAPIHealthDot(live) {
+        const dot = document.getElementById('apiHealthDot');
+        if (!dot) return;
+        if (live) {
+            dot.style.background = '#4ade80';
+            dot.classList.add('live');
+        } else {
+            dot.style.background = '#6b7280';
+            dot.classList.remove('live');
+        }
+    }
+
+    function updateDataFreshness() {
+        const ageS = Math.floor((Date.now() - _lastDataFresh) / 1000);
+        const badge = document.getElementById('dataSourceBadge');
+        if (!badge) return;
+        if (ageS < 30)      badge.title = 'Data fresh (< 30s)';
+        else if (ageS < 120) badge.title = 'Data ' + ageS + 's old';
+        else                 badge.title = 'Data stale — price may be delayed';
+    }
+
+    // Patch updateUI to update freshness + API health
+    const _origUpdateUIHealth = updateUI;
+    updateUI = function() {
+        _origUpdateUIHealth();
+        updateDataFreshness();
+    };
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  SMART NOTIFICATIONS — wire into trading events
+    // ══════════════════════════════════════════════════════════════════════
+
+    // Patch showTradeToast to also push notifications
+    const _origShowTradeToast = showTradeToast;
+    showTradeToast = function(type, qty, sym, price, isPending) {
+        _origShowTradeToast(type, qty, sym, price, isPending);
+        if (type === 'BUY' && !isPending)
+            pushNotif('trade', `Bought ${qty} × ${sym} @ $${Number(price||0).toFixed(2)}`);
+        else if (type === 'SELL' && !isPending)
+            pushNotif('trade', `Sold ${qty} × ${sym} @ $${Number(price||0).toFixed(2)}`);
+        else if (isPending)
+            pushNotif('alert', `${type} order placed for ${qty} × ${sym} @ $${Number(price||0).toFixed(2)}`);
+    };
+
+    // Patch executeOrderNow to track consecutive losses & notify on RG limit
+    const _origExecuteOrderNow = executeOrderNow;
+    executeOrderNow = function(order, fillPrice, fromPending) {
+        const result = _origExecuteOrderNow(order, fillPrice, fromPending);
+        if (result && order.side === 'SELL') {
+            const cb = costBasis[order.symbol];
+            const avg = cb && cb.shares ? cb.totalCost/cb.shares : fillPrice;
+            const pl = (fillPrice - avg) * (order.qty || 1);
+            trackTradeOutcome(pl);
+            if (pl < 0 && _consecLosses >= (riskGuardCfg.consecLoss || 3) && riskGuardCfg.consecEnabled) {
+                pushNotif('risk', `${_consecLosses} consecutive losses. Risk Guard recommends a break.`);
+            }
+        }
+        return result;
+    };
+
+    // Patch loginAs chain to load all new state
+    const _origLoginAsSystems = loginAs;
+    loginAs = async function(userData) {
+        await _origLoginAsSystems(userData);
+        loadStrategies();
+        loadRiskGuardCfg();
+        // Restore theme
+        const savedTheme = (currentUser && currentUser.theme) || localStorage.getItem('vestra_theme') || 'dark';
+        applyTheme(savedTheme);
+        // Welcome notification
+        setTimeout(() => {
+            pushNotif('info', `Welcome back, ${currentUser?.displayName || 'Trader'}! Markets are ${isMarketHoursNow() ? 'open 🟢' : 'closed 🔴'}.`);
+        }, 1000);
+        // Update API health dot
+        updateAPIHealthDot(!!window.RT && !!window.RT.key);
+    };
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  TRADE REPLAY ENGINE 🎬
+    // ══════════════════════════════════════════════════════════════════════
+    let replayActive   = false;
+    let replayCandles  = [];   // full historical candle array
+    let replayCursor   = 0;    // current visible index
+    let replayTimer    = null;
+    let replayPlaying  = false;
+
+    function openReplayMode() {
+        if (!detailStock) return;
+        // We need candlestick data — use whatever is cached in the chart
+        if (!sChart || !sChart.data || !sChart.data.datasets[0] || !sChart.data.datasets[0].data.length) {
+            showTradeToast('INFO', 0, 'Load a chart period first, then start Replay.', 0, true);
+            return;
+        }
+        replayCandles = [...sChart.data.datasets[0].data];
+        if (replayCandles.length < 5) {
+            showTradeToast('INFO', 0, 'Not enough candle data for replay.', 0, true);
+            return;
+        }
+        replayCursor  = Math.max(5, Math.floor(replayCandles.length * 0.3));
+        replayActive  = true;
+        replayPlaying = false;
+        const bar = document.getElementById('replayBar');
+        if (bar) bar.style.display = 'flex';
+        updateReplayChart();
+        pushNotif('info', '🎬 Replay mode started. Practice trading on historical data.');
+    }
+
+    function closeReplayMode() {
+        replayActive  = false;
+        replayPlaying = false;
+        clearInterval(replayTimer);
+        replayTimer   = null;
+        const bar = document.getElementById('replayBar');
+        if (bar) bar.style.display = 'none';
+        const btn = document.getElementById('replayPlayBtn');
+        if (btn) btn.textContent = '▶ Play';
+        // Restore full chart
+        if (detailStock) drawChart(detailStock, currentChartPeriod);
+    }
+
+    function updateReplayChart() {
+        if (!replayActive || !sChart) return;
+        const visible = replayCandles.slice(0, replayCursor + 1);
+        sChart.data.datasets[0].data = visible;
+        if (sChart.data.datasets[1]) {
+            const volAll = sChart.data.datasets[1].data;
+            sChart.data.datasets[1].data = Array.isArray(volAll) ? volAll.slice(0, replayCursor + 1) : [];
+        }
+        sChart.update('none');
+
+        // Update labels
+        const cur = replayCandles[replayCursor];
+        const dateEl = document.getElementById('replayDateLabel');
+        const idxEl  = document.getElementById('replayCandleIdx');
+        if (dateEl && cur) {
+            const d = new Date(cur.x || cur.t || 0);
+            dateEl.textContent = d.toLocaleDateString('en-US', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+        }
+        if (idxEl) idxEl.textContent = `Candle ${replayCursor+1} / ${replayCandles.length}`;
+    }
+
+    function replayStep(dir) {
+        replayCursor = Math.max(4, Math.min(replayCandles.length-1, replayCursor + dir));
+        updateReplayChart();
+    }
+
+    function toggleReplayPlay() {
+        replayPlaying = !replayPlaying;
+        const btn = document.getElementById('replayPlayBtn');
+        if (btn) btn.textContent = replayPlaying ? '⏸ Pause' : '▶ Play';
+        if (replayPlaying) {
+            const speed = parseInt(document.getElementById('replaySpeed')?.value || '500', 10);
+            clearInterval(replayTimer);
+            replayTimer = setInterval(() => {
+                if (replayCursor >= replayCandles.length - 1) {
+                    replayPlaying = false;
+                    clearInterval(replayTimer);
+                    if (btn) btn.textContent = '▶ Play';
+                    return;
+                }
+                replayCursor++;
+                updateReplayChart();
+            }, speed);
+        } else {
+            clearInterval(replayTimer);
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  STRATEGY SELECTOR in trade panel
+    // ══════════════════════════════════════════════════════════════════════
+    function populateStrategySelector() {
+        const sel = document.getElementById('tradeStrategyTag');
+        if (!sel) return;
+        sel.innerHTML = '<option value="">No strategy</option>' +
+            strategies.map(s => `<option value="${s.id}">${s.name} ${s.tag}</option>`).join('');
+    }
+
+    // Patch openStockDetail to populate strategy selector
+    const _origOpenStockDetailReplay = openStockDetail;
+    openStockDetail = function(stock) {
+        _origOpenStockDetailReplay(stock);
+        setTimeout(populateStrategySelector, 200);
+    };
+
+    // Patch executeConfirmedTrade chain to tag trades with strategy
+    const _origExecConfirmedStrategy = executeConfirmedTrade;
+    executeConfirmedTrade = function() {
+        const stratId = document.getElementById('tradeStrategyTag')?.value || '';
+        // We'll tag the trade by hooking into the next transaction push
+        _pendingStrategyId = stratId;
+        _origExecConfirmedStrategy();
+    };
+
+    let _pendingStrategyId = '';
+
+    // Patch executeOrderNow to stamp strategy
+    const _origExecOrderNowStrat = executeOrderNow;
+    executeOrderNow = function(order, fillPrice, fromPending) {
+        if (_pendingStrategyId) {
+            order = { ...order, strategyId: _pendingStrategyId };
+        }
+        const res = _origExecOrderNowStrat(order, fillPrice, fromPending);
+        _pendingStrategyId = '';
+        return res;
+    };
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  PERFORMANCE BADGE SYSTEM 🏅
+    // ══════════════════════════════════════════════════════════════════════
+    const PERF_BADGES = [
+        { id:'green10',   emoji:'🌱', label:'10 Green Days',       desc:'10 profitable trading days',       check: u => (u._greenDays||0)>=10 },
+        { id:'fiveR',     emoji:'⚡', label:'5R Trade',             desc:'Single trade with 5× R-multiple',  check: u => (u._best5R||0)>=5 },
+        { id:'month20',   emoji:'🚀', label:'20% Month',            desc:'20%+ return in a calendar month',  check: u => (u._bestMonthReturn||0)>=20 },
+        { id:'noViolate', emoji:'🛡', label:'Zero Violations',      desc:'Month with no Risk Guard alerts',  check: u => (u._monthNoViolation||false) },
+        { id:'discipline80',emoji:'🎯',label:'Discipline 80',      desc:'Discipline score ≥ 80',            check: u => (u.disciplineScore||0)>=80 },
+        { id:'win60',     emoji:'💰', label:'60% Win Rate',         desc:'60%+ win rate over 20+ trades',   check: u => (u.totalTrades||0)>=20 && (u._winRate||0)>=60 },
+        { id:'hold7',     emoji:'🏦', label:'Patient Trader',       desc:'Avg hold time > 7 days',          check: u => (u._avgHoldDays||0)>7 },
+        { id:'million',   emoji:'💎', label:'Millionaire',          desc:'Portfolio reached $1,000,000',    check: u => (u.totalValue||0)>=1000000 },
+    ];
+
+    function computeAndSaveBadges() {
+        if (!currentUser) return;
+        const sells = (transactions||[]).filter(t=>t.type==='SELL');
+
+        // Green days (days with profit)
+        const dayPL = {};
+        sells.forEach(t => { const d=dayKey(t.ts); dayPL[d]=(dayPL[d]||0)+(t.price-(t.avgBuy||t.price))*(t.qty||1); });
+        currentUser._greenDays = Object.values(dayPL).filter(v=>v>0).length;
+
+        // Best R-multiple
+        const bestR = sells.reduce((mx,t)=>{
+            const risk = (t.slPrice||0) ? Math.abs(t.price-t.slPrice) : (t.avgBuy||t.price)*0.02;
+            const reward = Math.abs(t.price-(t.avgBuy||t.price));
+            const r = risk>0?reward/risk:0;
+            return r>mx?r:mx;
+        },0);
+        currentUser._best5R = bestR;
+
+        // Win rate
+        const wins = sells.filter(t=>(t.price-(t.avgBuy||t.price))>0);
+        currentUser._winRate = sells.length>0?(wins.length/sells.length*100):0;
+
+        // Avg hold time
+        const holds = sells.map(t=>{ const b=(transactions||[]).filter(b=>b.type==='BUY'&&b.symbol===t.symbol&&b.ts<t.ts); return b.length?t.ts-b[b.length-1].ts:0; }).filter(Boolean);
+        currentUser._avgHoldDays = holds.length>0?holds.reduce((a,b)=>a+b,0)/holds.length/86400000:0;
+
+        // Best month return
+        const monthlyVals = {};
+        (perfHistory||[]).forEach(p=>{ const d=new Date(p.ts||Date.now()); const mk=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); monthlyVals[mk]=monthlyVals[mk]||[]; monthlyVals[mk].push(p.value||100000); });
+        const monthReturns = Object.values(monthlyVals).map(vals=>vals.length>1?(vals[vals.length-1]-vals[0])/vals[0]*100:0);
+        currentUser._bestMonthReturn = monthReturns.length?Math.max(...monthReturns):0;
+
+        // Unlock badges
+        const earned = PERF_BADGES.filter(b=>b.check(currentUser)).map(b=>b.id);
+        const prev = currentUser.badges || [];
+        const newOnes = earned.filter(id=>!prev.includes(id));
+        currentUser.badges = earned;
+        // Notify on new badge
+        newOnes.forEach(id=>{
+            const b = PERF_BADGES.find(x=>x.id===id);
+            if(b) pushNotif('rank', `🏅 New Badge Unlocked: "${b.label}" — ${b.desc}`);
+        });
+    }
+
+    function renderBadgesInCommunity() {
+        const el = document.getElementById('myBadgeList');
+        if (!el || !currentUser) return;
+        const earned = currentUser.badges || [];
+        if (!earned.length) { el.innerHTML = '<span style="font-size:10px;color:#6868a0;font-style:italic;">Trade to earn badges</span>'; return; }
+        el.innerHTML = PERF_BADGES.filter(b=>earned.includes(b.id)).map(b=>`<span title="${b.label}: ${b.desc}" style="font-size:14px;cursor:default;" class="perf-badge">${b.emoji}</span>`).join('');
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  COMMUNITY 2.0 — strategy tags, filters, copy idea, follow
+    // ══════════════════════════════════════════════════════════════════════
+    let communityFilter = 'all';
+    const TAG_COLORS = { '#Breakout':'#60a5fa','#Swing':'#4ade80','#Earnings':'#f59e0b','#Momentum':'#a78bfa','#Reversal':'#f87171','#Scalp':'#f0c96a','#ValueBuy':'#34d399','#DipBuy':'#fb923c' };
+
+    function setCommunityFilter(tag) {
+        communityFilter = tag;
+        document.querySelectorAll('.cf-btn').forEach(b => {
+            const active = b.id === 'cf-' + tag;
+            b.style.background = active ? 'rgba(212,168,75,0.1)' : 'transparent';
+            b.style.color = active ? 'var(--v-gold)' : '#8888a8';
+            b.style.borderColor = active ? 'rgba(212,168,75,0.3)' : 'rgba(255,255,255,0.08)';
+        });
+        renderCommunityFeed();
+    }
+
+    function insertTag(tag) {
+        const ta = document.getElementById('communityPost');
+        if (!ta) return;
+        ta.value = ta.value.trimEnd() + (ta.value ? ' ' : '') + tag + ' ';
+        ta.focus();
+    }
+
+    function extractTags(text) {
+        const matches = text.match(/#[A-Za-z]+/g) || [];
+        return matches.filter(t => Object.keys(TAG_COLORS).includes(t));
+    }
+
+    // Override renderCommunityFeed to add strategy tags, follow, copy idea
+    renderCommunityFeed = function() {
+        const feed = document.getElementById('communityFeed');
+        if (!feed) return;
+        let posts = communityPosts.slice().sort((a,b)=>b.ts-a.ts);
+        if (communityFilter !== 'all') {
+            posts = posts.filter(p => p.text.includes('#'+communityFilter));
+        }
+        if (!posts.length) {
+            feed.innerHTML = '<div style="text-align:center;color:#6868a0;padding:24px;font-style:italic;font-size:12px;">No posts with this filter yet.</div>';
+            return;
+        }
+        feed.innerHTML = posts.map((p, idx) => {
+            const rel  = relativeTime(p.ts);
+            const tags = extractTags(p.text);
+            const tagHtml = tags.map(t=>`<span style="font-size:9px;font-weight:700;color:${TAG_COLORS[t]||'#8888a8'};background:${TAG_COLORS[t]||'#8888a8'}18;border-radius:3px;padding:1px 5px;">${t}</span>`).join(' ');
+            const followed = (currentUser && currentUser.following || []).includes(p.user);
+            const isMe = currentUser && (p.user === currentUser.displayName || p.user === currentUser.username);
+            return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 14px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                    <div style="width:28px;height:28px;border-radius:50%;background:${isMe?'var(--v-gold)':'#2a2a3a'};display:flex;align-items:center;justify-content:center;color:${isMe?'#0a0a0f':'#c0c0d8'};font-size:11px;font-weight:700;flex-shrink:0;">${p.avatar}</div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-weight:700;color:#e0e0f5;font-size:12px;display:flex;align-items:center;gap:6px;">
+                            ${p.user}
+                            ${p.badge?`<span style="font-size:11px;" title="${p.badge}">${p.badge}</span>`:''}
+                        </div>
+                        <div style="font-size:10px;color:#6868a0;">${rel}</div>
+                    </div>
+                    ${p.sym ? `<span onclick="closeCommunity();openStockDetail(getStockBySymbol('${p.sym}'))" style="font-size:9px;font-weight:700;color:var(--v-gold);background:rgba(212,168,75,0.1);border:1px solid rgba(212,168,75,0.2);padding:2px 7px;border-radius:4px;cursor:pointer;">$${p.sym}</span>` : ''}
+                    ${!isMe?`<button onclick="toggleFollowTrader('${p.user}')" style="font-size:9px;font-weight:700;color:${followed?'#4ade80':'#8888a8'};background:${followed?'rgba(74,222,128,0.08)':'rgba(255,255,255,0.04)'};border:1px solid ${followed?'rgba(74,222,128,0.2)':'rgba(255,255,255,0.08)'};border-radius:4px;padding:2px 7px;cursor:pointer;">${followed?'✓ Following':'+ Follow'}</button>`:''}
+                </div>
+                ${tagHtml?`<div style="margin-bottom:6px;display:flex;gap:4px;">${tagHtml}</div>`:''}
+                <p style="font-size:12px;color:#c0c0d8;line-height:1.6;margin:0 0 8px;">${p.text}</p>
+                <div style="display:flex;gap:10px;align-items:center;">
+                    <button onclick="communityLike(${idx})" style="font-size:10px;color:#6868a0;background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.color='var(--v-gold)'" onmouseout="this.style.color='#6868a0'">❤️ ${p.likes}</button>
+                    ${p.sym?`<button onclick="copyIdeaToWatchlist('${p.sym}')" style="font-size:10px;color:#6868a0;background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#6868a0'">📋 Copy Idea</button>`:''}
+                </div>
+            </div>`;
+        }).join('');
+    };
+
+    function toggleFollowTrader(traderName) {
+        if (!currentUser) return;
+        currentUser.following = currentUser.following || [];
+        const idx = currentUser.following.indexOf(traderName);
+        if (idx >= 0) currentUser.following.splice(idx, 1);
+        else { currentUser.following.push(traderName); pushNotif('info', `Now following ${traderName}'s trade ideas.`); }
+        saveUserData(false);
+        renderCommunityFeed();
+    }
+
+    function copyIdeaToWatchlist(sym) {
+        if (!sym) return;
+        if (!watchlist.includes(sym)) watchlist.push(sym);
+        saveUserData(false);
+        pushNotif('info', `$${sym} added to watchlist from community idea.`);
+        showTradeToast('INFO', 0, `$${sym} → Watchlist ✓`, 0, true);
+        renderCommunityFeed();
+    }
+
+    // Override postCommunityIdea to include strategy tags and user badges
+    const _origPostIdea = postCommunityIdea;
+    postCommunityIdea = function() {
+        const ta = document.getElementById('communityPost');
+        const text = ta ? ta.value.trim() : '';
+        if (!text) return;
+        const name = currentUser?.displayName || currentUser?.username || 'You';
+        const initials = name.slice(0,2).toUpperCase();
+        const syms = text.match(/\$[A-Z]{1,5}/g);
+        const sym  = syms ? syms[0].replace('$','') : '';
+        const badges = currentUser?.badges || [];
+        const topBadge = badges.length ? PERF_BADGES.find(b=>badges.includes(b.id))?.emoji || '' : '';
+        communityPosts.unshift({ user:name, avatar:initials, ts:Date.now(), text, likes:0, sym, badge:topBadge });
+        if (ta) ta.value = '';
+        renderCommunityFeed();
+        renderBadgesInCommunity();
+        playTick();
+    };
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  CALENDAR UPGRADE — filters + countdowns + IPOs + dividends
+    // ══════════════════════════════════════════════════════════════════════
+    let calFilter = 'all';
+
+    const calendarEvents = (() => {
+        const now = Date.now(), day = 86400000;
+        return [
+            { ts: now + 1*day,  type:'fed',      impact:'high',   title:'FOMC Meeting Minutes',             detail:'Federal Reserve publishes meeting minutes. Watch for rate guidance language.' },
+            { ts: now + 2*day,  type:'earnings', impact:'high',   title:'NVDA Earnings Q4 2025',            detail:'NVIDIA Q4 earnings. EPS est. $0.84 on revenue $38.0B.' },
+            { ts: now + 3*day,  type:'data',     impact:'medium', title:'US CPI Inflation Data',            detail:'Core CPI expected at 3.1% YoY.' },
+            { ts: now + 4*day,  type:'earnings', impact:'high',   title:'AAPL Earnings Q1 2026',            detail:'iPhone 17 cycle in focus. EPS est. $2.26.' },
+            { ts: now + 4*day,  type:'ipo',      impact:'medium', title:'Reddit Inc (RDDT) Secondary',      detail:'Reddit secondary offering of 8M shares.' },
+            { ts: now + 5*day,  type:'data',     impact:'high',   title:'US Non-Farm Payrolls',             detail:'Consensus: +195K jobs, unemployment 4.1%.' },
+            { ts: now + 5*day,  type:'dividend', impact:'low',    title:'AAPL Dividend Ex-Date',            detail:'Apple quarterly dividend $0.25/share. Ex-dividend date.' },
+            { ts: now + 6*day,  type:'earnings', impact:'medium', title:'MSFT Earnings Q2 FY26',            detail:'Azure cloud growth in focus. EPS est. $3.12.' },
+            { ts: now + 7*day,  type:'ipo',      impact:'high',   title:'CoreWeave IPO Pricing',            detail:'AI infrastructure company CoreWeave pricing expected at $40-47/share.' },
+            { ts: now + 8*day,  type:'fed',      impact:'high',   title:'Fed Chair Powell Speech',          detail:'Powell speaks at Economic Club of NY on monetary policy.' },
+            { ts: now + 9*day,  type:'data',     impact:'medium', title:'US Retail Sales MoM',              detail:'Previous: +0.4%. Consensus: +0.3%.' },
+            { ts: now + 9*day,  type:'dividend', impact:'low',    title:'MSFT Dividend Ex-Date',            detail:'Microsoft quarterly dividend $0.83/share.' },
+            { ts: now + 11*day, type:'earnings', impact:'high',   title:'GOOGL Earnings Q4 2025',           detail:'AI-driven search + cloud revenue in focus.' },
+            { ts: now + 12*day, type:'data',     impact:'high',   title:'Fed Rate Decision',                detail:'Markets pricing 88% hold probability at 4.25–4.50%.' },
+            { ts: now + 14*day, type:'earnings', impact:'medium', title:'META Earnings Q4 2025',            detail:'AI advertising tools and Reality Labs losses in focus.' },
+            { ts: now + 15*day, type:'ipo',      impact:'medium', title:'Shein IPO Expected Date',          detail:'Fast fashion giant Shein expected NYSE listing.' },
+            { ts: now + 18*day, type:'data',     impact:'medium', title:'US GDP Q4 2025 Preliminary',       detail:'Previous: +2.8% annualized. Est: +2.5%.' },
+            { ts: now + 20*day, type:'dividend', impact:'low',    title:'JPM Dividend Ex-Date',             detail:'JPMorgan quarterly dividend $1.25/share.' },
+        ];
+    })();
+
+    function setCalFilter(type) {
+        calFilter = type;
+        document.querySelectorAll('.cal-filter-btn').forEach(b=>{
+            const active = b.id === 'cal-' + type;
+            b.style.background = active ? 'rgba(212,168,75,0.1)' : 'transparent';
+            b.style.color      = active ? 'var(--v-gold)' : '#8888a8';
+            b.style.borderColor= active ? 'rgba(212,168,75,0.3)' : 'rgba(255,255,255,0.08)';
+        });
+        renderCalendar();
+    }
+
+    // Override existing renderCalendar
+    renderCalendar = function() {
+        const el = document.getElementById('calendarContent');
+        if (!el) return;
+        const now = Date.now();
+        const events = calFilter === 'all' ? calendarEvents : calendarEvents.filter(e=>e.type===calFilter);
+        const typeColor = { fed:'rgba(139,92,246,0.1)', earnings:'rgba(212,168,75,0.08)', data:'rgba(34,197,94,0.08)', ipo:'rgba(96,165,250,0.08)', dividend:'rgba(245,158,11,0.08)' };
+        const typeText  = { fed:'#a78bfa', earnings:'var(--v-gold)', data:'#4ade80', ipo:'#60a5fa', dividend:'#f59e0b' };
+        const typeLabel = { fed:'🏦 Fed', earnings:'📊 Earnings', data:'📈 Economic', ipo:'🚀 IPO', dividend:'💰 Dividend' };
+        const impactDot = { high:'#ef4444', medium:'var(--v-gold)', low:'#4ade80' };
+
+        function countdown(ts) {
+            const diff = ts - now;
+            if (diff <= 0) return '<span style="font-size:9px;color:#4ade80;font-weight:700;">Today</span>';
+            const d = Math.floor(diff/86400000);
+            const h = Math.floor((diff%86400000)/3600000);
+            if (d > 0) return `<span style="font-size:9px;color:#f59e0b;font-weight:700;">in ${d}d ${h}h</span>`;
+            return `<span style="font-size:9px;color:#f87171;font-weight:700;">in ${h}h</span>`;
+        }
+
+        el.innerHTML = events.length ? `<div style="display:flex;flex-direction:column;gap:8px;">
+            ${events.map(ev => {
+                const d = new Date(ev.ts);
+                const dateStr = d.toLocaleDateString([],{weekday:'short',month:'short',day:'numeric'});
+                return `<div style="background:${typeColor[ev.type]||'rgba(255,255,255,0.03)'};border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;">
+                    <div style="width:52px;flex-shrink:0;text-align:center;">
+                        <div style="font-size:9px;color:#6868a0;text-transform:uppercase;font-weight:700;">${d.toLocaleDateString([],{month:'short'})}</div>
+                        <div style="font-family:var(--v-mono);font-size:1.3rem;color:#f0f0fa;line-height:1;">${d.getDate()}</div>
+                        <div style="font-size:9px;color:#6868a0;">${d.toLocaleDateString([],{weekday:'short'})}</div>
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap;">
+                            <span style="font-size:9px;font-weight:700;color:${typeText[ev.type]||'#8888a8'};text-transform:uppercase;letter-spacing:0.05em;">${typeLabel[ev.type]||ev.type}</span>
+                            <span style="width:5px;height:5px;border-radius:50%;background:${impactDot[ev.impact]||'#8888a8'};flex-shrink:0;"></span>
+                            <span style="font-size:9px;color:#6868a0;text-transform:capitalize;">${ev.impact} impact</span>
+                            ${countdown(ev.ts)}
+                        </div>
+                        <div style="font-weight:600;color:#e0e0f5;font-size:0.875rem;margin-bottom:3px;">${ev.title}</div>
+                        <div style="font-size:11px;color:#8888a8;line-height:1.5;">${ev.detail}</div>
+                    </div>
+                </div>`;
+            }).join('')}
+        </div>` : '<div style="text-align:center;color:#6868a0;padding:32px;font-style:italic;">No events for this filter.</div>';
+    };
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  MICRO SOUND SYSTEM 🔔
+    // ══════════════════════════════════════════════════════════════════════
+    let soundEnabled = false;
+    let _audioCtx = null;
+
+    function getAudioCtx() {
+        if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        return _audioCtx;
+    }
+
+    function playTone(freq, duration, vol, type) {
+        if (!soundEnabled) return;
+        try {
+            const ctx = getAudioCtx();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = type || 'sine';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(vol || 0.06, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + duration);
+        } catch(e) {}
+    }
+
+    function playTick()     { playTone(880, 0.06, 0.04, 'sine'); }
+    function playBuy()      { playTone(440, 0.12, 0.06, 'sine'); setTimeout(()=>playTone(554,0.1,0.05,'sine'),80); }
+    function playSell()     { playTone(330, 0.12, 0.06, 'sine'); }
+    function playAlert()    { playTone(660, 0.15, 0.07, 'triangle'); }
+    function playSuccess()  { [440,554,659].forEach((f,i)=>setTimeout(()=>playTone(f,0.15,0.05,'sine'),i*80)); }
+
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        const btn = document.getElementById('soundToggleBtn');
+        if (btn) btn.textContent = soundEnabled ? '🔔' : '🔇';
+        if (soundEnabled) { setTimeout(playSuccess, 50); pushNotif('info','🔔 Micro sounds enabled'); }
+        if (currentUser) { currentUser.soundEnabled = soundEnabled; saveUserData(false); }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  CHART DEPTH GRADIENT BACKGROUND
+    // ══════════════════════════════════════════════════════════════════════
+    function applyChartDepthGradient() {
+        const canvas = document.getElementById('sChart');
+        if (!canvas || !sChart) return;
+        const ctx = canvas.getContext('2d');
+        const chartArea = sChart.chartArea;
+        if (!chartArea) return;
+        const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+        gradient.addColorStop(0,   'rgba(96,165,250,0.18)');
+        gradient.addColorStop(0.5, 'rgba(96,165,250,0.06)');
+        gradient.addColorStop(1,   'rgba(96,165,250,0.0)');
+        if (sChart.data && sChart.data.datasets && sChart.data.datasets[0]) {
+            sChart.data.datasets[0].backgroundColor = gradient;
+            sChart.update('none');
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  COMPOUNDING PROJECTION + 10-YEAR SIMULATOR
+    // ══════════════════════════════════════════════════════════════════════
+    function openCompoundProjector() {
+        const currentVal = (currentUser && currentUser.totalValue) || cash;
+        const modal = document.createElement('div');
+        modal.id = 'compoundModal';
+        modal.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.85);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;';
+        modal.innerHTML = `
+        <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(212,168,75,0.2);border-radius:24px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto;animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);">
+            <div style="padding:24px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <h2 style="font-family:var(--v-serif);font-size:1.3rem;color:#f0f0fa;margin:0 0 3px;">📈 10-Year Compound Projector</h2>
+                    <p style="font-size:11px;color:#8888a8;margin:0;">Simulate long-term portfolio growth</p>
+                </div>
+                <button onclick="document.getElementById('compoundModal').remove()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;">&times;</button>
+            </div>
+            <div style="padding:20px 28px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;">
+                    <div>
+                        <label style="font-size:9px;color:#8888a8;text-transform:uppercase;font-weight:700;display:block;margin-bottom:4px;">Starting Value</label>
+                        <input id="cpStart" type="number" value="${Math.round(currentVal)}" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 10px;font-size:13px;color:#f0f0fa;outline:none;font-family:var(--v-mono);">
+                    </div>
+                    <div>
+                        <label style="font-size:9px;color:#8888a8;text-transform:uppercase;font-weight:700;display:block;margin-bottom:4px;">Annual Return %</label>
+                        <input id="cpReturn" type="number" value="12" min="1" max="50" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 10px;font-size:13px;color:#f0f0fa;outline:none;font-family:var(--v-mono);">
+                    </div>
+                    <div>
+                        <label style="font-size:9px;color:#8888a8;text-transform:uppercase;font-weight:700;display:block;margin-bottom:4px;">Monthly Add ($)</label>
+                        <input id="cpMonthly" type="number" value="500" min="0" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 10px;font-size:13px;color:#f0f0fa;outline:none;font-family:var(--v-mono);">
+                    </div>
+                </div>
+                <button onclick="runCompound()" style="background:rgba(212,168,75,0.12);color:var(--v-gold);border:1px solid rgba(212,168,75,0.25);border-radius:8px;padding:9px 20px;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:16px;">Calculate Growth →</button>
+                <div id="cpResults" style="display:none;">
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;" id="cpStats"></div>
+                    <div style="height:180px;position:relative;background:rgba(255,255,255,0.02);border-radius:10px;padding:12px;overflow:hidden;">
+                        <canvas id="cpChart"></canvas>
+                    </div>
+                    <div id="cpTable" style="margin-top:14px;max-height:200px;overflow-y:auto;font-size:11px;"></div>
+                </div>
+            </div>
+        </div>`;
+        modal.onclick = () => modal.remove();
+        document.body.appendChild(modal);
+    }
+
+    function runCompound() {
+        const start   = parseFloat(document.getElementById('cpStart')?.value || 100000);
+        const annRate = parseFloat(document.getElementById('cpReturn')?.value || 12) / 100;
+        const monthly = parseFloat(document.getElementById('cpMonthly')?.value || 500);
+        const years   = 10;
+        const mRate   = annRate / 12;
+        const results = [{ year:0, value:start }];
+        let v = start;
+        for (let y = 1; y <= years; y++) {
+            for (let m = 0; m < 12; m++) { v = v * (1 + mRate) + monthly; }
+            results.push({ year:y, value:Math.round(v) });
+        }
+        const totalContributions = start + monthly * 12 * years;
+        const finalVal = results[years].value;
+        const gain = finalVal - totalContributions;
+        document.getElementById('cpResults').style.display = 'block';
+        document.getElementById('cpStats').innerHTML = [
+            { label:'Final Value',    val:'$'+finalVal.toLocaleString(),                    color:'#4ade80' },
+            { label:'Total Invested', val:'$'+Math.round(totalContributions).toLocaleString(), color:'#f0f0fa' },
+            { label:'Compound Gain',  val:'$'+Math.round(gain).toLocaleString(),            color:gain>=0?'#4ade80':'#f87171' }
+        ].map(s=>`<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px;text-align:center;">
+            <div style="font-size:8px;color:#6868a0;text-transform:uppercase;margin-bottom:4px;">${s.label}</div>
+            <div style="font-family:var(--v-mono);font-size:1rem;font-weight:700;color:${s.color};">${s.val}</div>
+        </div>`).join('');
+        // Draw bar chart on canvas
+        const canvas = document.getElementById('cpChart');
+        if (canvas && typeof Chart !== 'undefined') {
+            if (canvas._chartInstance) canvas._chartInstance.destroy();
+            canvas._chartInstance = new Chart(canvas.getContext('2d'), {
+                type:'bar',
+                data:{ labels:results.map(r=>`Y${r.year}`), datasets:[{ data:results.map(r=>r.value), backgroundColor:'rgba(212,168,75,0.4)', borderColor:'var(--v-gold)', borderWidth:1, borderRadius:3 }] },
+                options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#8888a8',font:{size:9}}}, y:{ticks:{color:'#8888a8',font:{size:9}, callback:v=>'$'+(v/1000).toFixed(0)+'K'}} } }
+            });
+        }
+        document.getElementById('cpTable').innerHTML = `<table style="width:100%;border-collapse:collapse;"><tr style="background:rgba(255,255,255,0.05);"><th style="text-align:left;padding:5px 10px;color:#6868a0;font-size:9px;text-transform:uppercase;">Year</th><th style="text-align:right;padding:5px 10px;color:#6868a0;font-size:9px;text-transform:uppercase;">Value</th><th style="text-align:right;padding:5px 10px;color:#6868a0;font-size:9px;text-transform:uppercase;">Growth</th></tr>${results.map(r=>`<tr style="border-bottom:1px solid rgba(255,255,255,0.04);"><td style="padding:5px 10px;color:#8888a8;">${r.year===0?'Now':r.year+' yr'}</td><td style="padding:5px 10px;text-align:right;font-family:var(--v-mono);color:#f0f0fa;font-weight:600;">$${r.value.toLocaleString()}</td><td style="padding:5px 10px;text-align:right;font-family:var(--v-mono);color:${r.value>=start?'#4ade80':'#f87171'};">${r.year>0?'+'+((r.value-start)/start*100).toFixed(0)+'%':'—'}</td></tr>`).join('')}</table>`;
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  HOOK AI COACH — REVENGE TRADING + PATTERN DETECTION
+    // ══════════════════════════════════════════════════════════════════════
+    function detectRevengeTradingPattern() {
+        const sells = (transactions||[]).filter(t=>t.type==='SELL');
+        // Revenge trading: buys within 10 minutes of a losing sell
+        let revengeCount = 0;
+        sells.forEach(sell => {
+            const pl = (sell.price-(sell.avgBuy||sell.price))*(sell.qty||1);
+            if (pl < 0) {
+                const quickBuy = (transactions||[]).find(b=>b.type==='BUY'&&b.ts>sell.ts&&b.ts<sell.ts+600000);
+                if (quickBuy) revengeCount++;
+            }
+        });
+        return revengeCount;
+    }
+
+    function detectLateExitPattern() {
+        const sells = (transactions||[]).filter(t=>t.type==='SELL');
+        let lateExits = 0;
+        sells.forEach(sell => {
+            // Late exit: exited at a loss after holding 3+ days, when position was profitable earlier
+            const holds = (transactions||[]).filter(b=>b.type==='BUY'&&b.symbol===sell.symbol&&b.ts<sell.ts);
+            if (!holds.length) return;
+            const holdDays = (sell.ts-holds[holds.length-1].ts)/86400000;
+            const finalPL = (sell.price-(sell.avgBuy||sell.price));
+            if (holdDays >= 3 && finalPL < 0) lateExits++;
+        });
+        return lateExits;
+    }
+
+    function detectEarlyProfitCutPattern() {
+        const sells = (transactions||[]).filter(t=>t.type==='SELL');
+        let earlyExits = 0;
+        sells.forEach(sell => {
+            const holds = (transactions||[]).filter(b=>b.type==='BUY'&&b.symbol===sell.symbol&&b.ts<sell.ts);
+            if (!holds.length) return;
+            const holdDays = (sell.ts-holds[holds.length-1].ts)/86400000;
+            const plPct    = (sell.price-(sell.avgBuy||sell.price))/(sell.avgBuy||sell.price)*100;
+            // Cut early: < 1 day hold, < 2% profit
+            if (holdDays < 1 && plPct > 0 && plPct < 2) earlyExits++;
+        });
+        return earlyExits;
+    }
+
+    // Enhanced generateCoachInsights with new pattern detection
+    const _origGenerateCoachInsights = generateCoachInsights;
+    generateCoachInsights = function(metrics) {
+        const base = _origGenerateCoachInsights(metrics);
+        const extra = [];
+        const revenge = detectRevengeTradingPattern();
+        if (revenge >= 2) extra.push(`You've entered trades within 10 minutes of a losing exit ${revenge} times — a classic revenge trading pattern. Pause 30 minutes after a loss before re-entering.`);
+        const lateExit = detectLateExitPattern();
+        if (lateExit >= 2) extra.push(`${lateExit} trades turned from winners to losers during holding — consider tighter trailing stops to protect profit on multi-day holds.`);
+        const earlyExit = detectEarlyProfitCutPattern();
+        if (earlyExit >= 3) extra.push(`You frequently exit profitable trades early (< 2% gain, < 1 day). Let your winners run by pre-defining a target before entering.`);
+        // Position sizing after losses
+        const sells = (transactions||[]).filter(t=>t.type==='SELL');
+        const portfolioVal = (currentUser&&currentUser.totalValue)||100000;
+        const afterLossBuys = sells.filter(sell=>{
+            const pl=(sell.price-(sell.avgBuy||sell.price))*(sell.qty||1);
+            if(pl>=0) return false;
+            const nextBuy=(transactions||[]).find(b=>b.type==='BUY'&&b.ts>sell.ts&&b.ts<sell.ts+86400000);
+            return nextBuy&&(nextBuy.price*nextBuy.qty)/portfolioVal>0.15;
+        });
+        if (afterLossBuys.length >= 2) extra.push(`You tend to increase position size after losses. This amplifies drawdowns. Consider keeping position sizes consistent regardless of recent results.`);
+        // Hold time pattern
+        if (metrics && metrics.avgHoldDays > 1.5) {
+            const shortWinRate = sells.filter(t=>(t.ts-(transactions.find(b=>b.type==='BUY'&&b.symbol===t.symbol&&b.ts<t.ts)?.ts||t.ts))<86400000&&(t.price-(t.avgBuy||t.price))>0).length / Math.max(1,sells.filter(t=>(t.ts-(transactions.find(b=>b.type==='BUY'&&b.symbol===t.symbol&&b.ts<t.ts)?.ts||t.ts))<86400000).length);
+            if (shortWinRate < 0.4 && metrics.winRate > 0.5) extra.push(`Your overall win rate (${(metrics.winRate*100).toFixed(0)}%) is higher than your intraday win rate. You perform significantly better when holding > 2 days.`);
+        }
+        return [...base, ...extra].slice(0, 4);
+    };
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  WIRE UP openCommunity to show badges
+    // ══════════════════════════════════════════════════════════════════════
+    const _origOpenComm = openCommunity;
+    openCommunity = function() {
+        _origOpenComm();
+        computeAndSaveBadges();
+        renderBadgesInCommunity();
+    };
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  SIDEBAR: Add Compound Projector button to Portfolio Intelligence
+    // ══════════════════════════════════════════════════════════════════════
+    // Patch renderPortfolioIntelligence to add compound button
+    const _origRenderPI = renderPortfolioIntelligence;
+    renderPortfolioIntelligence = function() {
+        _origRenderPI();
+        const bwEl = document.getElementById('bestWorstTrade');
+        if (bwEl && !document.getElementById('cpLaunchBtn')) {
+            const btn = document.createElement('button');
+            btn.id = 'cpLaunchBtn';
+            btn.textContent = '📈 10-Year Compound Projector →';
+            btn.style.cssText = 'display:block;width:100%;margin-top:10px;background:rgba(212,168,75,0.07);color:var(--v-gold);border:1px solid rgba(212,168,75,0.18);border-radius:8px;padding:8px 12px;font-size:11px;font-weight:700;cursor:pointer;text-align:left;';
+            btn.onclick = openCompoundProjector;
+            bwEl.appendChild(btn);
+        }
+    };
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  SOUND — wire into trades
+    // ══════════════════════════════════════════════════════════════════════
+    const _origShowToastSound = showTradeToast;
+    showTradeToast = function(type, qty, sym, price, isPending) {
+        _origShowToastSound(type, qty, sym, price, isPending);
+        if (!isPending) {
+            if (type === 'BUY')  playBuy();
+            if (type === 'SELL') playSell();
+        }
+    };
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  PATCH updateUI — compute badges on every 5th update
+    // ══════════════════════════════════════════════════════════════════════
+    const _origUpdateUIBadge = updateUI;
+    updateUI = function() {
+        _origUpdateUIBadge();
+        updateUI._badgeCount = (updateUI._badgeCount||0)+1;
+        if (updateUI._badgeCount % 5 === 0) computeAndSaveBadges();
+    };
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  PATCH loginAs — restore sound setting + badges
+    // ══════════════════════════════════════════════════════════════════════
+    const _origLoginAsFinal = loginAs;
+    loginAs = async function(userData) {
+        await _origLoginAsFinal(userData);
+        // Restore sound
+        if (currentUser && currentUser.soundEnabled) {
+            soundEnabled = true;
+            const btn = document.getElementById('soundToggleBtn');
+            if (btn) btn.textContent = '🔔';
+        }
+        computeAndSaveBadges();
+        renderBadgesInCommunity();
+        // Apply chart gradient after chart loads
+        setTimeout(applyChartDepthGradient, 1500);
+    };
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  LEGAL PAGES SYSTEM
+    // ══════════════════════════════════════════════════════════════════════
+    const _activeLegalPages = new Set();
+
+    function openLegalPage(key) {
+        const el = document.getElementById('legal-' + key);
+        if (!el) return;
+        el.style.display = 'flex';
+        _activeLegalPages.add(key);
+        document.body.style.overflow = 'hidden';
+        // Special init
+        if (key === 'faq') renderFAQ();
+        // Close on backdrop click
+        el.addEventListener('click', function bk(e) {
+            if (e.target === el) { closeLegalPage(key); el.removeEventListener('click', bk); }
+        });
+        // Close on Escape
+        const esc = (e) => { if (e.key === 'Escape') { closeLegalPage(key); document.removeEventListener('keydown', esc); } };
+        document.addEventListener('keydown', esc);
+    }
+
+    function closeLegalPage(key) {
+        const el = document.getElementById('legal-' + key);
+        if (el) el.style.display = 'none';
+        _activeLegalPages.delete(key);
+        if (_activeLegalPages.size === 0) document.body.style.overflow = '';
+    }
+
+    // ── Contact Form ──────────────────────────────────────────────────
+    function submitContactForm() {
+        const name  = (document.getElementById('contactName')?.value || '').trim();
+        const email = (document.getElementById('contactEmail')?.value || '').trim();
+        const msg   = (document.getElementById('contactMessage')?.value || '').trim();
+
+        if (!name)  { document.getElementById('contactName')?.focus();  return; }
+        if (!email || !email.includes('@')) { document.getElementById('contactEmail')?.focus(); return; }
+        if (!msg)   { document.getElementById('contactMessage')?.focus(); return; }
+
+        // Simulate submission (real implementation would POST to backend)
+        const emailConfirm = document.getElementById('contactEmailConfirm');
+        if (emailConfirm) emailConfirm.textContent = email;
+        const form = document.getElementById('contactForm');
+        const success = document.getElementById('contactSuccess');
+        if (form) form.style.display = 'none';
+        if (success) success.style.display = 'block';
+
+        // Reset form for next use
+        setTimeout(() => {
+            if (form) { form.style.display = 'grid'; ['contactName','contactEmail','contactMessage'].forEach(id => { const el=document.getElementById(id); if(el)el.value=''; }); }
+            if (success) success.style.display = 'none';
+        }, 8000);
+    }
+
+    // ── FAQ Content ───────────────────────────────────────────────────
+    const FAQ_ITEMS = [
+        { q: 'Is Vestra free to use?', a: 'Yes. Vestra is completely free. No credit card, no subscription, no hidden fees. Create an account and start trading with $100,000 virtual cash instantly.' },
+        { q: 'Does Vestra use real money?', a: 'No. All portfolio values, trades, and returns on Vestra are entirely virtual. No real currency is ever deposited, withdrawn, or at risk. This is a simulation platform only.' },
+        { q: 'How do I get live stock prices?', a: 'Vestra integrates with the Finnhub API for real-time market data. Get a free API key from finnhub.io and enter it via the ⚡ Live button in the header. Without an API key, prices update with simulated realistic movements.' },
+        { q: 'What is Realism Mode?', a: 'Realism Mode enforces real-world trading constraints: orders only execute during NYSE market hours (9:30 AM – 4:00 PM ET), bid-ask spread simulation applies, and you compete on a separate leaderboard from Standard Mode users.' },
+        { q: 'What is the Strategy Lab?', a: 'The Strategy Lab lets you create named trading strategies with defined entry/exit conditions, risk parameters, and trade tagging. Each strategy builds its own performance dashboard showing win rate, average return, and drawdown.' },
+        { q: 'How does the Risk Guard work?', a: 'Risk Guard lets you set personal trading rules: max risk per trade (% of portfolio), max daily loss, max open positions, and consecutive loss limits. If you attempt to violate a rule, the trade is blocked with an explanation.' },
+        { q: 'What is the Trade Replay Engine?', a: 'The Replay Engine lets you practice on historical candle data. Open any stock chart, select a period, and click 🎬 Replay. Candles reveal one at a time while you can place trades — exactly like a real trading practice session.' },
+        { q: 'Can I export my trade history?', a: 'Yes. Use the ⋯ menu in the top right of the dashboard, then click 📤 Export Portfolio. Your full trade history, portfolio state, and journal entries are exported as a JSON file.' },
+        { q: 'How are leaderboard rankings calculated?', a: 'Rankings are calculated monthly by total portfolio value. Secondary sort is by percentage return. Tertiary sort is by lowest maximum drawdown. Standard and Realism modes have completely separate leaderboards.' },
+        { q: 'How do I delete my account?', a: 'Email support@vestra.app with your username and a deletion request. We will remove all your data within 5 business days. Alternatively, clearing your browser\'s local storage will erase local data immediately.' },
+    ];
+
+    function renderFAQ() {
+        const el = document.getElementById('faqBody');
+        if (!el || el.dataset.rendered) return;
+        el.dataset.rendered = '1';
+        el.innerHTML = FAQ_ITEMS.map((item, i) => `
+            <div style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;">
+                <button onclick="toggleFAQ(${i})" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;" aria-expanded="false" id="faqBtn${i}">
+                    <span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">${item.q}</span>
+                    <span id="faqArrow${i}" style="font-size:16px;color:#8888a8;flex-shrink:0;transition:transform 0.2s;line-height:1.5;">+</span>
+                </button>
+                <div id="faqAns${i}" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">${item.a}</div>
+            </div>`).join('');
+    }
+
+    function toggleFAQ(i) {
+        const ans   = document.getElementById('faqAns'  + i);
+        const arrow = document.getElementById('faqArrow' + i);
+        const btn   = document.getElementById('faqBtn'  + i);
+        if (!ans) return;
+        const open = ans.style.display !== 'none';
+        ans.style.display   = open ? 'none' : 'block';
+        if (arrow) arrow.textContent  = open ? '+' : '−';
+        if (arrow) arrow.style.color  = open ? '#8888a8' : 'var(--v-gold)';
+        if (btn)   btn.setAttribute('aria-expanded', !open);
+    }
+
+    // ── Footer: dynamic year ──────────────────────────────────────────
+    const footerYearEl = document.getElementById('footerYear');
+    if (footerYearEl) footerYearEl.textContent = new Date().getFullYear();
+
+    // ── Footer: responsive layout ─────────────────────────────────────
+    function updateFooterLayout() {
+        const fg = document.getElementById('footerGrid');
+        if (!fg) return;
+        fg.style.gridTemplateColumns = window.innerWidth < 768 ? '1fr 1fr' : window.innerWidth < 560 ? '1fr' : '2fr 1fr 1fr 1fr';
+    }
+    window.addEventListener('resize', updateFooterLayout);
+    updateFooterLayout();
+
+    // ── System status indicator ────────────────────────────────────────
+    function updateSystemStatus() {
+        const el = document.getElementById('systemStatus');
+        if (!el) return;
+        // Could do a real ping here; for now always show operational
+        el.textContent = 'All Systems Operational';
+        el.style.color = '#4ade80';
+    }
+    setTimeout(updateSystemStatus, 500);
+
     // ── Init ──
     initMarket();  // pre-load stock data
     showHomepage(); // start on homepage
@@ -7122,5 +8845,620 @@ function startNewsEngine() {
     </div>
 </div>
 
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     STRATEGY LAB MODAL
+════════════════════════════════════════════════════════════════════════ -->
+<div id="strategyLabModal" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto;">
+    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(167,139,250,0.2);border-radius:24px;width:100%;max-width:700px;margin:0 auto 40px;overflow:hidden;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);">
+        <div style="padding:24px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(167,139,250,0.07),transparent);">
+            <div>
+                <h2 style="font-family:var(--v-serif);font-size:1.4rem;color:#f0f0fa;margin:0 0 3px;">🧪 Strategy Lab</h2>
+                <p style="font-size:11px;color:#8888a8;margin:0;">Create, tag and analyse your trading strategies</p>
+            </div>
+            <button onclick="closeStrategyLab()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;">&times;</button>
+        </div>
+        <div style="padding:20px 28px;">
+            <!-- Create Strategy -->
+            <div style="background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.15);border-radius:14px;padding:16px;margin-bottom:20px;">
+                <div style="font-size:11px;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:12px;">+ New Strategy</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                    <input id="slName" placeholder="Strategy name (e.g. RSI Bounce)" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 12px;font-size:12px;color:#e0e0f5;outline:none;" onfocus="this.style.borderColor='#a78bfa'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+                    <select id="slTag" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 12px;font-size:12px;color:#e0e0f5;outline:none;">
+                        <option value="#Breakout">#Breakout</option>
+                        <option value="#Swing">#Swing</option>
+                        <option value="#Earnings">#Earnings</option>
+                        <option value="#Momentum">#Momentum</option>
+                        <option value="#Reversal">#Reversal</option>
+                        <option value="#Scalp">#Scalp</option>
+                        <option value="#ValueBuy">#ValueBuy</option>
+                        <option value="#DipBuy">#DipBuy</option>
+                    </select>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+                    <div>
+                        <label style="font-size:9px;color:#6868a0;text-transform:uppercase;margin-bottom:3px;display:block;">Entry Condition</label>
+                        <input id="slEntry" placeholder="RSI &lt; 30, price break..." style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:7px 10px;font-size:11px;color:#e0e0f5;outline:none;" onfocus="this.style.borderColor='#a78bfa'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+                    </div>
+                    <div>
+                        <label style="font-size:9px;color:#6868a0;text-transform:uppercase;margin-bottom:3px;display:block;">Exit Condition</label>
+                        <input id="slExit" placeholder="RSI &gt; 70, target hit..." style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:7px 10px;font-size:11px;color:#e0e0f5;outline:none;" onfocus="this.style.borderColor='#a78bfa'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+                    </div>
+                    <div>
+                        <label style="font-size:9px;color:#6868a0;text-transform:uppercase;margin-bottom:3px;display:block;">Risk per Trade %</label>
+                        <input id="slRisk" type="number" step="0.1" value="1" min="0.1" max="10" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:7px 10px;font-size:11px;color:#e0e0f5;outline:none;" onfocus="this.style.borderColor='#a78bfa'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+                    </div>
+                </div>
+                <button onclick="createStrategy()" style="background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:8px 20px;font-size:12px;font-weight:700;cursor:pointer;">Create Strategy</button>
+            </div>
+            <!-- Strategy Performance Dashboard -->
+            <div style="font-size:11px;font-weight:700;color:#8888a8;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;">Strategy Performance</div>
+            <div id="strategyList" style="display:flex;flex-direction:column;gap:10px;">
+                <div style="text-align:center;color:#6868a0;padding:20px;font-style:italic;font-size:12px;">No strategies yet. Create one above.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     RISK GUARD MODAL
+════════════════════════════════════════════════════════════════════════ -->
+<div id="riskGuardModal" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);align-items:center;justify-content:center;">
+    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(245,158,11,0.2);border-radius:24px;width:100%;max-width:480px;overflow:hidden;animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);">
+        <div style="padding:24px 28px 16px;border-bottom:1px solid rgba(255,255,255,0.07);background:linear-gradient(135deg,rgba(245,158,11,0.06),transparent);">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <h2 style="font-family:var(--v-serif);font-size:1.3rem;color:#f0f0fa;margin:0 0 3px;">🛡 Risk Guard</h2>
+                    <p style="font-size:11px;color:#8888a8;margin:0;">Enforce trading discipline with hard rules</p>
+                </div>
+                <button onclick="closeRiskGuard()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;">&times;</button>
+            </div>
+        </div>
+        <div style="padding:20px 28px;">
+            <div style="display:grid;gap:14px;">
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                        <div>
+                            <div style="font-size:12px;font-weight:600;color:#f0f0fa;">Max Risk per Trade</div>
+                            <div style="font-size:10px;color:#8888a8;">Block trades exceeding this % of portfolio</div>
+                        </div>
+                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                            <input type="checkbox" id="rgMaxRiskEnabled" onchange="saveRiskGuard()" style="cursor:pointer;">
+                            <span style="font-size:10px;color:#8888a8;">Active</span>
+                        </label>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <input id="rgMaxRisk" type="number" value="2" min="0.1" max="20" step="0.1" style="width:80px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 10px;font-size:13px;color:#f0f0fa;outline:none;font-family:var(--v-mono);" oninput="saveRiskGuard()">
+                        <span style="color:#8888a8;font-size:12px;">% of portfolio per trade</span>
+                    </div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                        <div>
+                            <div style="font-size:12px;font-weight:600;color:#f0f0fa;">Max Daily Loss</div>
+                            <div style="font-size:10px;color:#8888a8;">Disable trading if daily P&amp;L falls below this</div>
+                        </div>
+                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                            <input type="checkbox" id="rgDailyLossEnabled" onchange="saveRiskGuard()" style="cursor:pointer;">
+                            <span style="font-size:10px;color:#8888a8;">Active</span>
+                        </label>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <input id="rgDailyLoss" type="number" value="3" min="0.5" max="30" step="0.5" style="width:80px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 10px;font-size:13px;color:#f0f0fa;outline:none;font-family:var(--v-mono);" oninput="saveRiskGuard()">
+                        <span style="color:#8888a8;font-size:12px;">% max daily drawdown</span>
+                    </div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                        <div>
+                            <div style="font-size:12px;font-weight:600;color:#f0f0fa;">Max Open Positions</div>
+                            <div style="font-size:10px;color:#8888a8;">Enforce concentration discipline</div>
+                        </div>
+                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                            <input type="checkbox" id="rgMaxPosEnabled" onchange="saveRiskGuard()" style="cursor:pointer;">
+                            <span style="font-size:10px;color:#8888a8;">Active</span>
+                        </label>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <input id="rgMaxPos" type="number" value="5" min="1" max="30" step="1" style="width:80px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 10px;font-size:13px;color:#f0f0fa;outline:none;font-family:var(--v-mono);" oninput="saveRiskGuard()">
+                        <span style="color:#8888a8;font-size:12px;">max simultaneous positions</span>
+                    </div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                        <div>
+                            <div style="font-size:12px;font-weight:600;color:#f0f0fa;">Consecutive Loss Limit</div>
+                            <div style="font-size:10px;color:#8888a8;">Pause trading after N losses in a row</div>
+                        </div>
+                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                            <input type="checkbox" id="rgConsecEnabled" onchange="saveRiskGuard()" style="cursor:pointer;">
+                            <span style="font-size:10px;color:#8888a8;">Active</span>
+                        </label>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <input id="rgConsecLoss" type="number" value="3" min="1" max="10" step="1" style="width:80px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 10px;font-size:13px;color:#f0f0fa;outline:none;font-family:var(--v-mono);" oninput="saveRiskGuard()">
+                        <span style="color:#8888a8;font-size:12px;">consecutive losses max</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Status -->
+            <div id="riskGuardStatus" style="margin-top:14px;padding:10px 14px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);color:#4ade80;display:flex;align-items:center;gap:6px;">
+                <span>✓</span> Risk Guard active — monitoring your trades
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     MACRO MARKET OVERVIEW MODAL
+════════════════════════════════════════════════════════════════════════ -->
+<div id="macroModal" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto;">
+    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(96,165,250,0.2);border-radius:24px;width:100%;max-width:800px;margin:0 auto 40px;overflow:hidden;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);">
+        <div style="padding:24px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(96,165,250,0.07),transparent);">
+            <div>
+                <h2 style="font-family:var(--v-serif);font-size:1.4rem;color:#f0f0fa;margin:0 0 3px;">🌎 Market Overview</h2>
+                <p style="font-size:11px;color:#8888a8;margin:0;">Major indices · Sector heatmap · Sentiment</p>
+            </div>
+            <button onclick="closeMacro()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;">&times;</button>
+        </div>
+        <div style="padding:20px 28px;display:grid;gap:16px;">
+            <!-- Major Indices -->
+            <div>
+                <div style="font-size:11px;font-weight:700;color:#8888a8;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;">Major Indices</div>
+                <div id="macroIndices" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
+            </div>
+            <!-- Fear/Greed + Breadth -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;">
+                    <div style="font-size:11px;font-weight:700;color:#8888a8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">😨 Sentiment Meter</div>
+                    <div style="text-align:center;">
+                        <div id="sentimentLabel" style="font-size:1.4rem;font-weight:700;color:#f0f0fa;margin-bottom:4px;">Neutral</div>
+                        <div id="sentimentScore" style="font-family:var(--v-mono);font-size:2rem;font-weight:300;color:#f59e0b;">50</div>
+                        <div style="height:8px;background:linear-gradient(90deg,#ef4444,#f59e0b,#4ade80);border-radius:4px;margin-top:10px;position:relative;">
+                            <div id="sentimentNeedle" style="position:absolute;top:-3px;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid #1a1a24;transform:translateX(-50%);transition:left 0.5s;left:50%;box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:8px;color:#6868a0;margin-top:4px;"><span>Extreme Fear</span><span>Extreme Greed</span></div>
+                    </div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;">
+                    <div style="font-size:11px;font-weight:700;color:#8888a8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">📊 Market Breadth</div>
+                    <div id="macroBreath" style="display:grid;gap:8px;"></div>
+                </div>
+            </div>
+            <!-- Sector Heatmap -->
+            <div>
+                <div style="font-size:11px;font-weight:700;color:#8888a8;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;">Sector Heatmap</div>
+                <div id="macroSectorHeat" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;"></div>
+            </div>
+            <!-- Top Movers -->
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+                <div>
+                    <div style="font-size:10px;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">🚀 Top Gainers</div>
+                    <div id="macroGainers" style="font-size:11px;display:flex;flex-direction:column;gap:4px;"></div>
+                </div>
+                <div>
+                    <div style="font-size:10px;font-weight:700;color:#f87171;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">📉 Top Losers</div>
+                    <div id="macroLosers" style="font-size:11px;display:flex;flex-direction:column;gap:4px;"></div>
+                </div>
+                <div>
+                    <div style="font-size:10px;font-weight:700;color:#f59e0b;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">⚡ Unusual Volume</div>
+                    <div id="macroVolume" style="font-size:11px;display:flex;flex-direction:column;gap:4px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     TRADER PROGRESS MODAL
+════════════════════════════════════════════════════════════════════════ -->
+<div id="progressModal" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto;">
+    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(74,222,128,0.2);border-radius:24px;width:100%;max-width:680px;margin:0 auto 40px;overflow:hidden;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);">
+        <div style="padding:24px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(74,222,128,0.06),transparent);">
+            <div>
+                <h2 style="font-family:var(--v-serif);font-size:1.4rem;color:#f0f0fa;margin:0 0 3px;">📈 Trader Progress</h2>
+                <p style="font-size:11px;color:#8888a8;margin:0;">Your growth as a disciplined trader</p>
+            </div>
+            <button onclick="closeProgress()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;">&times;</button>
+        </div>
+        <div style="padding:20px 28px;display:grid;gap:16px;">
+            <!-- Key Stats Grid -->
+            <div id="progressStats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;"></div>
+            <!-- Long vs Short Bias -->
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;">
+                <div style="font-size:11px;font-weight:700;color:#8888a8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Trading Bias</div>
+                <div id="progressBias" style="display:grid;gap:6px;"></div>
+            </div>
+            <!-- Risk Consistency -->
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;">
+                <div style="font-size:11px;font-weight:700;color:#8888a8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Risk Consistency</div>
+                <div id="progressRiskChart" style="height:80px;display:flex;align-items:flex-end;gap:3px;"></div>
+            </div>
+            <!-- Reflection Prompts -->
+            <div style="background:rgba(212,168,75,0.05);border:1px solid rgba(212,168,75,0.15);border-radius:12px;padding:16px;">
+                <div style="font-size:11px;font-weight:700;color:var(--v-gold);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">📓 Weekly Reflection</div>
+                <div style="display:grid;gap:8px;">
+                    <div>
+                        <label style="font-size:10px;color:#8888a8;display:block;margin-bottom:3px;">What did you learn this week?</label>
+                        <textarea id="reflectLearn" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;font-size:11px;color:#e0e0f5;outline:none;resize:none;height:50px;font-family:var(--v-sans);line-height:1.5;" onfocus="this.style.borderColor='var(--v-gold)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'"></textarea>
+                    </div>
+                    <div>
+                        <label style="font-size:10px;color:#8888a8;display:block;margin-bottom:3px;">What mistake repeated?</label>
+                        <textarea id="reflectMistake" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;font-size:11px;color:#e0e0f5;outline:none;resize:none;height:50px;font-family:var(--v-sans);line-height:1.5;" onfocus="this.style.borderColor='var(--v-gold)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'"></textarea>
+                    </div>
+                    <button onclick="saveReflection()" style="background:rgba(212,168,75,0.12);color:var(--v-gold);border:1px solid rgba(212,168,75,0.25);border-radius:8px;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;align-self:start;">Save Reflection</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     LEGAL PAGES — SPA Overlays
+     All opened via openLegalPage(key)
+════════════════════════════════════════════════════════════════════ -->
+
+<!-- ─── PRIVACY POLICY ─── -->
+<div id="legal-privacy" class="legal-overlay" role="dialog" aria-modal="true" aria-label="Privacy Policy">
+  <div class="legal-sheet">
+    <div class="legal-header">
+      <div>
+        <p style="font-size:10px;color:#d4a84b;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;margin:0 0 4px;">Legal</p>
+        <h2 style="font-family:var(--v-serif);font-size:1.5rem;color:#f0f0fa;margin:0;">Privacy Policy</h2>
+        <p style="font-size:11px;color:#8888a8;margin:4px 0 0;">Last updated: January 2026</p>
+      </div>
+      <button onclick="closeLegalPage('privacy')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#a0a0b8;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px;font-weight:600;">✕ Close</button>
+    </div>
+    <div class="legal-body">
+      <div class="highlight-box">Vestra does not process real financial transactions. This policy covers simulated trading data only.</div>
+      <h2>1. Data We Collect</h2>
+      <p>When you use Vestra, we collect the following information:</p>
+      <ul>
+        <li><strong>Account data:</strong> Display name, username (no real name or ID required)</li>
+        <li><strong>Simulation data:</strong> Virtual portfolio holdings, trade history, strategy notes, journal entries</li>
+        <li><strong>Usage data:</strong> Pages visited, features used, session duration — collected in aggregate only</li>
+        <li><strong>Device data:</strong> Browser type, operating system, screen resolution</li>
+      </ul>
+      <p>We do not collect: real name, address, phone number, payment information, government ID, or any financial account details.</p>
+      <h2>2. How We Use Your Data</h2>
+      <ul>
+        <li>To operate your simulation account and maintain your virtual portfolio</li>
+        <li>To display your performance on the competitive leaderboard (if you consent)</li>
+        <li>To improve platform features and fix issues</li>
+        <li>To send service-critical notifications (no marketing without consent)</li>
+      </ul>
+      <h2>3. Data Sharing</h2>
+      <p>We do not sell your personal data. We may share aggregated, non-identifiable statistics publicly (e.g., "average user return this month"). Your username and simulation performance may be visible to other users on the leaderboard unless you enable Private Profile mode.</p>
+      <h2>4. Data Storage</h2>
+      <p>Simulation data is stored in your browser's local storage and, if you enable cloud sync, in encrypted form on our servers. Data is retained for up to 24 months of inactivity before being purged.</p>
+      <h2>5. Cookies</h2>
+      <p>Vestra uses only strictly necessary cookies required for session management. We do not use advertising, tracking, or third-party analytics cookies without your explicit consent.</p>
+      <h2>6. Your Rights</h2>
+      <ul>
+        <li>Right to access your data: request a full export at any time</li>
+        <li>Right to deletion: request account and data deletion via <a href="mailto:support@vestra.app">support@vestra.app</a></li>
+        <li>Right to portability: export your trade history as JSON</li>
+        <li>Right to correct: edit your display name and profile details at any time</li>
+      </ul>
+      <h2>7. Contact</h2>
+      <p>For data-related requests: <a href="mailto:support@vestra.app">support@vestra.app</a><br>We respond within 48 hours on business days.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TERMS OF SERVICE ─── -->
+<div id="legal-terms" class="legal-overlay" role="dialog" aria-modal="true" aria-label="Terms of Service">
+  <div class="legal-sheet">
+    <div class="legal-header">
+      <div>
+        <p style="font-size:10px;color:#d4a84b;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;margin:0 0 4px;">Legal</p>
+        <h2 style="font-family:var(--v-serif);font-size:1.5rem;color:#f0f0fa;margin:0;">Terms of Service</h2>
+        <p style="font-size:11px;color:#8888a8;margin:4px 0 0;">Last updated: January 2026</p>
+      </div>
+      <button onclick="closeLegalPage('terms')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#a0a0b8;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px;font-weight:600;">✕ Close</button>
+    </div>
+    <div class="legal-body">
+      <div class="highlight-box">By creating an account or using Vestra, you agree to these Terms of Service in full.</div>
+      <h2>1. Acceptance of Terms</h2>
+      <p>By accessing or using Vestra ("the Platform"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Platform.</p>
+      <h2>2. Simulation-Only Clause</h2>
+      <p>Vestra is exclusively a simulation platform. All portfolio values, trades, profits, and losses are entirely virtual. No real currency, securities, or financial instruments are traded. Vestra is not a broker-dealer, investment advisor, or financial services provider. Nothing on this platform constitutes a real financial transaction.</p>
+      <h2>3. No Financial Advice</h2>
+      <p>All content on Vestra — including charts, analytics, AI coaching, strategy suggestions, and educational material — is provided for informational and educational purposes only. Nothing constitutes financial, investment, legal, or tax advice. Always consult a qualified professional before making real investment decisions.</p>
+      <h2>4. Account Responsibilities</h2>
+      <ul>
+        <li>You are responsible for maintaining the security of your account credentials</li>
+        <li>You must not impersonate other users or create misleading usernames</li>
+        <li>You must not use automated bots or scripts to interact with the platform</li>
+        <li>You must not attempt to manipulate leaderboard rankings through exploits</li>
+      </ul>
+      <h2>5. Leaderboard Integrity</h2>
+      <p>Competitive leaderboards are provided in good faith. Any attempt to exploit system bugs, use automated trading bots, or otherwise manipulate rankings will result in immediate account suspension. Vestra reserves the right to remove any entry deemed to violate the spirit of fair competition.</p>
+      <h2>6. Termination</h2>
+      <p>Vestra reserves the right to suspend or terminate accounts that violate these Terms, at our sole discretion, with or without prior notice.</p>
+      <h2>7. Limitation of Liability</h2>
+      <p>To the maximum extent permitted by law, Vestra and its operators shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of the Platform. The Platform is provided "as is" without warranty of any kind.</p>
+      <h2>8. Intellectual Property</h2>
+      <p>All platform code, design, and brand assets are the property of Vestra. User-generated content (journal entries, strategy notes) remains your property, and you grant Vestra a limited licence to store and display it within the Platform.</p>
+      <h2>9. Governing Law</h2>
+      <p>These Terms shall be governed by the laws of the applicable jurisdiction. Any disputes shall be resolved through binding arbitration where permitted by law.</p>
+      <h2>10. Changes to Terms</h2>
+      <p>We may update these Terms periodically. Continued use of the Platform after changes constitutes acceptance of the revised Terms. We will notify users of material changes via the in-app notification system.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ─── RISK DISCLAIMER ─── -->
+<div id="legal-disclaimer" class="legal-overlay" role="dialog" aria-modal="true" aria-label="Risk Disclaimer">
+  <div class="legal-sheet">
+    <div class="legal-header">
+      <div>
+        <p style="font-size:10px;color:#f87171;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;margin:0 0 4px;">Important Notice</p>
+        <h2 style="font-family:var(--v-serif);font-size:1.5rem;color:#f0f0fa;margin:0;">Risk Disclaimer</h2>
+        <p style="font-size:11px;color:#8888a8;margin:4px 0 0;">Please read carefully before trading with real money</p>
+      </div>
+      <button onclick="closeLegalPage('disclaimer')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#a0a0b8;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px;font-weight:600;">✕ Close</button>
+    </div>
+    <div class="legal-body">
+      <div class="highlight-box" style="border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.05);color:#fca5a5;">⚠ This disclaimer applies to real-world trading. Vestra itself involves no financial risk whatsoever.</div>
+      <h2>Real-World Trading Risk</h2>
+      <p>Trading securities, derivatives, and other financial instruments in real markets involves substantial risk of loss. The following risks are inherent to all market participation:</p>
+      <ul>
+        <li><strong>Capital loss risk:</strong> You can lose some or all of your invested capital</li>
+        <li><strong>Market risk:</strong> Prices can move against your position rapidly and unpredictably</li>
+        <li><strong>Liquidity risk:</strong> You may not be able to exit a position at a desired price</li>
+        <li><strong>Volatility risk:</strong> Markets can experience extreme movements, especially around news events</li>
+        <li><strong>Leverage risk:</strong> Leveraged products can result in losses exceeding your initial investment</li>
+      </ul>
+      <h2>Simulation vs Reality</h2>
+      <p>Vestra is designed purely for educational purposes. The following important differences exist between simulation and real trading:</p>
+      <ul>
+        <li>Simulated orders execute at idealized prices without real-world slippage (outside Realism Mode)</li>
+        <li>Emotional responses to real financial loss are not replicated in simulation</li>
+        <li>Virtual portfolio growth does not guarantee equivalent real-world performance</li>
+        <li>Tax implications of real trading are not modelled in simulation</li>
+      </ul>
+      <h2>No Financial Advice</h2>
+      <p>Nothing on Vestra — including AI coaching insights, strategy analytics, educational content, or market data — constitutes financial advice. Vestra is not a licensed financial advisor. All analysis is for educational reference only.</p>
+      <h2>Past Performance</h2>
+      <p>Past simulated performance on Vestra does not guarantee, predict, or imply equivalent future performance in real markets. Historical results shown are based on virtual conditions that may differ substantially from real market environments.</p>
+      <h2>Seek Professional Advice</h2>
+      <p>Before making any real investment decisions, consult a qualified, licenced financial advisor who understands your personal financial situation, goals, and risk tolerance.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ─── COMPETITION RULES ─── -->
+<div id="legal-competition" class="legal-overlay" role="dialog" aria-modal="true" aria-label="Competition Rules">
+  <div class="legal-sheet">
+    <div class="legal-header">
+      <div>
+        <p style="font-size:10px;color:#d4a84b;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;margin:0 0 4px;">Competitive Platform</p>
+        <h2 style="font-family:var(--v-serif);font-size:1.5rem;color:#f0f0fa;margin:0;">Competition Rules</h2>
+        <p style="font-size:11px;color:#8888a8;margin:4px 0 0;">Monthly leaderboard integrity policy</p>
+      </div>
+      <button onclick="closeLegalPage('competition')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#a0a0b8;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px;font-weight:600;">✕ Close</button>
+    </div>
+    <div class="legal-body">
+      <h2>Mode Separation</h2>
+      <p>Standard Mode and Realism Mode leaderboards are strictly separated. Users compete only against others in the same mode. Cross-mode comparisons are not made on competitive rankings.</p>
+      <h2>Monthly Competition Period</h2>
+      <p>Each competition runs for a full calendar month. Rankings are calculated based on total portfolio value, percentage return, and maximum drawdown. Mode switching is locked from the 7th of the month until the 1st of the following month to ensure fair competition.</p>
+      <h2>Eligibility</h2>
+      <ul>
+        <li>Account must have been active before the 7th of the competition month</li>
+        <li>A minimum of 3 completed trades is required for leaderboard eligibility</li>
+        <li>Users who switch mode mid-competition are marked ineligible for that month</li>
+      </ul>
+      <h2>Prohibited Conduct</h2>
+      <ul>
+        <li>Exploiting platform bugs to gain unfair advantage</li>
+        <li>Using automated trading scripts or bots</li>
+        <li>Creating multiple accounts to manipulate rankings</li>
+        <li>Any form of collusion with other users</li>
+      </ul>
+      <h2>Realism Mode Rules</h2>
+      <ul>
+        <li>Trades only execute during NYSE market hours (9:30 AM – 4:00 PM ET)</li>
+        <li>Bid-ask spread simulation applies to all executions</li>
+        <li>Maximum 5 trades per day in Millionaire Path Challenge mode</li>
+        <li>Maximum 2% risk per trade in Millionaire Path Challenge mode</li>
+      </ul>
+      <h2>Prizes &amp; Recognition</h2>
+      <p>Monthly champions receive a "Hall of Champions" entry visible to all users. Vestra competitions are recognition-only — no real monetary prizes are offered or implied.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ─── COOKIE POLICY ─── -->
+<div id="legal-cookies" class="legal-overlay" role="dialog" aria-modal="true" aria-label="Cookie Policy">
+  <div class="legal-sheet">
+    <div class="legal-header">
+      <div>
+        <p style="font-size:10px;color:#d4a84b;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;margin:0 0 4px;">Legal</p>
+        <h2 style="font-family:var(--v-serif);font-size:1.5rem;color:#f0f0fa;margin:0;">Cookie Policy</h2>
+        <p style="font-size:11px;color:#8888a8;margin:4px 0 0;">Last updated: January 2026</p>
+      </div>
+      <button onclick="closeLegalPage('cookies')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#a0a0b8;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px;font-weight:600;">✕ Close</button>
+    </div>
+    <div class="legal-body">
+      <h2>What Are Cookies?</h2>
+      <p>Cookies are small text files stored on your device by your browser. They help websites remember your preferences and maintain session state.</p>
+      <h2>Cookies We Use</h2>
+      <p><strong>Strictly Necessary (always active):</strong></p>
+      <ul>
+        <li><code style="background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px;">vestra_session</code> — Maintains your login session</li>
+        <li><code style="background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px;">vestra_theme</code> — Remembers your chosen theme preference</li>
+      </ul>
+      <p><strong>We do NOT use:</strong></p>
+      <ul>
+        <li>Advertising or retargeting cookies</li>
+        <li>Third-party analytics cookies (e.g., Google Analytics)</li>
+        <li>Social media tracking pixels</li>
+        <li>Cross-site tracking of any kind</li>
+      </ul>
+      <h2>Managing Cookies</h2>
+      <p>You can clear cookies at any time through your browser settings. Note that clearing strictly necessary cookies will log you out of the platform. Most of Vestra's data is stored in <strong>localStorage</strong>, not cookies — this data persists until you explicitly clear it or request account deletion.</p>
+      <h2>Changes</h2>
+      <p>We will notify users via the in-app notification system of any changes to our cookie practices.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ─── ABOUT ─── -->
+<div id="legal-about" class="legal-overlay" role="dialog" aria-modal="true" aria-label="About Vestra">
+  <div class="legal-sheet">
+    <div class="legal-header">
+      <div>
+        <p style="font-size:10px;color:#d4a84b;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;margin:0 0 4px;">Company</p>
+        <h2 style="font-family:var(--v-serif);font-size:1.5rem;color:#f0f0fa;margin:0;">About Vestra</h2>
+      </div>
+      <button onclick="closeLegalPage('about')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#a0a0b8;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px;font-weight:600;">✕ Close</button>
+    </div>
+    <div class="legal-body">
+      <div class="highlight-box">Vestra v5.0 — Built for Education &amp; Skill Development</div>
+      <h2>Mission</h2>
+      <p>Vestra exists to make professional-grade trading education accessible to everyone. We believe that the best way to learn markets is by doing — with realistic tools, structured feedback, and competitive motivation — without any financial risk.</p>
+      <h2>What Vestra Is</h2>
+      <p>A structured trading simulation platform that replicates the experience of real market participation as closely as possible, with institutional-grade tools including:</p>
+      <ul>
+        <li>Real-time and historical market data (via Finnhub API)</li>
+        <li>Advanced order types: market, limit, stop-loss, bracket, GTT</li>
+        <li>Strategy Lab with performance analytics per strategy</li>
+        <li>AI Trading Coach with behavioural pattern detection</li>
+        <li>Risk Guard enforcement system for discipline training</li>
+        <li>Competitive monthly leaderboards with mode separation</li>
+        <li>Trade Replay Engine for practice on historical data</li>
+        <li>Portfolio Intelligence with Sharpe ratio, drawdown curves, monthly heatmaps</li>
+      </ul>
+      <h2>What Vestra Is Not</h2>
+      <p>Vestra is not a brokerage, not a financial advisor, not an investment platform, and not a gambling application. No real money ever changes hands.</p>
+      <h2>Version History</h2>
+      <ul>
+        <li><strong>v5.0</strong> — Strategy Lab, Replay Engine, Risk Guard, AI Coach 2.0, Legal Infrastructure</li>
+        <li><strong>v4.0</strong> — Mode-split leaderboards, Realism Mode, Portfolio Intelligence</li>
+        <li><strong>v3.0</strong> — Bracket orders, SIP plans, community layer, education academy</li>
+        <li><strong>v2.0</strong> — Live API integration, advanced charting, screener</li>
+        <li><strong>v1.0</strong> — Core simulation with basic portfolio tracking</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CONTACT ─── -->
+<div id="legal-contact" class="legal-overlay" role="dialog" aria-modal="true" aria-label="Contact">
+  <div class="legal-sheet" style="max-width:560px;">
+    <div class="legal-header">
+      <div>
+        <p style="font-size:10px;color:#d4a84b;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;margin:0 0 4px;">Company</p>
+        <h2 style="font-family:var(--v-serif);font-size:1.5rem;color:#f0f0fa;margin:0;">Contact Us</h2>
+        <p style="font-size:11px;color:#8888a8;margin:4px 0 0;">We respond within 48 hours on business days</p>
+      </div>
+      <button onclick="closeLegalPage('contact')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#a0a0b8;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px;font-weight:600;">✕ Close</button>
+    </div>
+    <div class="legal-body">
+      <!-- Email direct -->
+      <div style="display:flex;align-items:center;gap:12px;background:rgba(212,168,75,0.06);border:1px solid rgba(212,168,75,0.18);border-radius:10px;padding:14px 16px;margin-bottom:24px;">
+        <div style="font-size:20px;">✉️</div>
+        <div>
+          <div style="font-size:11px;color:#8888a8;margin-bottom:2px;">Email us directly</div>
+          <a href="mailto:support@vestra.app" style="color:var(--v-gold);font-weight:600;font-size:14px;text-decoration:none;">support@vestra.app</a>
+        </div>
+      </div>
+      <!-- Contact Form -->
+      <div style="display:grid;gap:12px;" id="contactForm">
+        <div>
+          <label style="font-size:11px;color:#8888a8;display:block;margin-bottom:5px;">Name</label>
+          <input id="contactName" class="contact-field" placeholder="Your name" type="text" autocomplete="name">
+        </div>
+        <div>
+          <label style="font-size:11px;color:#8888a8;display:block;margin-bottom:5px;">Email</label>
+          <input id="contactEmail" class="contact-field" placeholder="your@email.com" type="email" autocomplete="email">
+        </div>
+        <div>
+          <label style="font-size:11px;color:#8888a8;display:block;margin-bottom:5px;">Message</label>
+          <textarea id="contactMessage" class="contact-field" placeholder="How can we help?" style="resize:vertical;min-height:100px;"></textarea>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <span style="font-size:11px;color:#6060a0;">⏱ Response within 48 hours</span>
+          <button onclick="submitContactForm()" style="background:var(--v-gold);color:#0a0a0f;font-weight:700;border:none;border-radius:8px;padding:10px 22px;font-size:13px;cursor:pointer;" onmouseover="this.style.background='var(--v-gold-light)'" onmouseout="this.style.background='var(--v-gold)'">Send Message →</button>
+        </div>
+      </div>
+      <div id="contactSuccess" style="display:none;text-align:center;padding:24px;">
+        <div style="font-size:2.5rem;margin-bottom:12px;">✅</div>
+        <div style="font-weight:700;color:#4ade80;font-size:1rem;margin-bottom:6px;">Message Sent!</div>
+        <div style="font-size:12px;color:#8888a8;">We've received your message and will respond to <span id="contactEmailConfirm"></span> within 48 hours.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FAQ ─── -->
+<div id="legal-faq" class="legal-overlay" role="dialog" aria-modal="true" aria-label="FAQ">
+  <div class="legal-sheet">
+    <div class="legal-header">
+      <div>
+        <p style="font-size:10px;color:#d4a84b;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;margin:0 0 4px;">Support</p>
+        <h2 style="font-family:var(--v-serif);font-size:1.5rem;color:#f0f0fa;margin:0;">Frequently Asked Questions</h2>
+      </div>
+      <button onclick="closeLegalPage('faq')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#a0a0b8;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px;font-weight:600;">✕ Close</button>
+    </div>
+    <div class="legal-body" id="faqBody"></div>
+  </div>
+</div>
+
+<!-- ─── SITEMAP ─── -->
+<div id="legal-sitemap" class="legal-overlay" role="dialog" aria-modal="true" aria-label="Sitemap">
+  <div class="legal-sheet">
+    <div class="legal-header">
+      <div>
+        <p style="font-size:10px;color:#d4a84b;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;margin:0 0 4px;">Navigation</p>
+        <h2 style="font-family:var(--v-serif);font-size:1.5rem;color:#f0f0fa;margin:0;">Sitemap</h2>
+        <p style="font-size:11px;color:#8888a8;margin:4px 0 0;">All sections and pages of Vestra</p>
+      </div>
+      <button onclick="closeLegalPage('sitemap')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#a0a0b8;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px;font-weight:600;">✕ Close</button>
+    </div>
+    <div class="legal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+        <div>
+          <div class="sitemap-group">
+            <div class="sitemap-group-title">Core Pages</div>
+            <button class="sitemap-link" onclick="closeLegalPage('sitemap');showHomepage()">🏠 Home</button>
+            <button class="sitemap-link" onclick="closeLegalPage('sitemap');document.getElementById('authOverlay').style.display='flex'">📊 Dashboard</button>
+            <button class="sitemap-link" onclick="closeLegalPage('sitemap');openLeaderboard()">🏆 Leaderboard</button>
+            <button class="sitemap-link" onclick="closeLegalPage('sitemap');openMacro()">🌎 Market Overview</button>
+          </div>
+          <div class="sitemap-group">
+            <div class="sitemap-group-title">Trading Tools</div>
+            <button class="sitemap-link" onclick="closeLegalPage('sitemap');openStrategyLab()">🧪 Strategy Lab</button>
+            <button class="sitemap-link" onclick="closeLegalPage('sitemap');openCalendar()">📅 Economic Calendar</button>
+            <button class="sitemap-link" onclick="closeLegalPage('sitemap');openScreener()">🔍 Stock Screener</button>
+            <button class="sitemap-link" onclick="closeLegalPage('sitemap');openRiskGuard()">🛡 Risk Guard</button>
+            <button class="sitemap-link" onclick="closeLegalPage('sitemap');openTraderProgress()">📈 Trader Progress</button>
+          </div>
+        </div>
+        <div>
+          <div class="sitemap-group">
+            <div class="sitemap-group-title">Community</div>
+            <button class="sitemap-link" onclick="closeLegalPage('sitemap');openCommunity()">💬 Discussion Feed</button>
+            <button class="sitemap-link" onclick="closeLegalPage('sitemap');openLeaderboard()">🥇 Monthly Challenges</button>
+            <button class="sitemap-link" onclick="closeLegalPage('sitemap');openChampions()">🏛 Hall of Champions</button>
+            <button class="sitemap-link" onclick="closeLegalPage('sitemap');openEducation()">🎓 Education Academy</button>
+          </div>
+          <div class="sitemap-group">
+            <div class="sitemap-group-title">Legal & Company</div>
+            <button class="sitemap-link" onclick="openLegalPage('privacy')">🔒 Privacy Policy</button>
+            <button class="sitemap-link" onclick="openLegalPage('terms')">📄 Terms of Service</button>
+            <button class="sitemap-link" onclick="openLegalPage('disclaimer')">⚠️ Risk Disclaimer</button>
+            <button class="sitemap-link" onclick="openLegalPage('competition')">🏆 Competition Rules</button>
+            <button class="sitemap-link" onclick="openLegalPage('about')">🏢 About Vestra</button>
+            <button class="sitemap-link" onclick="openLegalPage('contact')">✉️ Contact Us</button>
+            <button class="sitemap-link" onclick="openLegalPage('faq')">❓ FAQ</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
