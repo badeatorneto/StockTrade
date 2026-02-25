@@ -1512,7 +1512,10 @@
           <div id="chartOverlay" style="display:none;position:absolute;inset:0;z-index:20;background:rgba(20,20,28,0.88);align-items:center;justify-content:center;flex-direction:column;gap:8px;">
             <div id="chartOverlayIcon" style="font-size:1.5rem;">⏳</div>
             <div id="chartOverlayText" style="font-size:12px;color:#9aa0a6;font-weight:600;">Loading chart…</div>
+            <button id="chartRetryBtn" onclick="if(detailStock)drawChart(detailStock,currentChartPeriod)" style="display:none;margin-top:6px;background:rgba(212,168,75,0.12);border:1px solid rgba(212,168,75,0.3);color:var(--v-gold);border-radius:6px;padding:5px 14px;font-size:11px;font-weight:600;cursor:pointer;">↺ Retry</button>
           </div>
+          <!-- Debug overlay — toggle with Shift+D on stock detail page -->
+          <div id="chartDebugOverlay" style="display:none;position:absolute;top:8px;left:8px;z-index:30;background:rgba(10,10,18,0.93);border:1px solid rgba(245,158,11,0.35);border-radius:8px;padding:10px 13px;min-width:185px;pointer-events:none;"></div>
           <!-- Prev close badge -->
           <div style="position:absolute;right:10px;top:8px;z-index:5;text-align:right;line-height:1.4;">
             <div style="font-size:9px;color:#6868a0;text-transform:uppercase;letter-spacing:0.04em;">Prev close</div>
@@ -2419,7 +2422,9 @@ function startNewsEngine() {
         document.getElementById('detailArrow').style.color = color;
         document.getElementById('detailArrow').innerText = isPos ? '↑' : '↓';
         document.getElementById('detailPremarket').innerText = 'Pre-market ' + (stock.price*0.997).toFixed(2) + ' -' + (stock.price*0.003).toFixed(2) + ' (0.35%)';
-        document.getElementById('prevCloseVal').innerText = (stock.price - changeAmt*(isPos?1:-1)).toFixed(2);
+        // prevClose: prefer live API value (from Finnhub quote pc field), else calculate
+        const prevClosePrice = stock.prevClose || (stock.price - changeAmt*(isPos?1:-1));
+        document.getElementById('prevCloseVal').innerText = prevClosePrice.toFixed(2);
         document.getElementById('sOpen').innerText = '$' + (stock.dayOpen || (stock.price * (1 + (Math.random()*0.005 - 0.002)))).toFixed(2);
         document.getElementById('sHigh').innerText = '$' + (stock.dayHigh || (stock.price * 1.008)).toFixed(2);
         document.getElementById('sLow').innerText  = '$' + (stock.dayLow  || (stock.price * 0.992)).toFixed(2);
@@ -2465,6 +2470,11 @@ function startNewsEngine() {
     }
 
     function closeStockDetail() {
+        // Clean chart state so next stock starts fresh
+        clearInterval(_liveRefreshTimer); _liveRefreshTimer = null;
+        _chartDebugMode = false;
+        const dbg = document.getElementById('chartDebugOverlay');
+        if (dbg) dbg.style.display = 'none';
         document.getElementById('stockDetailPage').classList.add('hidden');
         document.body.style.overflow = '';
         detailStock = null;
@@ -2497,39 +2507,82 @@ function startNewsEngine() {
     let _periodDebounce     = null;
     let _liveRefreshTimer   = null;
     let _lastLiveCandle     = 0;     // timestamp of last live candle (ms)
-    const candleCache = {};          // symbol_period_res → {data, ts}
+    const candleCache = {};          // symbol||period||res → {data, ts}  (fully isolated)
+    let _chartDebugMode = false;     // toggle with Shift+D on chart page
+    let _chartDebugInfo = {};        // populated by fetchCandles + drawChart
 
-    // ── Interval config table ─────────────────────────────────────────────────
-    //   res       = Finnhub resolution string
-    //   fromSec   = seconds to look back from now
-    //   unit      = Chart.js time axis unit
-    //   maxPts    = hard cap on candle count
-    //   showItv   = show intraday interval row?
-    //   itvDef    = default interval button to highlight
-    // ── Finnhub resolution + time-window table ──────────────────────────────────
-    //   Interval btn  → Finnhub res  → from window         → Chart.js time unit
-    //   1m            → 1            → last 1 day           → minute
-    //   5m            → 5            → last 5 days          → minute
-    //   15m           → 15           → last 14 days         → minute
-    //   1H            → 60           → last 30 days         → hour
-    //   1D (period)   → D            → last 6 months        → day
-    //   1W (period)   → W            → last 2 years         → week
-    //   1M (period)   → M            → last 5 years         → month
+    // ── Debug overlay §8 ─────────────────────────────────────────────────────
+    function updateChartDebugOverlay() {
+        const el = document.getElementById('chartDebugOverlay');
+        if (!el) return;
+        el.style.display = _chartDebugMode ? 'block' : 'none';
+        if (!_chartDebugMode) return;
+        const d = _chartDebugInfo;
+        const fmt = ts => ts ? new Date(ts).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : 'N/A';
+        const mismatchRow = d.priceMismatch ? `<div><span style="color:#8888a8;">Δ Price:</span> <span style="color:#f59e0b;">⚠ ${d.priceMismatch}</span></div>` : '';
+        const cacheCount = Object.keys(candleCache).length;
+        el.innerHTML = `
+            <div style="font-size:9px;line-height:1.6;color:#e0e0f5;">
+                <div style="font-weight:700;color:#f59e0b;margin-bottom:4px;">🔍 Chart Debug</div>
+                <div><span style="color:#8888a8;">Symbol:</span> ${d.symbol || '—'} | <span style="color:#8888a8;">Period:</span> ${d.period || '—'}</div>
+                <div><span style="color:#8888a8;">Resolution:</span> ${d.res || '—'} | <span style="color:#8888a8;">Unit:</span> ${INTERVAL_CFG[d.period||'1D']?.unit||'—'}</div>
+                <div><span style="color:#8888a8;">Candles:</span> ${d.count || 0} | <span style="color:#8888a8;">Cache:</span> ${cacheCount} entries</div>
+                <div><span style="color:#8888a8;">First:</span> ${fmt(d.first?.x)} @ $${d.first?.c?.toFixed(2) || '—'}</div>
+                <div><span style="color:#8888a8;">Last:</span>  ${fmt(d.last?.x)}  @ $${d.last?.c?.toFixed(2) || '—'}</div>
+                <div><span style="color:#8888a8;">Min:</span> $${d.minPrice?.toFixed(2) || '—'} | <span style="color:#8888a8;">Max:</span> $${d.maxPrice?.toFixed(2) || '—'}</div>
+                <div><span style="color:#8888a8;">Data:</span> <span style="color:${d.isSimulated?'#f87171':'#4ade80'}">${d.isSimulated ? '⚠ Simulated (no API)' : '✓ Live split-adjusted'}</span></div>
+                <div><span style="color:#8888a8;">Integrity:</span> <span style="color:${(d.integrityIssues||0)>0?'#f59e0b':'#4ade80'}">${d.integrityIssues||0} issue${(d.integrityIssues||0)!==1?'s':''}</span></div>
+                ${mismatchRow}
+                ${d.ytdPct != null ? `<div><span style="color:#8888a8;">YTD%:</span> <span style="color:${parseFloat(d.ytdPct)>=0?'#4ade80':'#f87171'}">${d.ytdPct >= 0 ? '+' : ''}${d.ytdPct}%</span></div>` : ''}
+                <div style="color:#6060a0;margin-top:3px;font-size:8px;">Shift+D to toggle • Shift+C to clear cache</div>
+            </div>`;
+    }
+
+    // ── Debug hotkeys: Shift+D (toggle overlay), Shift+C (clear cache) ─────────
+    document.addEventListener('keydown', e => {
+        if (!document.getElementById('stockDetailPage') ||
+            document.getElementById('stockDetailPage').classList.contains('hidden')) return;
+        if (e.shiftKey && e.key === 'D') {
+            _chartDebugMode = !_chartDebugMode;
+            updateChartDebugOverlay();
+        }
+        if (e.shiftKey && e.key === 'C') {
+            // Clear entire candle cache — forces fresh API fetch on next chart load
+            Object.keys(candleCache).forEach(k => delete candleCache[k]);
+            if (detailStock) drawChart(detailStock, currentChartPeriod);
+            console.log('[Vestra Chart] Cache cleared via Shift+C');
+        }
+    });
+
+    // ── Unified data pipeline config — immutable per period ─────────────────
+    // RULE: INTERVAL_CFG entries must NEVER be mutated at runtime.
+    // Resolution overrides (intraday buttons) are applied via _currentIntradayRes only.
+    // fromSec values include weekend/holiday buffer (+2 days for intraday, +15% for multi-day).
+    //
+    // Aggregation contract (spec §3):
+    //   1D  → 5m intraday  (NYSE session candles only, adjusted=true)
+    //   5D  → 15m intraday (5 trading days ≈ 7 calendar days with buffer)
+    //   1M  → D  daily     (30 trading days)
+    //   6M  → D  daily     (≈130 trading days)
+    //   YTD → D  daily     (from Jan 1 00:00 ET — always EST, not EDT)
+    //   1Y  → W  weekly    (52 weeks)
+    //   5Y  → W  weekly    (260 weeks)
+    //   Max → M  monthly   (up to 20 years)
     const INTERVAL_CFG = {
-        // Intraday resolutions (used by the interval button row)
-        '1m':  { res:'1',  fromSec:86400,            unit:'minute', maxPts:500, showItv:true,  itvDef:'1'   },
-        '5m':  { res:'5',  fromSec:5*86400,          unit:'minute', maxPts:500, showItv:true,  itvDef:'5'   },
-        '15m': { res:'15', fromSec:14*86400,         unit:'minute', maxPts:500, showItv:true,  itvDef:'15'  },
-        '1H':  { res:'60', fromSec:30*86400,         unit:'hour',   maxPts:500, showItv:true,  itvDef:'60'  },
-        // Period-tab resolutions (no intraday button row)
-        '1D':  { res:'5',  fromSec:86400,            unit:'minute', maxPts:300, showItv:true,  itvDef:'5'   },
-        '5D':  { res:'15', fromSec:5*86400,          unit:'minute', maxPts:300, showItv:true,  itvDef:'15'  },
-        '1M':  { res:'60', fromSec:30*86400,         unit:'hour',   maxPts:300, showItv:true,  itvDef:'60'  },
-        '6M':  { res:'D',  fromSec:180*86400,        unit:'day',    maxPts:180, showItv:false, itvDef:'D'   },
-        'YTD': { res:'D',  fromSec:null,             unit:'day',    maxPts:240, showItv:false, itvDef:'D'   },
-        '1Y':  { res:'W',  fromSec:365*86400,        unit:'week',   maxPts:52,  showItv:false, itvDef:'W'   },
-        '5Y':  { res:'M',  fromSec:5*365*86400,      unit:'month',  maxPts:60,  showItv:false, itvDef:'M'   },
-        'Max': { res:'M',  fromSec:10*365*86400,     unit:'month',  maxPts:120, showItv:false, itvDef:'M'   },
+        // Intraday resolution buttons (used when showItv periods delegate to them)
+        '1m':  { res:'1',  fromSec:3*86400,          unit:'minute', maxPts:480, showItv:true,  itvDef:'1'  },
+        '5m':  { res:'5',  fromSec:7*86400,          unit:'minute', maxPts:480, showItv:true,  itvDef:'5'  },
+        '15m': { res:'15', fromSec:14*86400,         unit:'minute', maxPts:480, showItv:true,  itvDef:'15' },
+        '1H':  { res:'60', fromSec:35*86400,         unit:'hour',   maxPts:480, showItv:true,  itvDef:'60' },
+        // Period tabs — correct resolution per spec §3, immutable at runtime
+        '1D':  { res:'5',  fromSec:3*86400,          unit:'minute', maxPts:200, showItv:true,  itvDef:'5'  },
+        '5D':  { res:'15', fromSec:9*86400,          unit:'minute', maxPts:250, showItv:true,  itvDef:'15' },
+        '1M':  { res:'D',  fromSec:40*86400,         unit:'day',    maxPts:35,  showItv:false, itvDef:'D'  },
+        '6M':  { res:'D',  fromSec:200*86400,        unit:'day',    maxPts:140, showItv:false, itvDef:'D'  },
+        'YTD': { res:'D',  fromSec:null,             unit:'day',    maxPts:260, showItv:false, itvDef:'D'  },
+        '1Y':  { res:'W',  fromSec:380*86400,        unit:'week',   maxPts:56,  showItv:false, itvDef:'W'  },
+        '5Y':  { res:'W',  fromSec:5*385*86400,      unit:'week',   maxPts:270, showItv:false, itvDef:'W'  },
+        'Max': { res:'M',  fromSec:22*365*86400,     unit:'month',  maxPts:264, showItv:false, itvDef:'M'  },
     };
 
     // resolution → Chart.js unit (for user-driven interval button overrides)
@@ -2547,59 +2600,196 @@ function startNewsEngine() {
     }
 
     // ── Candle generators ─────────────────────────────────────────────────────
+    // ── Simulation candle generator ──────────────────────────────────────────
+    //   Used ONLY when API is unavailable or returns no data.
+    //   Anchors the LAST candle's close to stock.price exactly.
+    //   Uses correct interval spacing matching what live data would use.
+    //   Consistent volatility per period (not random per call).
     function generateSimCandles(stock, period, res) {
-        const cfg    = INTERVAL_CFG[period] || INTERVAL_CFG['1M'];
-        const numPts = cfg.maxPts;
-        const volPct = { '1D':0.004,'5D':0.007,'1M':0.012,'6M':0.025,'YTD':0.022,'1Y':0.035,'5Y':0.055,'Max':0.065 }[period] || 0.015;
-        const trend  = stock.change < 0 ? -volPct*0.25 : volPct*0.12;
-        const itvMs  = { '1':'60000','5':'300000','15':'900000','60':'3600000','D':'86400000','W':'604800000','M':'2592000000' }[res]
-                    || { '1D':300000,'5D':900000,'1M':3600000,'6M':86400000,'YTD':86400000,'1Y':604800000,'5Y':2592000000,'Max':2592000000 }[period]
-                    || 86400000;
-        let prices=[stock.price];
-        for(let i=1;i<numPts;i++) prices.push(prices[i-1]/(1+trend+(Math.random()-0.5)*volPct*2));
-        prices.reverse();
-        const now=Date.now();
-        return prices.map((cl,i)=>{
-            const t=now-(numPts-1-i)*Number(itvMs);
-            const sw=cl*volPct*0.75, o=cl+(Math.random()-0.5)*sw;
-            const h=Math.max(o,cl)+Math.random()*sw*0.35;
-            const l=Math.min(o,cl)-Math.random()*sw*0.35;
-            const v=Math.round(stock.price*1e5*(0.7+Math.random()*0.9));
-            return {x:t,o:+o.toFixed(2),h:+h.toFixed(2),l:+l.toFixed(2),c:+cl.toFixed(2),v};
+        const cfg  = INTERVAL_CFG[period] || INTERVAL_CFG['1D'];
+        // Number of candles: reasonable count per period
+        const nMap = {'1D':78,'5D':130,'1M':22,'6M':130,'YTD':180,'1Y':52,'5Y':260,'Max':120};
+        const numPts = Math.min(cfg.maxPts, nMap[period] || 80);
+        // Per-period volatility (realistic daily move %)
+        const volPct = {'1D':0.003,'5D':0.004,'1M':0.008,'6M':0.010,'YTD':0.010,'1Y':0.012,'5Y':0.018,'Max':0.022}[period] || 0.010;
+        // Trend: slight positive drift (markets go up over time in sim)
+        const dailyDrift = 0.0002;
+        // Interval duration in ms
+        const itvMs = {
+            '1':60000,'5':300000,'15':900000,'60':3600000,
+            'D':86400000,'W':604800000,'M':2592000000
+        }[res] || {'1D':300000,'5D':900000,'1M':86400000,'6M':86400000,'YTD':86400000,'1Y':604800000,'5Y':604800000,'Max':2592000000}[period] || 86400000;
+
+        // Build closes working BACKWARDS from current price
+        // Use seeded-like generation so the same stock always looks similar
+        const seed = stock.price * 7919; // pseudo-seed from price
+        let rng = seed;
+        const rand = () => { rng = (rng * 1664525 + 1013904223) % 4294967296; return rng / 4294967296; };
+
+        const closes = [stock.price];
+        for (let i = 1; i < numPts; i++) {
+            const prev = closes[i-1];
+            const move = (rand() - 0.5) * 2 * volPct - dailyDrift; // drift back in time
+            closes.push(Math.max(prev * 0.5, prev * (1 + move)));
+        }
+        closes.reverse(); // now oldest→newest, closes[last] = stock.price
+
+        const now = Date.now();
+        return closes.map((cl, i) => {
+            const t = now - (numPts - 1 - i) * itvMs;
+            const sw = cl * volPct * 0.6;
+            const o  = cl + (rand() - 0.5) * sw;
+            const h  = Math.max(o, cl) + rand() * sw * 0.3;
+            const l  = Math.min(o, cl) - rand() * sw * 0.3;
+            const v  = Math.round(cl * 8e4 * (0.6 + rand() * 0.8));
+            return { x:t, o:+o.toFixed(2), h:+h.toFixed(2), l:+l.toFixed(2), c:+cl.toFixed(2), v, adjusted:false };
         });
     }
 
+    // ── Unified candle fetcher — single pipeline for ALL intervals ───────────
+    //   • Always uses Finnhub /stock/candle (same endpoint, same exchange)
+    //   • adjusted=true appended for split-adjusted OHLC on every call
+    //   • YTD "from" calculated as Jan 1 midnight Eastern Time (no UTC shift)
+    //   • Data integrity validation: outliers, zero prices, sequence order
+    //   • Cache keyed by symbol+period+res (fully isolated per interval)
+    //   • TTL: 55s for intraday, 5min for daily+, never stale across symbols
     async function fetchCandles(symbol, period, res) {
-        const key = `${symbol}_${period}_${res}`;
-        if (candleCache[key] && Date.now()-candleCache[key].ts < 55000) return candleCache[key].data;
-        if (!RT.key) return null;
+        const cacheKey = `${symbol}||${period}||${res}`;
+        const ttl = ['D','W','M'].includes(res) ? 300000 : 55000;
+        const cached = candleCache[cacheKey];
+        if (cached && (Date.now() - cached.ts) < ttl) return cached.data;
+
+        if (!RT || !RT.key) return null;
+
+        const cfg = INTERVAL_CFG[period] || INTERVAL_CFG['1D'];
+        const toSec = Math.floor(Date.now() / 1000);
+        let fromSec;
+
+        if (period === 'YTD') {
+            // Jan 1 of current year at 00:00 Eastern Time (ET), DST-aware.
+            // We create a Date representing "Jan 1 YYYY 00:00:00" in America/New_York,
+            // then convert to UTC epoch. This handles EST (UTC-5) and EDT (UTC-4) correctly.
+            const year = new Date().getFullYear();
+            // Construct ISO string for Jan 1 local ET — use Intl to resolve the actual offset
+            // Method: find what UTC time corresponds to Jan 1 00:00 ET by binary search isn't
+            // needed — Jan 1 is always in EST (UTC-5) since daylight saving starts in March.
+            // So Jan 1 00:00 ET = Jan 1 05:00 UTC reliably.
+            const jan1UTC = Date.UTC(year, 0, 1, 5, 0, 0); // Jan 1 00:00 EST = 05:00 UTC
+            fromSec = Math.floor(jan1UTC / 1000);
+        } else {
+            fromSec = toSec - (cfg.fromSec || 86400);
+        }
+
+        // Extra buffer: fetch 20% more data than needed, trim to maxPts after validation
+        const bufferFrom = fromSec - Math.floor((toSec - fromSec) * 0.2);
+
         try {
-            const cfg  = INTERVAL_CFG[period] || INTERVAL_CFG['1D'];
-            const to   = Math.floor(Date.now()/1000);
-            let from;
-            if (period === 'YTD') {
-                from = Math.floor(new Date(new Date().getFullYear(),0,1)/1000);
-            } else {
-                from = to - (cfg.fromSec || 86400);
-            }
-            const url  = `https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(symbol)}&resolution=${res}&from=${from}&to=${to}&token=${RT.key}`;
+            // adjusted=true ensures split-adjusted OHLC — consistent across ALL intervals
+            const url = `https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(symbol)}&resolution=${res}&from=${bufferFrom}&to=${toSec}&adjusted=true&token=${RT.key}`;
             const resp = await fetch(url);
-            if (!resp.ok) throw new Error('HTTP '+resp.status);
+            // Rate limit detection (Finnhub returns 429 when key is exhausted)
+            if (resp.status === 429) {
+                showChartOverlay('ratelimit');
+                throw new Error('Rate limited');
+            }
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
             const data = await resp.json();
-            if (!data || data.s !== 'ok' || !Array.isArray(data.t) || data.t.length === 0) return null;
-            const total = data.t.length;
-            const start = Math.max(0, total - cfg.maxPts);
-            const candles = data.t.slice(start).map((ts,i)=>({
-                x: ts*1000,
-                o: +data.o[start+i].toFixed(4),
-                h: +data.h[start+i].toFixed(4),
-                l: +data.l[start+i].toFixed(4),
-                c: +data.c[start+i].toFixed(4),
-                v: data.v ? data.v[start+i] : Math.round(data.c[start+i]*1e5),
+
+            // ── Data integrity guard §9 ───────────────────────────────────────
+            if (!data || data.s !== 'ok') return null;
+            if (!Array.isArray(data.t) || !Array.isArray(data.c) || data.t.length === 0) return null;
+            if (data.t.length !== data.c.length) return null;  // malformed response
+
+            // Build raw candles
+            let raw = data.t.map((ts, i) => ({
+                x:  ts * 1000,
+                o:  data.o[i],
+                h:  data.h[i],
+                l:  data.l[i],
+                c:  data.c[i],
+                v:  data.v ? (data.v[i] || 0) : 0,
             }));
-            candleCache[key] = { data: candles, ts: Date.now() };
+
+            // ── Integrity checks on each candle ──────────────────────────────
+            const integrityErrors = [];
+            raw = raw.filter((candle, i) => {
+                // Missing OHLC
+                if (candle.o == null || candle.h == null || candle.l == null || candle.c == null) {
+                    integrityErrors.push(`candle[${i}] missing OHLC`); return false;
+                }
+                // Zero prices
+                if (candle.c <= 0 || candle.o <= 0) {
+                    integrityErrors.push(`candle[${i}] zero/negative price`); return false;
+                }
+                // OHLC relationship sanity (H >= max(O,C,L), L <= min(O,C,H))
+                if (candle.h < Math.max(candle.o, candle.c) || candle.l > Math.min(candle.o, candle.c)) {
+                    // Don't reject, but clamp: some APIs have rounding edge cases
+                    candle.h = Math.max(candle.h, candle.o, candle.c);
+                    candle.l = Math.min(candle.l, candle.o, candle.c);
+                }
+                return true;
+            });
+
+            if (raw.length === 0) return null;
+
+            // ── Outlier detection — threshold tuned per period ─────────────────
+            // For long-period views (5Y, Max), stocks can have 10-30× range legitimately
+            // (e.g. NVDA went from $11 in 2019 to $800+ in 2024).
+            // For intraday views, anything >10× median is a genuine error.
+            const longPeriod = ['5Y','Max','1Y'].includes(period);
+            const outlierHigh = longPeriod ? 100 : 12;
+            const outlierLow  = longPeriod ? 0.01 : 0.08;
+            const closes = raw.map(c => c.c).sort((a,b) => a-b);
+            const median = closes[Math.floor(closes.length / 2)];
+            raw = raw.filter(c => c.c > median * outlierLow && c.c < median * outlierHigh);
+            if (raw.length < 3) return null;
+
+            // ── Timestamp sequence validation ─────────────────────────────────
+            // Sort ascending (API should already be sorted, but enforce it)
+            raw.sort((a, b) => a.x - b.x);
+            // Remove duplicate timestamps
+            raw = raw.filter((c, i) => i === 0 || c.x !== raw[i-1].x);
+
+            // Filter to requested window (remove buffer excess from before fromSec)
+            raw = raw.filter(c => c.x >= fromSec * 1000);
+
+            // Trim to maxPts (keep most recent)
+            if (raw.length > cfg.maxPts) raw = raw.slice(raw.length - cfg.maxPts);
+
+            // Final precision rounding (4dp for prices, avoids float noise)
+            const candles = raw.map(c => ({
+                x: c.x,
+                o: +c.o.toFixed(4),
+                h: +c.h.toFixed(4),
+                l: +c.l.toFixed(4),
+                c: +c.c.toFixed(4),
+                v: Math.round(c.v || 0),
+                adjusted: true,  // flag for debug overlay
+            }));
+
+            if (integrityErrors.length > 0) {
+                console.warn(`[Vestra Chart] ${symbol} ${period} integrity issues:`, integrityErrors);
+            }
+
+            candleCache[cacheKey] = { data: candles, ts: Date.now(), period, res, symbol };
+            _chartDebugInfo = {
+                period, res, symbol,
+                count: candles.length,
+                first: candles[0],
+                last: candles[candles.length-1],
+                minPrice: Math.min(...candles.map(c=>c.l)),
+                maxPrice: Math.max(...candles.map(c=>c.h)),
+                adjusted: true,
+                integrityIssues: integrityErrors.length,
+                fetchedAt: new Date().toISOString(),
+            };
+            updateChartDebugOverlay();
             return candles;
-        } catch(e) { return null; }
+
+        } catch(e) {
+            console.warn('[Vestra Chart] fetchCandles error:', e);
+            return null;
+        }
     }
 
     // ── Overlay / indicator math ──────────────────────────────────────────────
@@ -2729,25 +2919,28 @@ function startNewsEngine() {
 
     // ── Overlay / loading UI ──────────────────────────────────────────────────
     const OVERLAY_STATES = {
-        loading:  { icon:'⏳', msg:'Loading chart…',          keep:true  },
-        nodata:   { icon:'📭', msg:'No data available',        keep:false },
-        closed:   { icon:'🔒', msg:'Market Closed',            keep:false },
-        ratelimit:{ icon:'⚠️', msg:'API limit reached — retry in 60s', keep:false },
-        simulated:{ icon:'📊', msg:'Simulated data',           keep:false },
-        unavail:  { icon:'⚠️', msg:'Live data unavailable',   keep:false },
+        loading:   { icon:'⏳', msg:'Loading chart…',                   keep:true  },
+        nodata:    { icon:'📭', msg:'No data available',                 keep:false },
+        closed:    { icon:'🔒', msg:'Market Closed',                     keep:false },
+        ratelimit: { icon:'⚠️', msg:'API limit reached — retry in 60s', keep:false },
+        simulated: { icon:'📊', msg:'Simulated data — connect API for live prices', keep:false },
+        unavail:   { icon:'⚠️', msg:'Live data unavailable',            keep:false },
+        integrity: { icon:'🛡', msg:'Data Integrity Error — showing simulation', keep:false },
     };
 
     function showChartOverlay(stateOrMsg, icon, keep=false) {
-        const ov=document.getElementById('chartOverlay');
-        const ti=document.getElementById('chartOverlayIcon');
-        const tt=document.getElementById('chartOverlayText');
+        const ov  = document.getElementById('chartOverlay');
+        const ti  = document.getElementById('chartOverlayIcon');
+        const tt  = document.getElementById('chartOverlayText');
+        const btn = document.getElementById('chartRetryBtn');
         if(!ov) return;
-        ov.style.display='flex';
+        ov.style.display = 'flex';
         const preset = OVERLAY_STATES[stateOrMsg];
-        if(ti) ti.textContent = preset ? preset.icon : (icon||'⏳');
-        if(tt) tt.textContent = preset ? preset.msg  : stateOrMsg;
+        if(ti)  ti.textContent = preset ? preset.icon : (icon || '⏳');
+        if(tt)  tt.textContent = preset ? preset.msg  : stateOrMsg;
+        if(btn) btn.style.display = ['integrity','ratelimit','unavail','nodata'].includes(stateOrMsg) ? 'block' : 'none';
         const shouldKeep = preset ? preset.keep : keep;
-        if(!shouldKeep) setTimeout(hideChartOverlay, 2200);
+        if(!shouldKeep) setTimeout(hideChartOverlay, 2800);
     }
     function hideChartOverlay() {
         const ov=document.getElementById('chartOverlay');
@@ -2804,7 +2997,9 @@ function startNewsEngine() {
         const PAD={top:18,right:68,bottom:34,left:8};
         const cW=W-PAD.left-PAD.right, cH=H-PAD.top-PAD.bottom;
         const allH=candles.map(c=>c.h), allL=candles.map(c=>c.l);
-        const minP=Math.min(...allL)*0.9985, maxP=Math.max(...allH)*1.0015, pr=maxP-minP||1;
+        const dataMin=Math.min(...allL), dataMax=Math.max(...allH);
+        const dataPad=(dataMax-dataMin)*0.003;
+        const minP=dataMin-dataPad, maxP=dataMax+dataPad, pr=maxP-minP||1;
         const toY=p=>PAD.top+cH*(1-(p-minP)/pr);
         const toX=i=>PAD.left+(i+0.5)*(cW/candles.length);
         const cw=Math.max(1, cW/candles.length*0.65);
@@ -2823,15 +3018,17 @@ function startNewsEngine() {
         }
 
         // X-axis labels
-        const isIntraday=['1D','5D','1M'].includes(period);
+        const isIntraday = ['1D','5D'].includes(period);
+        const isMonthly  = ['5Y','Max'].includes(period);
         ctx.fillStyle=tc.text; ctx.font='10px sans-serif'; ctx.textAlign='center';
         const labelEvery=Math.max(1,Math.floor(candles.length/8));
         candles.forEach((c,i)=>{
             if(i%labelEvery!==0)return;
             const d=new Date(c.x);
-            const lbl=isIntraday
-                ? d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
-                : d.toLocaleDateString([],{month:'short',day:'numeric'});
+            let lbl;
+            if (isIntraday)     lbl = d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+            else if (isMonthly) lbl = d.toLocaleDateString([],{month:'short',year:'2-digit'});
+            else                lbl = d.toLocaleDateString([],{month:'short',day:'numeric'});
             ctx.fillText(lbl,toX(i),H-PAD.bottom+14);
         });
 
@@ -2986,26 +3183,110 @@ function startNewsEngine() {
     }
 
     // ── MAIN: full chart draw (or no-flicker update) ─────────────────────────
+    // ── MAIN CHART DRAW — unified, validated, cross-interval consistent ──────
     async function drawChart(stock, period) {
         currentChartPeriod = period;
         const fetchId = ++_chartFetchId;
         showChartOverlay('loading');
-
-        // Show/update timezone label
         updateTzLabel();
 
         const cfg = INTERVAL_CFG[period] || INTERVAL_CFG['1D'];
-        const res = _currentIntradayRes;   // may have been overridden by interval button
+        // Use the period's default resolution; respect intraday override ONLY for showItv periods
+        const res = cfg.showItv ? _currentIntradayRes : cfg.itvDef;
+
+        // ── Cache isolation: clear stale cross-interval data ─────────────────
+        // Different periods must never share candle data. Each key is unique.
+        // (cache key format: symbol||period||res — fully isolated)
 
         let candles = await fetchCandles(stock.symbol, period, res);
-        if (fetchId !== _chartFetchId) return; // stale
+        if (fetchId !== _chartFetchId) return; // stale fetch — newer request in flight
 
+        let isSimulated = false;
         if (!candles || candles.length < 3) {
-            candles = generateSimCandles(stock, period, res);
-            showChartOverlay(RT.key ? 'unavail' : 'simulated');
+            // ── Data integrity error path ─────────────────────────────────────
+            if (RT && RT.key) {
+                // API is configured but returned nothing usable — show error overlay
+                // Render simulation underneath so the chart area isn't blank
+                candles = generateSimCandles(stock, period, res);
+                isSimulated = true;
+                showChartOverlay('integrity');
+                // integrity overlay auto-dismisses after 2.8s (OVERLAY_STATES.integrity.keep=false)
+            } else {
+                candles = generateSimCandles(stock, period, res);
+                isSimulated = true;
+                showChartOverlay('simulated');
+            }
         } else {
+            // ── Cross-interval validation §6 ──────────────────────────────────
+            const lastCandle = candles[candles.length - 1];
+            const lastClose  = lastCandle.c;
+            const currentPx  = stock.price;
+            // Intraday (1D/5D): last candle close should be within 5% of live price
+            // Daily+ (1M+): last candle close is the most recent daily close — can differ
+            //   from live intraday price by more, so use 15% tolerance
+            const isIntraday = ['1D','5D'].includes(period);
+            const tolerance  = isIntraday ? 0.05 : 0.15;
+            if (currentPx > 0 && Math.abs(lastClose - currentPx) / currentPx > tolerance) {
+                // Cross-interval price mismatch — likely means stale/wrong data
+                // Log but don't block: user may have live price vs delayed chart
+                console.warn(`[Vestra Chart] ${stock.symbol} ${period}: last candle close $${lastClose.toFixed(2)} vs live $${currentPx.toFixed(2)} (${((Math.abs(lastClose-currentPx)/currentPx)*100).toFixed(1)}% diff)`);
+                _chartDebugInfo.priceMismatch = `${((Math.abs(lastClose-currentPx)/currentPx)*100).toFixed(1)}%`;
+            }
+            // Sync prevClose from chart data if API quote hasn't populated it yet
+            // For 1D: previous session close = first candle's open (market open price)
+            // Better: use candles[0].c from 6M daily view gives the prior day close
+            if ((period === '1D' || period === '5D') && candles.length > 0 && !stock.prevClose) {
+                // For intraday, the open of the day's first candle approximates prev close
+                const dayOpen = candles.find(c => {
+                    const d = new Date(c.x);
+                    const et = new Date(d.toLocaleString('en-US', {timeZone:'America/New_York'}));
+                    return et.getHours() === 9 && et.getMinutes() === 30;
+                });
+                if (dayOpen) {
+                    stock.prevClose = stock.prevClose || dayOpen.o;
+                    const pcEl = document.getElementById('prevCloseVal');
+                    if (pcEl) pcEl.innerText = stock.prevClose.toFixed(2);
+                }
+            }
+            // Update 52W high/low from dataset when on 1Y view
+            if (period === '1Y' || period === '5Y') {
+                const allH = candles.map(c => c.h), allL = candles.map(c => c.l);
+                const dsHigh = Math.max(...allH), dsLow = Math.min(...allL);
+                const h52El = document.getElementById('s52H');
+                const l52El = document.getElementById('s52L');
+                if (h52El && dsHigh > 0) h52El.innerText = '$' + dsHigh.toFixed(2);
+                if (l52El && dsLow  > 0) l52El.innerText = '$' + dsLow.toFixed(2);
+            }
+            // Update YTD % in header from first candle of dataset
+            if (period === 'YTD' && candles.length > 1) {
+                const ytdStart = candles[0].c;
+                const ytdPct   = ((currentPx - ytdStart) / ytdStart * 100).toFixed(2);
+                _chartDebugInfo = { ..._chartDebugInfo, ytdStartPrice: ytdStart, ytdPct };
+                updateChartDebugOverlay();
+            }
             hideChartOverlay();
+
+            // Update prev-close badge from most recent daily data
+            // For any daily+ period: second-to-last candle's close = previous session close
+            if (!['1D','5D'].includes(period) && candles.length >= 2) {
+                const prevDayClose = candles[candles.length - 2].c;
+                const pcEl = document.getElementById('prevCloseVal');
+                if (pcEl && prevDayClose > 0) pcEl.innerText = prevDayClose.toFixed(2);
+                if (!stock.prevClose) stock.prevClose = prevDayClose;
+            }
         }
+
+        _chartDebugInfo = {
+            ..._chartDebugInfo,
+            period, res, symbol: stock.symbol,
+            count: candles.length,
+            first: candles[0],
+            last: candles[candles.length-1],
+            minPrice: Math.min(...candles.map(c=>c.l)),
+            maxPrice: Math.max(...candles.map(c=>c.h)),
+            isSimulated,
+        };
+        updateChartDebugOverlay();
 
         // Live indicator badge
         const liveBadge = document.getElementById('chartLiveIndicator');
@@ -3031,10 +3312,18 @@ function startNewsEngine() {
             const volData    = candles.map(c=>({x:c.x,y:c.v||0}));
             const overlays   = buildOverlayDatasets(candles);
 
-            if (sChart && sChart.canvas === candleCanvas && !sChart._destroyed) {
-                // ── NO-FLICKER UPDATE: swap data in place, no re-create ──────────
+            // ── Per-period recreation guard ───────────────────────────────────
+            //   Chart.js cannot reliably switch time unit (minute↔day↔week↔month)
+            //   in-place without y-axis scale contamination from prior period.
+            //   We recreate when: period changed, or unit changed, or chart gone.
+            const prevUnit = sChart?._vestraUnit;
+            const needRecreate = !sChart || sChart._destroyed ||
+                                 sChart.canvas !== candleCanvas ||
+                                 prevUnit !== cfg.unit;
+
+            if (!needRecreate) {
+                // ── NO-FLICKER SAME-UNIT UPDATE: swap data in place ────────────
                 sChart.data.datasets[0].data = candleData;
-                // Volume dataset is always at index 1
                 if(sChart.data.datasets[1] && sChart.data.datasets[1].label==='Volume') {
                     sChart.data.datasets[1].data = volData;
                     sChart.data.datasets[1].backgroundColor = candles.map(c=>c.c>=c.o?'rgba(38,166,154,0.3)':'rgba(239,83,80,0.3)');
@@ -3043,8 +3332,14 @@ function startNewsEngine() {
                     sChart.data.datasets.splice(1);
                 }
                 overlays.forEach(ds=>sChart.data.datasets.push(ds));
+                // Update time unit and Y-axis bounds from actual dataset
                 sChart.options.scales.x.time.unit = cfg.unit;
-                // Recalc Y autoscale
+                const lo = Math.min(...candles.map(c=>c.l));
+                const hi = Math.max(...candles.map(c=>c.h));
+                const pad = (hi-lo)*0.02 || hi*0.01;
+                sChart.options.scales.y.min = lo - pad;
+                sChart.options.scales.y.max = hi + pad;
+                sChart.options.scales.vol.max = Math.max(...candles.map(c=>c.v||0)) * 5 || 1;
                 sChart.update('none');
             } else {
                 // ── INITIAL CREATE ─────────────────────────────────────────────
@@ -3075,7 +3370,7 @@ function startNewsEngine() {
                                     title:ctx=>{
                                         const raw=ctx[0];
                                         const d=new Date(raw.parsed?.x||raw.raw?.x||0);
-                                        const intra=['1D','5D','1M'].includes(period)||['1','5','15','60'].includes(_currentIntradayRes);
+                                        const intra=['1D','5D'].includes(period)||['1','5','15','60'].includes(_currentIntradayRes);
                                         return d.toLocaleString([],intra
                                             ?{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}
                                             :{weekday:'short',month:'short',day:'numeric',year:'numeric'});
@@ -3098,27 +3393,44 @@ function startNewsEngine() {
                         scales:{
                             x:{
                                 type:'time',
-                                time:{ unit:cfg.unit, tooltipFormat:'MMM d, yyyy HH:mm' },
+                                time:{
+                                    unit: cfg.unit,
+                                    tooltipFormat: (['day','week'].includes(cfg.unit)) ? 'MMM d, yyyy' :
+                                                   cfg.unit === 'month' ? 'MMM yyyy' : 'MMM d, yyyy HH:mm'
+                                },
                                 adapters:{ date:{} },
                                 ticks:{ color:tc.text, maxTicksLimit:9, maxRotation:0, source:'auto', autoSkip:true },
                                 grid:{ color:tc.grid, drawBorder:false }
                             },
                             y:{
                                 position:'right',
+                                // Explicit auto-scale from actual dataset, with 2% padding.
+                                // NEVER undefined — that causes Chart.js to inherit stale domain
+                                // from the previous period when switching (e.g. 1D→Max).
+                                min: (()=>{ const lo=Math.min(...candles.map(c=>c.l)); const hi=Math.max(...candles.map(c=>c.h)); return lo - (hi-lo)*0.02; })(),
+                                max: (()=>{ const lo=Math.min(...candles.map(c=>c.l)); const hi=Math.max(...candles.map(c=>c.h)); return hi + (hi-lo)*0.02; })(),
                                 grid:{ color:tc.grid, drawBorder:false },
-                                ticks:{ color:tc.text, callback:v=>'$'+v.toLocaleString(undefined,{maximumFractionDigits:2}) }
+                                ticks:{
+                                    color:tc.text,
+                                    maxTicksLimit:8,
+                                    callback: v => '$' + (v>=1000 ? v.toFixed(0) : v>=100 ? v.toFixed(1) : v.toFixed(2))
+                                }
                             },
                             vol:{
                                 position:'left',
                                 display:true,
                                 grid:{ display:false },
-                                max: Math.max(...candles.map(c=>c.v||0)) * 4,
+                                // Volume axis: max = 5× peak volume so bars stay in lower 20%
+                                // Calculated from actual dataset, never hard-coded
+                                max: Math.max(...candles.map(c=>c.v||0)) * 5 || 1,
+                                min: 0,
                                 ticks:{ display:false },
                                 border:{ display:false }
                             }
                         }
                     }
                 });
+                sChart._vestraUnit = cfg.unit;  // stamp for recreation guard
             }
 
             // Volume is now embedded in sChart as dataset index 1 (yAxisID:'vol')
@@ -3146,8 +3458,8 @@ function startNewsEngine() {
             _lastLiveCandle = candles[candles.length-1]?.x || 0;
             _liveRefreshTimer = setInterval(async()=>{
                 if(!detailStock || currentChartPeriod!=='1D') { clearInterval(_liveRefreshTimer); return; }
-                // bust only the live key, keep other cache intact
-                delete candleCache[`${detailStock.symbol}_1D_${_currentIntradayRes}`];
+                // Bust only the live 1D key (|| format used by fetchCandles)
+                delete candleCache[`${detailStock.symbol}||1D||${_currentIntradayRes}`];
                 const fresh = await fetchCandles(detailStock.symbol,'1D',_currentIntradayRes);
                 if(!fresh||fresh.length===0) {
                     showChartOverlay(isMarketOpen() ? 'ratelimit' : 'closed');
@@ -3176,13 +3488,15 @@ function startNewsEngine() {
 
     // ── Intraday interval button system ───────────────────────────────────────
     const PERIOD_INTRADAY_MAP = {
+        // 1D and 5D: show intraday interval selector
         '1D':  { showItv:true,  itvDef:'5'  },
         '5D':  { showItv:true,  itvDef:'15' },
-        '1M':  { showItv:true,  itvDef:'60' },
+        // 1M and above: use fixed resolutions (no interval button row)
+        '1M':  { showItv:false, itvDef:'D'  },  // daily candles per spec §3
         '6M':  { showItv:false, itvDef:'D'  },
         'YTD': { showItv:false, itvDef:'D'  },
         '1Y':  { showItv:false, itvDef:'W'  },
-        '5Y':  { showItv:false, itvDef:'M'  },
+        '5Y':  { showItv:false, itvDef:'W'  },  // weekly per spec §3
         'Max': { showItv:false, itvDef:'M'  },
         // Intraday resolution buttons map to themselves
         '1m':  { showItv:true,  itvDef:'1'  },
@@ -3196,7 +3510,14 @@ function startNewsEngine() {
         document.querySelectorAll('.itv-btn').forEach(b=>b.classList.remove('itv-active'));
         const b=document.getElementById('itv-'+res); if(b) b.classList.add('itv-active');
         if(detailStock) {
-            delete candleCache[`${detailStock.symbol}_${currentChartPeriod}_${res}`];
+            // Invalidate cache for this exact combination — force fresh fetch
+            delete candleCache[`${detailStock.symbol}||${currentChartPeriod}||${res}`];
+            // Also clear any old-format keys to prevent stale data
+            Object.keys(candleCache).forEach(k => {
+                if (k.startsWith(detailStock.symbol + '||' + currentChartPeriod)) {
+                    delete candleCache[k];
+                }
+            });
             drawChart(detailStock, currentChartPeriod);
         }
     }
@@ -3210,7 +3531,7 @@ function startNewsEngine() {
         btn.style.color='#8ab4f8'; btn.style.borderBottomColor='#8ab4f8'; btn.style.fontWeight='700';
         currentChartPeriod = period;
 
-        // Intraday interval row
+        // Intraday interval row — driven by PERIOD_INTRADAY_MAP
         const icfg = PERIOD_INTRADAY_MAP[period] || {showItv:false, itvDef:'D'};
         const itvRow = document.getElementById('intradayRow');
         if(itvRow) itvRow.style.display = icfg.showItv ? 'flex' : 'none';
@@ -3218,9 +3539,21 @@ function startNewsEngine() {
         document.querySelectorAll('.itv-btn').forEach(b=>b.classList.remove('itv-active'));
         const db=document.getElementById('itv-'+icfg.itvDef); if(db) db.classList.add('itv-active');
 
-        // Debounce
+        // ── Cache isolation on period switch §7 ──────────────────────────────
+        // Clear the cache for this symbol + new period to force a fresh fetch.
+        // Old period data must NOT be reused for the new period.
+        // Clears BOTH key formats (|| and _) to prevent stale data from any path.
+        if (detailStock) {
+            const symPrefix1 = detailStock.symbol + '||' + period;
+            const symPrefix2 = detailStock.symbol + '_' + period;
+            Object.keys(candleCache).forEach(k => {
+                if (k.startsWith(symPrefix1) || k.startsWith(symPrefix2)) delete candleCache[k];
+            });
+        }
+
+        // Debounce 80ms (prevents double-fetch on rapid tab clicks)
         clearTimeout(_periodDebounce);
-        _periodDebounce=setTimeout(()=>{ if(detailStock) drawChart(detailStock, period); }, 80);
+        _periodDebounce = setTimeout(() => { if(detailStock) drawChart(detailStock, period); }, 80);
     }
 
     // ── Indicator toggle ──────────────────────────────────────────────────────
@@ -3370,8 +3703,9 @@ function startNewsEngine() {
     };
 
     // ── Improved setIntradayInterval with loading + debounce ─────────────────
+    // IMPORTANT: Does NOT mutate INTERVAL_CFG — period configs are immutable.
+    // Resolution overrides are applied only inside fetchCandles via _currentIntradayRes.
     let _itvDebounce = null;
-    const _baseSetIntradayInterval = setIntradayInterval;
     setIntradayInterval = function(res) {
         // Update buttons immediately (no wait)
         document.querySelectorAll('.itv-btn').forEach(b => b.classList.remove('itv-active'));
@@ -3381,24 +3715,13 @@ function startNewsEngine() {
         clearTimeout(_itvDebounce);
         _itvDebounce = setTimeout(() => {
             if (detailStock) {
-                // Bust cache only for this exact resolution to avoid stale data
-                delete candleCache[`${detailStock.symbol}_${currentChartPeriod}_${res}`];
-                // Update INTERVAL_CFG time window + unit based on resolution
-                const resMap = {
-                    '1':  { fromSec:86400,      unit:'minute' },
-                    '5':  { fromSec:5*86400,    unit:'minute' },
-                    '15': { fromSec:14*86400,   unit:'minute' },
-                    '60': { fromSec:30*86400,   unit:'hour'   },
-                    'D':  { fromSec:180*86400,  unit:'day'    },
-                    'W':  { fromSec:2*365*86400,unit:'week'   },
-                    'M':  { fromSec:5*365*86400,unit:'month'  },
-                };
-                const rm = resMap[res] || resMap['5'];
-                if (INTERVAL_CFG[currentChartPeriod]) {
-                    INTERVAL_CFG[currentChartPeriod].res     = res;
-                    INTERVAL_CFG[currentChartPeriod].fromSec = rm.fromSec;
-                    INTERVAL_CFG[currentChartPeriod].unit    = rm.unit;
-                }
+                // Bust cache for ALL keys for this symbol+period (both key formats) to force fresh fetch
+                const prefix = detailStock.symbol + '||' + currentChartPeriod;
+                Object.keys(candleCache).forEach(k => {
+                    if (k.startsWith(prefix) || k.startsWith(detailStock.symbol + '_' + currentChartPeriod)) {
+                        delete candleCache[k];
+                    }
+                });
                 drawChart(detailStock, currentChartPeriod);
             }
         }, 120);
@@ -3443,7 +3766,7 @@ function startNewsEngine() {
 
     // ── Max candle guard: slice if over limit before rendering ────────────────
     function enforceMaxCandles(candles, period) {
-        const intraday = ['1D','5D','1M'].includes(period) || ['1','5','15','60'].includes(_currentIntradayRes);
+        const intraday = ['1D','5D'].includes(period) || ['1','5','15','60'].includes(_currentIntradayRes);
         const limit = intraday ? 500 : 300;
         if (candles.length > limit) return candles.slice(candles.length - limit);
         return candles;
@@ -3514,11 +3837,24 @@ function startNewsEngine() {
     const _drawChartWithSummary = drawChart;
     drawChart = async function(stock, period) {
         await _drawChartWithSummary(stock, period);
-        // Retrieve the candles that were last rendered
+        // Primary: read from canvas._candles (set by paintCandleCanvas)
         const vc = document.getElementById('stockChart');
-        if (vc && vc._candles) updateOHLCSummary(vc._candles);
-        // Also update via candleCache
-        const cacheKey = `${stock.symbol}_${period}_${_currentIntradayRes}`;
+        if (vc && vc._candles && vc._candles.length > 0) {
+            updateOHLCSummary(vc._candles);
+            return;
+        }
+        // Secondary: read from Chart.js dataset if in financial mode
+        if (sChart && !sChart._destroyed && sChart.data.datasets[0]?.data?.length > 0) {
+            const ds = sChart.data.datasets[0].data;
+            // Chart.js candlestick data is {x,o,h,l,c} — reconstruct candle format
+            const synth = ds.map(d => ({ x:d.x, o:d.o||d.y, h:d.h||d.y, l:d.l||d.y, c:d.c||d.y, v:0 }));
+            updateOHLCSummary(synth);
+            return;
+        }
+        // Tertiary: cache lookup using correct key format
+        const cfg = INTERVAL_CFG[period] || INTERVAL_CFG['1D'];
+        const res  = (cfg.showItv ? _currentIntradayRes : cfg.itvDef);
+        const cacheKey = `${stock.symbol}||${period}||${res}`;
         if (candleCache[cacheKey]) updateOHLCSummary(candleCache[cacheKey].data);
     };
 
