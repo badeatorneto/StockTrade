@@ -2461,7 +2461,10 @@ function startNewsEngine() {
         }
         document.querySelectorAll('.ctab').forEach(b => { b.className = 'ctab text-sm font-medium px-4 py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200'; });
         document.querySelector('.ctab').className = 'ctab text-sm font-medium px-4 py-3 border-b-2 border-[#8ab4f8] text-[#8ab4f8]';
-        drawChart(stock, '1D');
+        // Draw chart after a microtask to allow the async fetchQuote (fired above)
+        // to warm RT.cache before resolveCandles runs. The one-shot quote fetch
+        // inside resolveCandles acts as a second safety net if the above is still pending.
+        Promise.resolve().then(() => drawChart(stock, '1D'));
         // New feature panels
         renderAnalystRatings(stock);
         renderEarnings(stock);
@@ -2519,22 +2522,28 @@ function startNewsEngine() {
         if (!_chartDebugMode) return;
         const d = _chartDebugInfo;
         const fmt = ts => ts ? new Date(ts).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : 'N/A';
-        const mismatchRow = d.priceMismatch ? `<div><span style="color:#8888a8;">Δ Price:</span> <span style="color:#f59e0b;">⚠ ${d.priceMismatch}</span></div>` : '';
+        const mismatchRow = d.priceMismatch ? `<div style="color:#f59e0b">⚠ Price Δ: ${d.priceMismatch}</div>` : '';
         const cacheCount = Object.keys(candleCache).length;
         el.innerHTML = `
-            <div style="font-size:9px;line-height:1.6;color:#e0e0f5;">
-                <div style="font-weight:700;color:#f59e0b;margin-bottom:4px;">🔍 Chart Debug</div>
-                <div><span style="color:#8888a8;">Symbol:</span> ${d.symbol || '—'} | <span style="color:#8888a8;">Period:</span> ${d.period || '—'}</div>
-                <div><span style="color:#8888a8;">Resolution:</span> ${d.res || '—'} | <span style="color:#8888a8;">Unit:</span> ${INTERVAL_CFG[d.period||'1D']?.unit||'—'}</div>
-                <div><span style="color:#8888a8;">Candles:</span> ${d.count || 0} | <span style="color:#8888a8;">Cache:</span> ${cacheCount} entries</div>
-                <div><span style="color:#8888a8;">First:</span> ${fmt(d.first?.x)} @ $${d.first?.c?.toFixed(2) || '—'}</div>
-                <div><span style="color:#8888a8;">Last:</span>  ${fmt(d.last?.x)}  @ $${d.last?.c?.toFixed(2) || '—'}</div>
-                <div><span style="color:#8888a8;">Min:</span> $${d.minPrice?.toFixed(2) || '—'} | <span style="color:#8888a8;">Max:</span> $${d.maxPrice?.toFixed(2) || '—'}</div>
-                <div><span style="color:#8888a8;">Data:</span> <span style="color:${d.isSimulated?'#f87171':'#4ade80'}">${d.isSimulated ? '⚠ Simulated (no API)' : '✓ Live split-adjusted'}</span></div>
-                <div><span style="color:#8888a8;">Integrity:</span> <span style="color:${(d.integrityIssues||0)>0?'#f59e0b':'#4ade80'}">${d.integrityIssues||0} issue${(d.integrityIssues||0)!==1?'s':''}</span></div>
+            <div style="font-size:9px;line-height:1.65;color:#e0e0f5;">
+                <div style="font-weight:700;color:#f59e0b;margin-bottom:4px;font-size:10px;">🔍 Chart Debug v5 — UDP</div>
+                <div><span style="color:#8888a8;">Symbol:</span> ${d.symbol||'—'} | <span style="color:#8888a8;">Period:</span> ${d.period||'—'}</div>
+                <div><span style="color:#8888a8;">Res:</span> ${d.res||'—'} | <span style="color:#8888a8;">Candles:</span> ${d.count||0} | <span style="color:#8888a8;">Base:</span> ${d.baseDays||0}d</div>
+                <div style="border-top:1px solid rgba(255,255,255,0.08);margin:3px 0;padding-top:3px;"></div>
+                <div><span style="color:#8888a8;">First:</span> ${fmt(d.first?.x)} @ $${d.first?.c?.toFixed(2)||'—'}</div>
+                <div><span style="color:#8888a8;">Last: </span> ${fmt(d.last?.x)}  @ $${d.last?.c?.toFixed(2)||'—'}</div>
+                <div><span style="color:#8888a8;">Range:</span> $${d.minPrice?.toFixed(2)||'—'} – $${d.maxPrice?.toFixed(2)||'—'}</div>
+                <div style="border-top:1px solid rgba(255,255,255,0.08);margin:3px 0;padding-top:3px;"></div>
+                <div><span style="color:#8888a8;">Live quote:</span> <span style="color:#4ade80;">$${typeof d.liveQuote==='number'?d.liveQuote.toFixed(4):d.liveQuote}</span></div>
+                <div><span style="color:#8888a8;">Last close: </span> <span style="color:#e0e0f5;">$${typeof d.lastClose==='number'?d.lastClose.toFixed(4):d.lastClose||'—'}</span></div>
+                <div><span style="color:#8888a8;">Quote Δ:</span> <span style="font-weight:700;color:${d.quoteDiff==='✓ synced'?'#4ade80':d.quoteDiff==='—'?'#8888a8':'#f87171'}">${d.quoteDiff||'—'}</span> <span style="color:#6060a0;font-size:8px;">(must be ✓ synced)</span></div>
+                <div><span style="color:#8888a8;">Chart $:</span> $${typeof d.lastClose==='number'?d.lastClose.toFixed(4):'—'} | <span style="color:#8888a8;">Header $:</span> $${typeof d.liveQuote==='number'?d.liveQuote.toFixed(4):'—'}</div>
+                <div><span style="color:#8888a8;">Split ×:</span> ${d.splitFactor||'—'}</div>
+                <div style="border-top:1px solid rgba(255,255,255,0.08);margin:3px 0;padding-top:3px;"></div>
+                <div><span style="color:#8888a8;">Data:</span> <span style="color:${d.isSimulated?'#f87171':'#4ade80'}">${d.isSimulated?'⚠ Simulated':'✓ Adj live'}</span> | <span style="color:#8888a8;">Cache:</span> ${cacheCount}</div>
+                ${d.ytdPct!=null?`<div><span style="color:#8888a8;">YTD:</span> <span style="color:${parseFloat(d.ytdPct)>=0?'#4ade80':'#f87171'}">${d.ytdPct>=0?'+':''}${d.ytdPct}%</span></div>`:''}
                 ${mismatchRow}
-                ${d.ytdPct != null ? `<div><span style="color:#8888a8;">YTD%:</span> <span style="color:${parseFloat(d.ytdPct)>=0?'#4ade80':'#f87171'}">${d.ytdPct >= 0 ? '+' : ''}${d.ytdPct}%</span></div>` : ''}
-                <div style="color:#6060a0;margin-top:3px;font-size:8px;">Shift+D to toggle • Shift+C to clear cache</div>
+                <div style="color:#5050a0;margin-top:4px;font-size:8px;">Shift+D toggle · Shift+C clear cache</div>
             </div>`;
     }
 
@@ -2547,10 +2556,13 @@ function startNewsEngine() {
             updateChartDebugOverlay();
         }
         if (e.shiftKey && e.key === 'C') {
-            // Clear entire candle cache — forces fresh API fetch on next chart load
+            // Clear ALL caches: candleCache (shim), _baseStore (daily base), _intradayStore (1D)
             Object.keys(candleCache).forEach(k => delete candleCache[k]);
+            Object.keys(_baseStore).forEach(k => delete _baseStore[k]);
+            Object.keys(_intradayStore).forEach(k => delete _intradayStore[k]);
+            Object.keys(_baseLoading).forEach(k => delete _baseLoading[k]);
             if (detailStock) drawChart(detailStock, currentChartPeriod);
-            console.log('[Vestra Chart] Cache cleared via Shift+C');
+            console.log('[UDP] All caches cleared via Shift+C');
         }
     });
 
@@ -2599,197 +2611,413 @@ function startNewsEngine() {
             : { bg:'#ffffff',  grid:'rgba(0,0,0,0.06)',        text:'#606078', tooltip:'rgba(248,248,255,0.97)', border:'rgba(0,0,0,0.08)' };
     }
 
-    // ── Candle generators ─────────────────────────────────────────────────────
-    // ── Simulation candle generator ──────────────────────────────────────────
-    //   Used ONLY when API is unavailable or returns no data.
-    //   Anchors the LAST candle's close to stock.price exactly.
-    //   Uses correct interval spacing matching what live data would use.
-    //   Consistent volatility per period (not random per call).
-    function generateSimCandles(stock, period, res) {
-        const cfg  = INTERVAL_CFG[period] || INTERVAL_CFG['1D'];
-        // Number of candles: reasonable count per period
-        const nMap = {'1D':78,'5D':130,'1M':22,'6M':130,'YTD':180,'1Y':52,'5Y':260,'Max':120};
-        const numPts = Math.min(cfg.maxPts, nMap[period] || 80);
-        // Per-period volatility (realistic daily move %)
-        const volPct = {'1D':0.003,'5D':0.004,'1M':0.008,'6M':0.010,'YTD':0.010,'1Y':0.012,'5Y':0.018,'Max':0.022}[period] || 0.010;
-        // Trend: slight positive drift (markets go up over time in sim)
-        const dailyDrift = 0.0002;
-        // Interval duration in ms
-        const itvMs = {
-            '1':60000,'5':300000,'15':900000,'60':3600000,
-            'D':86400000,'W':604800000,'M':2592000000
-        }[res] || {'1D':300000,'5D':900000,'1M':86400000,'6M':86400000,'YTD':86400000,'1Y':604800000,'5Y':604800000,'Max':2592000000}[period] || 86400000;
+    // ══════════════════════════════════════════════════════════════════════════
+    //  UNIFIED DATA PIPELINE  v4  —  Single source of truth
+    //
+    //  Architecture:
+    //    Step 1 — fetchBase()       : MAX-range daily adjusted candles for symbol
+    //    Step 2 — aggregateBase()   : derive any period view from that base
+    //    Step 3 — syncQuoteToCandles(): patch last candle with /quote live price
+    //    Step 4 — isBaseStale()     : force re-fetch if >5 calendar days old
+    //    Step 5 — validateDataset() : log integrity issues, never silent-fail
+    //    Step 6 — buildDebugInfo()  : populate Shift+D panel with split factor,
+    //                                 quote diff, base day count
+    //
+    //  resolveCandles(symbol, period, intradayRes) is the single public API.
+    //  fetchCandles() is kept as a thin shim for backward compat.
+    //  candleCache is kept for the live-refresh timer (1D intraday).
+    // ══════════════════════════════════════════════════════════════════════════
 
-        // Build closes working BACKWARDS from current price
-        // Use seeded-like generation so the same stock always looks similar
-        const seed = stock.price * 7919; // pseudo-seed from price
-        let rng = seed;
-        const rand = () => { rng = (rng * 1664525 + 1013904223) % 4294967296; return rng / 4294967296; };
+    // ── Base store ────────────────────────────────────────────────────────────
+    const _baseStore   = {};   // symbol → { candles[], fetchedAt, splitFactor, quote }
+    const _intradayStore = {}; // `${symbol}||${res}` → { candles[], fetchedAt }
+    const _baseLoading = {};   // symbol → Promise (deduplicate concurrent calls)
+    const BASE_TTL     = 5 * 60 * 1000;   // 5 min
+    const INTRADAY_TTL = 30  * 1000;       // 30 s
 
+    // ── Simulation fallback ───────────────────────────────────────────────────
+    //   Used ONLY when API unavailable. Anchors last candle to stock.price.
+    //   Seeded by price so same stock always generates the same-looking history.
+    function generateSimCandles(stock, period) {
+        const nMap  = { '1D':78,'5D':5,'1M':22,'6M':130,'YTD':180,'1Y':252,'5Y':260,'Max':120 };
+        const vMap  = { '1D':0.003,'5D':0.004,'1M':0.008,'6M':0.010,
+                        'YTD':0.010,'1Y':0.012,'5Y':0.018,'Max':0.022 };
+        const iMap  = { '1D':300000,'5D':86400000,'1M':86400000,'6M':86400000,
+                        'YTD':86400000,'1Y':86400000,'5Y':604800000,'Max':2592000000 };
+        const n     = nMap[period]  || 80;
+        const volPct = vMap[period]  || 0.010;
+        const itvMs = iMap[period]  || 86400000;
+        let rng = Math.abs(Math.round(stock.price * 7919)) % 4294967296 || 1;
+        const rand = () => { rng=(rng*1664525+1013904223)%4294967296; return rng/4294967296; };
         const closes = [stock.price];
-        for (let i = 1; i < numPts; i++) {
-            const prev = closes[i-1];
-            const move = (rand() - 0.5) * 2 * volPct - dailyDrift; // drift back in time
-            closes.push(Math.max(prev * 0.5, prev * (1 + move)));
+        for (let i=1;i<n;i++) {
+            const p=closes[i-1];
+            closes.push(Math.max(p*0.5, p*(1+(rand()-0.5)*2*volPct-0.0002)));
         }
-        closes.reverse(); // now oldest→newest, closes[last] = stock.price
-
-        const now = Date.now();
-        return closes.map((cl, i) => {
-            const t = now - (numPts - 1 - i) * itvMs;
-            const sw = cl * volPct * 0.6;
-            const o  = cl + (rand() - 0.5) * sw;
-            const h  = Math.max(o, cl) + rand() * sw * 0.3;
-            const l  = Math.min(o, cl) - rand() * sw * 0.3;
-            const v  = Math.round(cl * 8e4 * (0.6 + rand() * 0.8));
-            return { x:t, o:+o.toFixed(2), h:+h.toFixed(2), l:+l.toFixed(2), c:+cl.toFixed(2), v, adjusted:false };
+        closes.reverse();
+        const now=Date.now();
+        return closes.map((cl,i)=>{
+            const t=now-(n-1-i)*itvMs, sw=cl*volPct*0.6;
+            const o=cl+(rand()-0.5)*sw, h=Math.max(o,cl)+rand()*sw*0.3, l=Math.min(o,cl)-rand()*sw*0.3;
+            return{x:t,o:+o.toFixed(4),h:+h.toFixed(4),l:+l.toFixed(4),
+                   c:+cl.toFixed(4),v:Math.round(cl*8e4*(0.6+rand()*0.8)),adjusted:false};
         });
     }
 
-    // ── Unified candle fetcher — single pipeline for ALL intervals ───────────
-    //   • Always uses Finnhub /stock/candle (same endpoint, same exchange)
-    //   • adjusted=true appended for split-adjusted OHLC on every call
-    //   • YTD "from" calculated as Jan 1 midnight Eastern Time (no UTC shift)
-    //   • Data integrity validation: outliers, zero prices, sequence order
-    //   • Cache keyed by symbol+period+res (fully isolated per interval)
-    //   • TTL: 55s for intraday, 5min for daily+, never stale across symbols
-    async function fetchCandles(symbol, period, res) {
-        const cacheKey = `${symbol}||${period}||${res}`;
-        const ttl = ['D','W','M'].includes(res) ? 300000 : 55000;
-        const cached = candleCache[cacheKey];
-        if (cached && (Date.now() - cached.ts) < ttl) return cached.data;
+    // ── Candle integrity validator ────────────────────────────────────────────
+    function validateRawCandles(raw, label) {
+        const errs=[];
+        let out = raw.filter((c,i)=>{
+            if(c.o==null||c.h==null||c.l==null||c.c==null){errs.push(`[${i}] null OHLC`);return false;}
+            if(c.c<=0||c.o<=0){errs.push(`[${i}] zero price`);return false;}
+            c.h=Math.max(c.h,c.o,c.c); c.l=Math.min(c.l,c.o,c.c);
+            return true;
+        });
+        out.sort((a,b)=>a.x-b.x);
+        out=out.filter((c,i)=>i===0||c.x!==out[i-1].x);
+        if(out.length>4){
+            const sorted=out.map(c=>c.c).sort((a,b)=>a-b);
+            const med=sorted[Math.floor(sorted.length/2)];
+            out=out.filter(c=>c.c>med*0.005&&c.c<med*200);
+        }
+        if(errs.length) console.warn(`[UDP] ${label}:`,errs);
+        return out;
+    }
 
-        if (!RT || !RT.key) return null;
+    // ── Step 1 — fetchBase ────────────────────────────────────────────────────
+    //   Fetches 22 years of daily adjusted candles once per symbol.
+    //   Also calls /stock/split for informational split factor.
+    async function fetchBase(symbol) {
+        if(!RT||!RT.key) return null;
+        // Deduplication: concurrent calls for same symbol share one in-flight Promise
+        if(_baseLoading[symbol]) return _baseLoading[symbol];
+        // Cache hit
+        const ex=_baseStore[symbol];
+        if(ex&&(Date.now()-ex.fetchedAt)<BASE_TTL) return ex;
 
-        const cfg = INTERVAL_CFG[period] || INTERVAL_CFG['1D'];
-        const toSec = Math.floor(Date.now() / 1000);
-        let fromSec;
+        // IMPORTANT: capture Promise in local var. The `finally` block deletes
+        // _baseLoading[symbol] before callers would read it via the property.
+        const promise=(async()=>{
+            try{
+                const toSec=Math.floor(Date.now()/1000);
+                const frSec=toSec-22*365*86400;  // 22 years of daily history
+                const url=`https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(symbol)}&resolution=D&from=${frSec}&to=${toSec}&adjusted=true&token=${RT.key}`;
+                const r=await fetch(url);
+                if(r.status===429){showChartOverlay('ratelimit');setRateLimit();return null;}
+                if(!r.ok) return null;
+                const d=await r.json();
+                if(!d||d.s!=='ok'||!d.t?.length) return null;
 
-        if (period === 'YTD') {
-            // Jan 1 of current year at 00:00 Eastern Time (ET), DST-aware.
-            // We create a Date representing "Jan 1 YYYY 00:00:00" in America/New_York,
-            // then convert to UTC epoch. This handles EST (UTC-5) and EDT (UTC-4) correctly.
-            const year = new Date().getFullYear();
-            // Construct ISO string for Jan 1 local ET — use Intl to resolve the actual offset
-            // Method: find what UTC time corresponds to Jan 1 00:00 ET by binary search isn't
-            // needed — Jan 1 is always in EST (UTC-5) since daylight saving starts in March.
-            // So Jan 1 00:00 ET = Jan 1 05:00 UTC reliably.
-            const jan1UTC = Date.UTC(year, 0, 1, 5, 0, 0); // Jan 1 00:00 EST = 05:00 UTC
-            fromSec = Math.floor(jan1UTC / 1000);
+                let raw=d.t.map((ts,i)=>({
+                    x:ts*1000,o:d.o[i],h:d.h[i],l:d.l[i],c:d.c[i],
+                    v:d.v?(d.v[i]||0):0
+                }));
+                raw=validateRawCandles(raw,`${symbol}/base`);
+                if(raw.length<5) return null;
+
+                // Fetch split history for debug panel (informational only —
+                // candles already come split-adjusted via adjusted=true)
+                let splitFactor=1;
+                try{
+                    const yr=new Date().getFullYear();
+                    const su=`https://finnhub.io/api/v1/stock/split?symbol=${encodeURIComponent(symbol)}&from=${yr-22}-01-01&to=${yr}-12-31&token=${RT.key}`;
+                    const sr=await fetch(su);
+                    if(sr.ok){
+                        const sd=await sr.json();
+                        if(Array.isArray(sd)&&sd.length){
+                            splitFactor=sd.reduce((acc,s)=>acc*((s.toFactor||1)/(s.fromFactor||1)),1);
+                        }
+                    }
+                }catch(_){}  // split fetch never blocks chart
+
+                const candles=raw.map(c=>({
+                    x:c.x,
+                    o:+c.o.toFixed(4),h:+c.h.toFixed(4),
+                    l:+c.l.toFixed(4),c:+c.c.toFixed(4),
+                    v:Math.round(c.v||0),adjusted:true
+                }));
+                const entry={candles,fetchedAt:Date.now(),splitFactor,quote:null,symbol};
+                _baseStore[symbol]=entry;
+                console.log(`[UDP] ${symbol}: ${candles.length} adj daily | split×${splitFactor.toFixed(4)} | $${candles[0].c.toFixed(2)}→$${candles[candles.length-1].c.toFixed(2)}`);
+                return entry;
+            }catch(e){console.warn('[UDP] fetchBase error:',e);return null;}
+            finally{delete _baseLoading[symbol];}  // release lock whether success or fail
+        })();
+        _baseLoading[symbol]=promise;  // register for deduplication
+        return promise;                // return captured ref (not _baseLoading which was just deleted)
+    }
+
+    // ── Step 2 — aggregateBase ────────────────────────────────────────────────
+    //   Derives view candles from daily base.
+    //   Aggregation: O=first, H=max, L=min, C=last, V=sum. Never average.
+    function aggregateBase(daily, period) {
+        if(!daily||daily.length===0) return [];
+        const now=Date.now();
+        let fromMs;
+        if(period==='YTD'){
+            const y=new Date().getFullYear();
+            fromMs=Date.UTC(y,0,1,5,0,0); // Jan 1 00:00 EST (UTC-5, always in Jan)
         } else {
-            fromSec = toSec - (cfg.fromSec || 86400);
+            const days={'5D':9,'1M':40,'6M':200,'1Y':380,'5Y':5*385,'Max':0};
+            const d=days[period];
+            fromMs = (d===0||d==null) ? 0 : now-d*86400000;
         }
 
-        // Extra buffer: fetch 20% more data than needed, trim to maxPts after validation
-        const bufferFrom = fromSec - Math.floor((toSec - fromSec) * 0.2);
+        const win=daily.filter(c=>c.x>=fromMs);
+        if(win.length===0) return daily.slice(-5);
 
-        try {
-            // adjusted=true ensures split-adjusted OHLC — consistent across ALL intervals
-            const url = `https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(symbol)}&resolution=${res}&from=${bufferFrom}&to=${toSec}&adjusted=true&token=${RT.key}`;
-            const resp = await fetch(url);
-            // Rate limit detection (Finnhub returns 429 when key is exhausted)
-            if (resp.status === 429) {
-                showChartOverlay('ratelimit');
-                throw new Error('Rate limited');
+        // 5Y → weekly buckets; Max → monthly buckets; others → daily as-is
+        if(period!=='5Y'&&period!=='Max') return win;
+
+        const bucketFn = c => {
+            const d=new Date(c.x);
+            if(period==='5Y'){
+                // ISO week: anchor to Monday
+                const dow=d.getUTCDay()||7;
+                const mon=new Date(d); mon.setUTCDate(d.getUTCDate()-(dow-1));
+                return `${mon.getUTCFullYear()}-${String(mon.getUTCMonth()).padStart(2,'0')}-${String(mon.getUTCDate()).padStart(2,'0')}`;
             }
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
-            const data = await resp.json();
+            return `${d.getUTCFullYear()}-${String(d.getUTCMonth()).padStart(2,'0')}`;
+        };
 
-            // ── Data integrity guard §9 ───────────────────────────────────────
-            if (!data || data.s !== 'ok') return null;
-            if (!Array.isArray(data.t) || !Array.isArray(data.c) || data.t.length === 0) return null;
-            if (data.t.length !== data.c.length) return null;  // malformed response
+        const buckets=new Map();
+        for(const c of win){
+            const k=bucketFn(c);
+            if(!buckets.has(k)){
+                buckets.set(k,{x:c.x,o:c.o,h:c.h,l:c.l,c:c.c,v:c.v||0,adjusted:true});
+            } else {
+                const b=buckets.get(k);
+                b.h=Math.max(b.h,c.h); b.l=Math.min(b.l,c.l);
+                b.c=c.c; b.v+=(c.v||0); // close = last, vol = sum
+            }
+        }
+        return [...buckets.values()].sort((a,b)=>a.x-b.x);
+    }
 
-            // Build raw candles
-            let raw = data.t.map((ts, i) => ({
-                x:  ts * 1000,
-                o:  data.o[i],
-                h:  data.h[i],
-                l:  data.l[i],
-                c:  data.c[i],
-                v:  data.v ? (data.v[i] || 0) : 0,
-            }));
+    // ── Step 1b — fetchIntraday (1D and 5D) ──────────────────────────────────
+    //   windowSec: how far back to fetch (3×86400 for 1D, 9×86400 for 5D)
+    //   period:    '1D' filters to today only; '5D' keeps all sessions in window
+    async function fetchIntraday(symbol, res, windowSec, period) {
+        if(!RT||!RT.key) return null;
+        const effWindow = windowSec || 3*86400;
+        const key = `${symbol}||${res}||${period||'1D'}`;
+        const cached = _intradayStore[key];
+        if(cached && (Date.now()-cached.fetchedAt) < INTRADAY_TTL) return cached.candles;
 
-            // ── Integrity checks on each candle ──────────────────────────────
-            const integrityErrors = [];
-            raw = raw.filter((candle, i) => {
-                // Missing OHLC
-                if (candle.o == null || candle.h == null || candle.l == null || candle.c == null) {
-                    integrityErrors.push(`candle[${i}] missing OHLC`); return false;
-                }
-                // Zero prices
-                if (candle.c <= 0 || candle.o <= 0) {
-                    integrityErrors.push(`candle[${i}] zero/negative price`); return false;
-                }
-                // OHLC relationship sanity (H >= max(O,C,L), L <= min(O,C,H))
-                if (candle.h < Math.max(candle.o, candle.c) || candle.l > Math.min(candle.o, candle.c)) {
-                    // Don't reject, but clamp: some APIs have rounding edge cases
-                    candle.h = Math.max(candle.h, candle.o, candle.c);
-                    candle.l = Math.min(candle.l, candle.o, candle.c);
-                }
-                return true;
-            });
+        const toSec = Math.floor(Date.now()/1000);
+        const frSec = toSec - effWindow;
+        try{
+            const url = `https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(symbol)}&resolution=${res}&from=${frSec}&to=${toSec}&adjusted=true&token=${RT.key}`;
+            const r = await fetch(url);
+            if(r.status===429){ showChartOverlay('ratelimit'); setRateLimit(); return null; }
+            if(!r.ok) return null;
+            const d = await r.json();
+            if(!d||d.s!=='ok'||!d.t?.length) return null;
 
-            if (raw.length === 0) return null;
+            let raw = d.t.map((ts,i)=>({x:ts*1000,o:d.o[i],h:d.h[i],l:d.l[i],c:d.c[i],v:d.v?(d.v[i]||0):0}));
+            raw = validateRawCandles(raw, `${symbol}/intra`);
 
-            // ── Outlier detection — threshold tuned per period ─────────────────
-            // For long-period views (5Y, Max), stocks can have 10-30× range legitimately
-            // (e.g. NVDA went from $11 in 2019 to $800+ in 2024).
-            // For intraday views, anything >10× median is a genuine error.
-            const longPeriod = ['5Y','Max','1Y'].includes(period);
-            const outlierHigh = longPeriod ? 100 : 12;
-            const outlierLow  = longPeriod ? 0.01 : 0.08;
-            const closes = raw.map(c => c.c).sort((a,b) => a-b);
-            const median = closes[Math.floor(closes.length / 2)];
-            raw = raw.filter(c => c.c > median * outlierLow && c.c < median * outlierHigh);
-            if (raw.length < 3) return null;
-
-            // ── Timestamp sequence validation ─────────────────────────────────
-            // Sort ascending (API should already be sorted, but enforce it)
-            raw.sort((a, b) => a.x - b.x);
-            // Remove duplicate timestamps
-            raw = raw.filter((c, i) => i === 0 || c.x !== raw[i-1].x);
-
-            // Filter to requested window (remove buffer excess from before fromSec)
-            raw = raw.filter(c => c.x >= fromSec * 1000);
-
-            // Trim to maxPts (keep most recent)
-            if (raw.length > cfg.maxPts) raw = raw.slice(raw.length - cfg.maxPts);
-
-            // Final precision rounding (4dp for prices, avoids float noise)
-            const candles = raw.map(c => ({
-                x: c.x,
-                o: +c.o.toFixed(4),
-                h: +c.h.toFixed(4),
-                l: +c.l.toFixed(4),
-                c: +c.c.toFixed(4),
-                v: Math.round(c.v || 0),
-                adjusted: true,  // flag for debug overlay
-            }));
-
-            if (integrityErrors.length > 0) {
-                console.warn(`[Vestra Chart] ${symbol} ${period} integrity issues:`, integrityErrors);
+            let candles;
+            if(period === '5D') {
+                // 5D: keep all regular-session candles in the 9-day window
+                // This gives 5 trading days of intraday data
+                candles = raw.filter(c => {
+                    const et = new Date(new Date(c.x).toLocaleString('en-US',{timeZone:'America/New_York'}));
+                    const mins = et.getHours()*60 + et.getMinutes();
+                    return mins >= 9*60+30 && mins <= 16*60;
+                });
+                if(candles.length < 3) candles = raw; // fallback: use all data
+            } else {
+                // 1D: prefer today's session only
+                const nowET = new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
+                const todayCandles = raw.filter(c => {
+                    const et = new Date(new Date(c.x).toLocaleString('en-US',{timeZone:'America/New_York'}));
+                    const mins = et.getHours()*60 + et.getMinutes();
+                    return et.getDate()===nowET.getDate() && et.getMonth()===nowET.getMonth()
+                        && et.getFullYear()===nowET.getFullYear() && mins>=9*60+30 && mins<=16*60;
+                });
+                candles = todayCandles.length >= 3 ? todayCandles : raw.slice(-200);
             }
 
-            candleCache[cacheKey] = { data: candles, ts: Date.now(), period, res, symbol };
-            _chartDebugInfo = {
-                period, res, symbol,
-                count: candles.length,
-                first: candles[0],
-                last: candles[candles.length-1],
-                minPrice: Math.min(...candles.map(c=>c.l)),
-                maxPrice: Math.max(...candles.map(c=>c.h)),
-                adjusted: true,
-                integrityIssues: integrityErrors.length,
-                fetchedAt: new Date().toISOString(),
-            };
-            updateChartDebugOverlay();
+            candles = candles.map(c=>({
+                x:c.x, o:+c.o.toFixed(4), h:+c.h.toFixed(4),
+                l:+c.l.toFixed(4), c:+c.c.toFixed(4),
+                v:Math.round(c.v||0), adjusted:true
+            }));
+            _intradayStore[key] = {candles, fetchedAt:Date.now()};
             return candles;
+        } catch(e) { return null; }
+    }
 
-        } catch(e) {
-            console.warn('[Vestra Chart] fetchCandles error:', e);
-            return null;
+    // ── Step 3 — syncQuoteToCandles ────────────────────────────────────────────
+    //   Patches last candle so chart close = header price = portfolio price.
+    //   Tolerance: $0.005 (half-cent). If within tolerance, no mutation.
+    function syncQuoteToCandles(candles, livePrice) {
+        if(!candles||candles.length===0||!(livePrice>0)) return candles;
+        const last=candles[candles.length-1];
+        const diff=Math.abs(last.c-livePrice);
+        if(diff<0.005) return candles;   // within half-cent tolerance — no mutation
+
+        const cloned=candles.map(c=>({...c}));
+        const lc=cloned[cloned.length-1];
+        const market=isMarketOpen();
+
+        if(market){
+            // Market hours: update current candle in place
+            lc.c=+livePrice.toFixed(4);
+            lc.h=Math.max(lc.h,livePrice);
+            lc.l=Math.min(lc.l,livePrice);
+        } else if(diff>0.005){
+            // After-hours and meaningful move: append extended-session stub
+            const nowMs=Date.now();
+            if(nowMs-lc.x>60000){
+                cloned.push({x:nowMs,o:lc.c,h:Math.max(lc.c,livePrice),
+                    l:Math.min(lc.c,livePrice),c:+livePrice.toFixed(4),
+                    v:0,adjusted:true,extended:true});
+            } else {
+                lc.c=+livePrice.toFixed(4);
+                lc.h=Math.max(lc.h,livePrice);
+                lc.l=Math.min(lc.l,livePrice);
+            }
         }
+        return cloned;
+    }
+
+    // ── Step 4 — stale detection ──────────────────────────────────────────────
+    function isBaseStale(entry){
+        if(!entry||!entry.candles.length) return true;
+        // Stale if last candle is more than 3 calendar days old.
+        // 3 days catches: last candle is Fri close, it's now Mon morning (2 days gap).
+        // Prevents showing Friday data on Monday without re-fetching.
+        return Date.now()-entry.candles[entry.candles.length-1].x > 3*86400000;
+    }
+
+    // ── Step 5 — dataset validation ───────────────────────────────────────────
+    function validateDataset(candles,symbol,period,livePrice){
+        if(!candles||candles.length===0){console.warn(`[UDP] ${symbol}/${period}: empty`);return;}
+        const issues=[];
+        if(candles.some(c=>c.c<=0)) issues.push('zero/neg prices');
+        for(let i=1;i<candles.length;i++){
+            if(candles[i].x<=candles[i-1].x){issues.push(`ts not increasing at [${i}]`);break;}
+        }
+        if(livePrice>0){
+            const diff=Math.abs(candles[candles.length-1].c-livePrice);
+            if(diff>0.01) issues.push(`last candle $${candles[candles.length-1].c.toFixed(4)} vs quote $${livePrice.toFixed(4)} (Δ${diff.toFixed(4)})`);
+        }
+        if(issues.length) console.warn(`[UDP] ${symbol}/${period} validation:`,issues);
+    }
+
+    // ── Master resolver ───────────────────────────────────────────────────────
+    //   Single entry point for all chart data. Period routing:
+    //     1D/5D → fetchIntraday (minute candles, correct window per period)
+    //     1M/6M/YTD/1Y → fetchBase daily, aggregateBase daily slices
+    //     5Y    → fetchBase daily, aggregateBase → ISO-week buckets
+    //     Max   → fetchBase daily, aggregateBase → calendar-month buckets
+    //
+    //   Quote sync guarantee:
+    //     If RT.cache is cold on first open, fires a one-shot /quote fetch so
+    //     the last candle close = header price BEFORE the batch cycle arrives.
+    async function resolveCandles(symbol, period, intradayRes) {
+        // ── Live price: RT.cache is the authoritative source after applyRealQuote.
+        //    On first open it may be 0. We warm it with a one-shot /quote fetch.
+        let livePrice = RT.cache[symbol]?.price || 0;
+        if(livePrice <= 0 && RT && RT.key) {
+            const qt = await fetchQuote(symbol);
+            if(qt && qt.c > 0) {
+                livePrice = qt.c;
+                RT.cache[symbol] = { price: qt.c, change: (qt.dp||0), ts: Date.now() };
+                const stk = getStockBySymbol(symbol);
+                if(stk) {
+                    stk.price = qt.c;
+                    if(qt.dp != null) stk.change = qt.dp;
+                    if(qt.h)  stk.dayHigh   = qt.h;
+                    if(qt.l)  stk.dayLow    = qt.l;
+                    if(qt.o)  stk.dayOpen   = qt.o;
+                    if(qt.pc) stk.prevClose = qt.pc;
+                }
+            }
+        }
+
+        // ── 1D and 5D: intraday candle fetch ───────────────────────────────────
+        if(period==='1D' || period==='5D') {
+            const res = intradayRes || (period==='5D' ? '15' : '5');
+            const windowSec = period==='5D' ? 9*86400 : 3*86400;
+            const candles = await fetchIntraday(symbol, res, windowSec, period);
+            if(!candles||candles.length<3) return null;
+            const synced = syncQuoteToCandles(candles, livePrice);
+            validateDataset(synced, symbol, period, livePrice);
+            return synced;
+        }
+
+        // ── Daily+ periods: one shared base dataset, windowed by aggregateBase ─
+        let entry = await fetchBase(symbol);
+        if(!entry) return null;
+        if(isBaseStale(entry)) {
+            delete _baseStore[symbol];
+            entry = await fetchBase(symbol);
+            if(!entry) return null;
+        }
+        if(entry.quote===null && livePrice>0) entry.quote = {c: livePrice};
+
+        // Patch base store last candle with live quote so ALL derived windows
+        // (1M, 6M, YTD, 1Y, 5Y, Max) share the same corrected endpoint.
+        if(livePrice > 0 && entry.candles.length > 0) {
+            const lb = entry.candles[entry.candles.length-1];
+            if(Math.abs(lb.c - livePrice) >= 0.005) {
+                lb.c = +livePrice.toFixed(4);
+                lb.h = Math.max(lb.h, livePrice);
+                lb.l = Math.min(lb.l, livePrice);
+            }
+        }
+
+        const view = aggregateBase(entry.candles, period);
+        if(!view||view.length<3) return null;
+        const synced = syncQuoteToCandles(view, livePrice);
+        validateDataset(synced, symbol, period, livePrice);
+        return synced;
+    }
+
+
+    // ── Debug info builder ─────────────────────────────────────────────────────
+    function buildDebugInfo(symbol,period,intradayRes,candles,isSimulated){
+        const entry=_baseStore[symbol];
+        const livePrice=RT.cache[symbol]?.price||0;
+        const last=candles[candles.length-1];
+        const diff=livePrice>0?Math.abs(last.c-livePrice):null;
+        _chartDebugInfo={
+            period,symbol,
+            res: (period==='1D'||period==='5D')?intradayRes:'D→agg',
+            count:candles.length,
+            first:candles[0],last,
+            minPrice:Math.min(...candles.map(c=>c.l)),
+            maxPrice:Math.max(...candles.map(c=>c.h)),
+            isSimulated,
+            splitFactor: entry?.splitFactor!=null?entry.splitFactor.toFixed(4):'—',
+            liveQuote: livePrice||'—',
+            lastClose: last.c,
+            quoteDiff: diff!=null?(diff<0.005?'✓ synced':'$'+diff.toFixed(4)):'—',
+            baseDays: entry?.candles.length||0,
+            integrityIssues:0,
+            ytdPct:null,
+            priceMismatch: diff!=null&&diff>0.01?(diff/livePrice*100).toFixed(2)+'%':null,
+        };
+        if(period==='YTD'&&candles.length>1){
+            const s=candles[0].c;
+            _chartDebugInfo.ytdPct=((last.c-s)/s*100).toFixed(2);
+        }
+        updateChartDebugOverlay();
+    }
+
+    // ── Backward-compat shim: fetchCandles → resolveCandles ─────────────────
+    //   Keeps live-refresh timer and any legacy callers working.
+    //   Also maintains candleCache for the live-refresh path.
+    async function fetchCandles(symbol, period, res) {
+        const candles = await resolveCandles(symbol, period, res||_currentIntradayRes);
+        if(candles) {
+            const key=`${symbol}||${period}||${res||_currentIntradayRes}`;
+            candleCache[key]={data:candles,ts:Date.now(),period,res,symbol};
+        }
+        return candles;
     }
 
     // ── Overlay / indicator math ──────────────────────────────────────────────
@@ -2986,6 +3214,11 @@ function startNewsEngine() {
         if(sChart)   { try{sChart.destroy();}   catch(e){} sChart=null; }
         if(volChart) { try{volChart.destroy();} catch(e){} volChart=null; }
         clearInterval(_liveRefreshTimer); _liveRefreshTimer=null;
+        // Clear per-symbol intraday store on close so next open re-fetches fresh data
+        if(detailStock) {
+            const sym = detailStock.symbol;
+            Object.keys(_intradayStore).forEach(k=>{ if(k.startsWith(sym+'||')) delete _intradayStore[k]; });
+        }
     }
 
     // ── Pure-canvas candlestick renderer ─────────────────────────────────────
@@ -3207,48 +3440,34 @@ function startNewsEngine() {
             if (RT && RT.key) {
                 // API is configured but returned nothing usable — show error overlay
                 // Render simulation underneath so the chart area isn't blank
-                candles = generateSimCandles(stock, period, res);
+                candles = generateSimCandles(stock, period);
                 isSimulated = true;
                 showChartOverlay('integrity');
                 // integrity overlay auto-dismisses after 2.8s (OVERLAY_STATES.integrity.keep=false)
             } else {
-                candles = generateSimCandles(stock, period, res);
+                candles = generateSimCandles(stock, period);
                 isSimulated = true;
                 showChartOverlay('simulated');
             }
         } else {
-            // ── Cross-interval validation §6 ──────────────────────────────────
+            // ── Post-resolve data synchronisation ────────────────────────────
+            // resolveCandles() already called syncQuoteToCandles() so last candle close
+            // matches the live price within $0.005 tolerance.
+            // Here we only push secondary UI fields that depend on the resolved candles.
             const lastCandle = candles[candles.length - 1];
-            const lastClose  = lastCandle.c;
-            const currentPx  = stock.price;
-            // Intraday (1D/5D): last candle close should be within 5% of live price
-            // Daily+ (1M+): last candle close is the most recent daily close — can differ
-            //   from live intraday price by more, so use 15% tolerance
-            const isIntraday = ['1D','5D'].includes(period);
-            const tolerance  = isIntraday ? 0.05 : 0.15;
-            if (currentPx > 0 && Math.abs(lastClose - currentPx) / currentPx > tolerance) {
-                // Cross-interval price mismatch — likely means stale/wrong data
-                // Log but don't block: user may have live price vs delayed chart
-                console.warn(`[Vestra Chart] ${stock.symbol} ${period}: last candle close $${lastClose.toFixed(2)} vs live $${currentPx.toFixed(2)} (${((Math.abs(lastClose-currentPx)/currentPx)*100).toFixed(1)}% diff)`);
-                _chartDebugInfo.priceMismatch = `${((Math.abs(lastClose-currentPx)/currentPx)*100).toFixed(1)}%`;
-            }
-            // Sync prevClose from chart data if API quote hasn't populated it yet
-            // For 1D: previous session close = first candle's open (market open price)
-            // Better: use candles[0].c from 6M daily view gives the prior day close
-            if ((period === '1D' || period === '5D') && candles.length > 0 && !stock.prevClose) {
-                // For intraday, the open of the day's first candle approximates prev close
-                const dayOpen = candles.find(c => {
-                    const d = new Date(c.x);
-                    const et = new Date(d.toLocaleString('en-US', {timeZone:'America/New_York'}));
-                    return et.getHours() === 9 && et.getMinutes() === 30;
-                });
-                if (dayOpen) {
-                    stock.prevClose = stock.prevClose || dayOpen.o;
-                    const pcEl = document.getElementById('prevCloseVal');
-                    if (pcEl) pcEl.innerText = stock.prevClose.toFixed(2);
+            const livePrice  = RT.cache[stock.symbol]?.price || stock.price || 0;
+
+            // prevClose sync: use Finnhub quote pc field (set by applyRealQuote),
+            // or fall back to second-to-last daily candle.
+            if (!stock.prevClose) {
+                if (candles.length >= 2) {
+                    stock.prevClose = candles[candles.length - 2].c;
                 }
             }
-            // Update 52W high/low from dataset when on 1Y view
+            const pcEl = document.getElementById('prevCloseVal');
+            if (pcEl && stock.prevClose > 0) pcEl.innerText = stock.prevClose.toFixed(2);
+
+            // 52W high/low: derive from the 1Y daily base view (most accurate)
             if (period === '1Y' || period === '5Y') {
                 const allH = candles.map(c => c.h), allL = candles.map(c => c.l);
                 const dsHigh = Math.max(...allH), dsLow = Math.min(...allL);
@@ -3257,36 +3476,11 @@ function startNewsEngine() {
                 if (h52El && dsHigh > 0) h52El.innerText = '$' + dsHigh.toFixed(2);
                 if (l52El && dsLow  > 0) l52El.innerText = '$' + dsLow.toFixed(2);
             }
-            // Update YTD % in header from first candle of dataset
-            if (period === 'YTD' && candles.length > 1) {
-                const ytdStart = candles[0].c;
-                const ytdPct   = ((currentPx - ytdStart) / ytdStart * 100).toFixed(2);
-                _chartDebugInfo = { ..._chartDebugInfo, ytdStartPrice: ytdStart, ytdPct };
-                updateChartDebugOverlay();
-            }
-            hideChartOverlay();
 
-            // Update prev-close badge from most recent daily data
-            // For any daily+ period: second-to-last candle's close = previous session close
-            if (!['1D','5D'].includes(period) && candles.length >= 2) {
-                const prevDayClose = candles[candles.length - 2].c;
-                const pcEl = document.getElementById('prevCloseVal');
-                if (pcEl && prevDayClose > 0) pcEl.innerText = prevDayClose.toFixed(2);
-                if (!stock.prevClose) stock.prevClose = prevDayClose;
-            }
+            hideChartOverlay();
         }
 
-        _chartDebugInfo = {
-            ..._chartDebugInfo,
-            period, res, symbol: stock.symbol,
-            count: candles.length,
-            first: candles[0],
-            last: candles[candles.length-1],
-            minPrice: Math.min(...candles.map(c=>c.l)),
-            maxPrice: Math.max(...candles.map(c=>c.h)),
-            isSimulated,
-        };
-        updateChartDebugOverlay();
+        buildDebugInfo(stock.symbol, period, res, candles, isSimulated);
 
         // Live indicator badge
         const liveBadge = document.getElementById('chartLiveIndicator');
@@ -3458,8 +3652,9 @@ function startNewsEngine() {
             _lastLiveCandle = candles[candles.length-1]?.x || 0;
             _liveRefreshTimer = setInterval(async()=>{
                 if(!detailStock || currentChartPeriod!=='1D') { clearInterval(_liveRefreshTimer); return; }
-                // Bust only the live 1D key (|| format used by fetchCandles)
+                // Bust candleCache shim AND _intradayStore so resolveCandles re-fetches fresh data
                 delete candleCache[`${detailStock.symbol}||1D||${_currentIntradayRes}`];
+                delete _intradayStore[`${detailStock.symbol}||${_currentIntradayRes}||1D`];
                 const fresh = await fetchCandles(detailStock.symbol,'1D',_currentIntradayRes);
                 if(!fresh||fresh.length===0) {
                     showChartOverlay(isMarketOpen() ? 'ratelimit' : 'closed');
@@ -3539,16 +3734,23 @@ function startNewsEngine() {
         document.querySelectorAll('.itv-btn').forEach(b=>b.classList.remove('itv-active'));
         const db=document.getElementById('itv-'+icfg.itvDef); if(db) db.classList.add('itv-active');
 
-        // ── Cache isolation on period switch §7 ──────────────────────────────
-        // Clear the cache for this symbol + new period to force a fresh fetch.
-        // Old period data must NOT be reused for the new period.
-        // Clears BOTH key formats (|| and _) to prevent stale data from any path.
+        // ── Cache isolation on period switch ─────────────────────────────────
+        // Clear candleCache shim for the new period.
+        // For 1D/5D (intraday): also clear _intradayStore to force a fresh fetch.
+        // Never clear _baseStore — the daily base is shared across all daily+ periods.
         if (detailStock) {
-            const symPrefix1 = detailStock.symbol + '||' + period;
-            const symPrefix2 = detailStock.symbol + '_' + period;
+            const sym = detailStock.symbol;
+            const p1 = sym + '||' + period;
+            const p2 = sym + '_' + period;
             Object.keys(candleCache).forEach(k => {
-                if (k.startsWith(symPrefix1) || k.startsWith(symPrefix2)) delete candleCache[k];
+                if (k.startsWith(p1) || k.startsWith(p2)) delete candleCache[k];
             });
+            if (period === '1D' || period === '5D') {
+                // Clear all intraday keys for this symbol so fetchIntraday re-fetches
+                Object.keys(_intradayStore).forEach(k => {
+                    if (k.startsWith(sym + '||')) delete _intradayStore[k];
+                });
+            }
         }
 
         // Debounce 80ms (prevents double-fetch on rapid tab clicks)
@@ -3715,12 +3917,16 @@ function startNewsEngine() {
         clearTimeout(_itvDebounce);
         _itvDebounce = setTimeout(() => {
             if (detailStock) {
-                // Bust cache for ALL keys for this symbol+period (both key formats) to force fresh fetch
-                const prefix = detailStock.symbol + '||' + currentChartPeriod;
+                const sym = detailStock.symbol;
+                // Clear candleCache shim + _intradayStore for all intraday periods
+                const symPfx1 = sym + '||' + currentChartPeriod;
+                const symPfx2 = sym + '_' + currentChartPeriod;
                 Object.keys(candleCache).forEach(k => {
-                    if (k.startsWith(prefix) || k.startsWith(detailStock.symbol + '_' + currentChartPeriod)) {
-                        delete candleCache[k];
-                    }
+                    if (k.startsWith(symPfx1) || k.startsWith(symPfx2)) delete candleCache[k];
+                });
+                // Always clear _intradayStore for this symbol (covers 1D and 5D)
+                Object.keys(_intradayStore).forEach(k => {
+                    if (k.startsWith(sym + '||')) delete _intradayStore[k];
                 });
                 drawChart(detailStock, currentChartPeriod);
             }
@@ -4971,6 +5177,61 @@ function startNewsEngine() {
         if (data.pc) stock.prevClose = data.pc;
         RT.cache[symbol] = { price: newPrice, change: stock.change, ts: Date.now() };
         RT.liveCount++;
+
+        // ── Patch base store last candle ─────────────────────────────────────
+        // Keep the cached daily base in sync with the live price so ALL derived
+        // views (1M, 6M, YTD, 1Y, 5Y, Max) show the correct final close without
+        // requiring a new API fetch for each period switch.
+        const baseEntry = _baseStore[symbol];
+        if (baseEntry && baseEntry.candles && baseEntry.candles.length > 0) {
+            const lb = baseEntry.candles[baseEntry.candles.length-1];
+            if (Math.abs(lb.c - newPrice) >= 0.005) {
+                lb.c = +newPrice.toFixed(4);
+                lb.h = Math.max(lb.h, newPrice);
+                lb.l = Math.min(lb.l, newPrice);
+            }
+        }
+
+        // ── Live chart candle sync ────────────────────────────────────────────
+        // When the live batch-fetch updates a quote, immediately sync the last
+        // chart candle so chart close = header price = portfolio price.
+        // Applies to both Chart.js mode and canvas fallback mode.
+        if (detailStock && detailStock.symbol === symbol) {
+            try {
+                if (sChart && !sChart._destroyed) {
+                    const ds0 = sChart.data.datasets[0];
+                    if (ds0 && ds0.data && ds0.data.length > 0) {
+                        const last = ds0.data[ds0.data.length - 1];
+                        if (last && Math.abs((last.c||0) - newPrice) >= 0.005) {
+                            last.c = +newPrice.toFixed(4);
+                            last.h = Math.max(last.h||newPrice, newPrice);
+                            last.l = Math.min(last.l||newPrice, newPrice);
+                            sChart.update('none');
+                        }
+                    }
+                } else {
+                    // Canvas fallback: re-paint if canvas has stored candles
+                    const canvas = document.getElementById('stockChart');
+                    if (canvas && canvas._candles && canvas._candles.length > 0) {
+                        const lc = canvas._candles[canvas._candles.length-1];
+                        if (Math.abs(lc.c - newPrice) >= 0.005) {
+                            lc.c = +newPrice.toFixed(4);
+                            lc.h = Math.max(lc.h, newPrice);
+                            lc.l = Math.min(lc.l, newPrice);
+                            paintCandleCanvas(canvas, canvas._candles, themeColors(), currentChartPeriod);
+                        }
+                    }
+                }
+            } catch(_) {}
+
+            // Keep header price display in sync (in case updateDetailPriceFields hasn't fired yet)
+            try {
+                const priceEl = document.getElementById('detailPrice');
+                if (priceEl && Math.abs(parseFloat(priceEl.innerText||'0') - newPrice) >= 0.005) {
+                    priceEl.innerText = newPrice.toFixed(2);
+                }
+            } catch(_) {}
+        }
     }
 
     // Batch-fetch: priority stocks every cycle, rest rotate
