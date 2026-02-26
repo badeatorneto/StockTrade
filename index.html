@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vestra | Structured Trading Simulation Platform</title>
+    <title>Vestra | Structured Trading Intelligence Platform</title>
     <meta name="description" content="Vestra is a professional trading simulation platform. Practice with $100,000 virtual cash, real-time market data, strategy analysis, and competitive leaderboards — all with zero financial risk.">
     <meta name="keywords" content="trading simulator, stock market practice, paper trading, trading education, investment simulation">
     <meta name="robots" content="index, follow">
@@ -107,6 +107,71 @@
 
         /* Gold divider */
         .gold-line { height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,75,0.5), transparent); }
+
+        /* ── Theme system ── */
+        body.theme-midnight { --v-bg:#080810; --v-surface:#0e0e1a; --v-card:#161626; --v-border:rgba(120,120,200,0.15); --v-gold:#c9a84b; }
+        body.theme-graphite { --v-bg:#0d0d0d; --v-surface:#131313; --v-card:#1c1c1c; --v-border:rgba(255,255,255,0.1); --v-gold:#d4a84b; }
+        body.theme-arctic  { --v-bg:#090f18; --v-surface:#0e1620; --v-card:#141e2c; --v-border:rgba(96,165,250,0.15); --v-gold:#60a5fa; }
+        body.theme-emerald { --v-bg:#080f0c; --v-surface:#0e1812; --v-card:#141f18; --v-border:rgba(52,211,153,0.15); --v-gold:#34d399; }
+
+        /* ── Skeleton loaders ── */
+        @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 6px;
+        }
+
+        /* ── Number animation ── */
+        .num-anim { transition: color 0.4s, opacity 0.3s; }
+        .num-flash-green { animation: flashGreen 0.6s ease; }
+        .num-flash-red   { animation: flashRed   0.6s ease; }
+        @keyframes flashGreen { 0%,100%{color:inherit} 50%{color:#4ade80} }
+        @keyframes flashRed   { 0%,100%{color:inherit} 50%{color:#f87171} }
+
+        /* ── Modal entrance ── */
+        @keyframes modalIn { from{opacity:0;transform:scale(0.96) translateY(12px)} to{opacity:1;transform:scale(1) translateY(0)} }
+        .modal-anim { animation: modalIn 0.28s cubic-bezier(0.16,1,0.3,1); }
+
+        /* ── Silent Focus Mode overlay ── */
+        #focusModeBar {
+            display:none; position:fixed; top:0; left:0; right:0; z-index:10100;
+            background:linear-gradient(90deg,#0a0a0f,#111118,#0a0a0f);
+            border-bottom:1px solid rgba(212,168,75,0.2);
+            padding:10px 24px; align-items:center; justify-content:space-between;
+        }
+        body.focus-mode #focusModeBar { display:flex; }
+        body.focus-mode .pl-value { filter:blur(8px); pointer-events:none; transition:filter 0.3s; }
+        body.focus-mode .pl-value:hover { filter:blur(0); }
+        body.focus-mode #leaderSection { opacity:0.15; pointer-events:none; }
+
+        /* ── Regime badge ── */
+        .regime-badge {
+            display:inline-flex; align-items:center; gap:5px;
+            padding:3px 9px; border-radius:20px; font-size:10px; font-weight:700;
+            background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
+        }
+
+        /* ── Strategy equity curve ── */
+        .equity-sparkline { height:40px; overflow:hidden; }
+
+        /* ── Decision timeline ── */
+        .decision-dot {
+            width:10px; height:10px; border-radius:50%; border:2px solid;
+            cursor:pointer; transition:transform 0.2s;
+            flex-shrink:0;
+        }
+        .decision-dot:hover { transform:scale(1.6); }
+
+        /* ── Capital allocator bars ── */
+        .alloc-bar {
+            height:8px; border-radius:4px; transition:width 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        /* ── Stress test pulse ── */
+        @keyframes stressPulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        .stress-running { animation: stressPulse 0.8s infinite; }
 
         /* Footer */
         footer { position: relative; z-index: 1; border-top: 1px solid rgba(255,255,255,0.08); }
@@ -906,6 +971,19 @@
     </div>
 </div>
 
+<!-- ══ SILENT FOCUS MODE BAR ══ -->
+<div id="focusModeBar">
+    <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:14px;">🎯</span>
+        <span style="font-size:12px;font-weight:700;color:var(--v-gold);">Silent Focus Mode</span>
+        <span style="font-size:11px;color:#8888a8;">P&L hidden · No distractions · Results revealed on close</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+        <span id="focusModeTimer" style="font-family:var(--v-mono);font-size:12px;color:#6868a0;"></span>
+        <button onclick="toggleFocusMode()" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);color:#f87171;border-radius:7px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;">Exit Focus</button>
+    </div>
+</div>
+
 <div id="appPage" style="width:100%;">
 
 
@@ -1112,25 +1190,31 @@
             <!-- Theme Switcher -->
             <div style="position:relative;" id="themeWrap">
                 <button onclick="toggleThemeMenu()" id="themeToggle" title="Change theme" style="background:rgba(255,255,255,0.06);border:1px solid var(--v-border);border-radius:6px;padding:5px 8px;cursor:pointer;font-size:13px;line-height:1;">🎨</button>
-                <div id="themeMenu" style="display:none;position:absolute;right:0;top:calc(100%+8px);background:#1a1a24;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px;min-width:180px;z-index:999;box-shadow:0 16px 40px rgba(0,0,0,0.5);">
-                    <div style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.07em;padding:4px 8px 6px;">Themes</div>
-                    <button onclick="applyTheme('dark')"    class="theme-opt" data-theme="dark">🌑 Institutional Dark</button>
-                    <button onclick="applyTheme('white')"   class="theme-opt" data-theme="white">☀️ Minimal White</button>
-                    <button onclick="applyTheme('blue')"    class="theme-opt" data-theme="blue">🌊 Midnight Blue</button>
-                    <button onclick="applyTheme('green')"   class="theme-opt" data-theme="green">💹 Hedge Fund Green</button>
+                <div id="themeMenu" style="display:none;position:absolute;right:0;top:calc(100%+8px);background:#1a1a24;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px;min-width:200px;z-index:999;box-shadow:0 16px 40px rgba(0,0,0,0.5);">
+                    <div style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.07em;padding:4px 8px 6px;">Professional Themes</div>
+                    <button onclick="applyTheme('dark')"     class="theme-opt" data-theme="dark">🌑 Institutional Dark</button>
+                    <button onclick="applyTheme('midnight')" class="theme-opt" data-theme="midnight">🌌 Midnight</button>
+                    <button onclick="applyTheme('graphite')" class="theme-opt" data-theme="graphite">⬛ Graphite</button>
+                    <button onclick="applyTheme('arctic')"   class="theme-opt" data-theme="arctic">🧊 Arctic Blue</button>
+                    <button onclick="applyTheme('emerald')"  class="theme-opt" data-theme="emerald">💹 Emerald Pro</button>
+                    <button onclick="applyTheme('white')"    class="theme-opt" data-theme="white">☀️ Minimal White</button>
                 </div>
             </div>
 
             <!-- Overflow menu — export/import/tutorial/sync -->
             <div style="position:relative;" id="moreMenuWrap">
                 <button onclick="toggleMoreMenu()" style="background:rgba(255,255,255,0.06);border:1px solid var(--v-border);border-radius:6px;padding:5px 9px;cursor:pointer;font-size:13px;color:var(--v-muted);">⋯</button>
-                <div id="moreMenu" style="display:none;position:absolute;right:0;top:calc(100%+6px);background:#1a1a24;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px;min-width:160px;z-index:999;box-shadow:0 16px 40px rgba(0,0,0,0.5);">
+                <div id="moreMenu" style="display:none;position:absolute;right:0;top:calc(100%+6px);background:#1a1a24;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px;min-width:180px;z-index:999;box-shadow:0 16px 40px rgba(0,0,0,0.5);">
                     <div id="syncBadge" style="font-size:11px;padding:6px 10px;color:var(--v-muted);border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:4px;">Sync: Local</div>
                     <button onclick="exportPortfolioData();toggleMoreMenu()" style="width:100%;text-align:left;background:none;border:none;color:#c0c0d8;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">📤 Export Portfolio</button>
                     <button onclick="document.getElementById('importFile').click();toggleMoreMenu()" style="width:100%;text-align:left;background:none;border:none;color:#c0c0d8;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">📥 Import Portfolio</button>
                     <button onclick="startTutorial(true);toggleMoreMenu()" style="width:100%;text-align:left;background:none;border:none;color:#c0c0d8;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">🎓 Tutorial</button>
                     <button onclick="openRiskGuard();toggleMoreMenu()" style="width:100%;text-align:left;background:none;border:none;color:#c0c0d8;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">🛡 Risk Guard Settings</button>
                     <button onclick="openTraderProgress();toggleMoreMenu()" style="width:100%;text-align:left;background:none;border:none;color:#c0c0d8;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">📈 Trader Progress</button>
+                    <div style="height:1px;background:rgba(255,255,255,0.06);margin:4px 0;"></div>
+                    <button onclick="openDecisionTimeline();toggleMoreMenu()" style="width:100%;text-align:left;background:none;border:none;color:#c0c0d8;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">🗓 Decision Timeline</button>
+                    <button onclick="openCapitalAllocator();toggleMoreMenu()" style="width:100%;text-align:left;background:none;border:none;color:#c0c0d8;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">💼 Capital Allocator</button>
+                    <button onclick="toggleSilentFocus();toggleMoreMenu()" style="width:100%;text-align:left;background:none;border:none;color:#c0c0d8;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">🔕 Silent Focus Mode</button>
                 </div>
             </div>
             <input id="importFile" type="file" accept="application/json" class="hidden" onchange="importPortfolioData(event)">
@@ -1174,6 +1258,11 @@
                 <button onclick="openMacro()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#60a5fa';this.style.color='#60a5fa'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'">🌎 Macro</button>
                 <button onclick="openTraderProgress()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#4ade80';this.style.color='#4ade80'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'">📈 Progress</button>
                 <button onclick="openRiskGuard()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#f59e0b';this.style.color='#f59e0b'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'">🛡 Risk Guard</button>
+                <button onclick="openAdvancedAnalytics()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#f472b6';this.style.color='#f472b6'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'">📊 Analytics</button>
+                <button onclick="openAICoach()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#34d399';this.style.color='#34d399'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'">🧠 AI Coach</button>
+                <button onclick="openChallengeMode()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#fb923c';this.style.color='#fb923c'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'">🏆 Challenge</button>
+                <button onclick="toggleSilentFocus()" id="silentFocusBtn" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#818cf8';this.style.color='#818cf8'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'" title="Hide P&amp;L during open trades">🔕 Focus</button>
+                <button onclick="openMultiAsset()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#22d3ee';this.style.color='#22d3ee'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'">🌐 Multi-Asset</button>
                 <!-- API Health -->
                 <div style="display:flex;align-items:center;gap:4px;padding:2px 7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:5px;" title="Data source status">
                     <div id="apiHealthDot" style="width:5px;height:5px;border-radius:50%;background:#6b7280;flex-shrink:0;"></div>
@@ -2238,6 +2327,40 @@ function startNewsEngine() {
     
     newsTimer = setInterval(showNewsEvent, 24000 + Math.random() * 12000);
 }
+
+
+    // ── Multi-Asset Expansion: ETFs, Forex, Commodities, Crypto ─────────────
+    const multiAssetData = {
+        // ── Index ETFs ──────────────────────────────────────────────────────
+        'SPY':  { name:'SPDR S&P 500 ETF',           price:587.32, change: 0.44, pe:22.1, mktCap:'557B',  div:'1.24%', divAmt:'1.82', wkHigh:613.23, wkLow:480.11, assetClass:'ETF',     sector:'Index', session:'NYSE' },
+        'QQQ':  { name:'Invesco QQQ (Nasdaq 100)',    price:516.48, change: 0.61, pe:32.4, mktCap:'294B',  div:'0.56%', divAmt:'0.89', wkHigh:540.81, wkLow:406.40, assetClass:'ETF',     sector:'Index', session:'NYSE' },
+        'DIA':  { name:'SPDR Dow Jones ETF',          price:447.18, change: 0.22, pe:20.8, mktCap:'33B',   div:'1.67%', divAmt:'5.63', wkHigh:450.29, wkLow:357.22, assetClass:'ETF',     sector:'Index', session:'NYSE' },
+        'IWM':  { name:'iShares Russell 2000 ETF',   price:225.62, change:-0.35, pe:18.2, mktCap:'64B',   div:'1.44%', divAmt:'0.97', wkHigh:245.19, wkLow:187.93, assetClass:'ETF',     sector:'Index', session:'NYSE' },
+        // ── Sector ETFs ─────────────────────────────────────────────────────
+        'XLK':  { name:'Technology Select Sector',   price:238.14, change: 0.81, pe:34.7, mktCap:'65B',   div:'0.74%', divAmt:'0.56', wkHigh:258.64, wkLow:175.28, assetClass:'ETF',     sector:'Technology', session:'NYSE' },
+        'XLF':  { name:'Financial Select Sector',    price:49.82,  change: 0.53, pe:15.4, mktCap:'41B',   div:'1.82%', divAmt:'0.27', wkHigh:51.67,  wkLow:34.81,  assetClass:'ETF',     sector:'Financials', session:'NYSE' },
+        'XLE':  { name:'Energy Select Sector',       price:91.44,  change:-1.12, pe:12.8, mktCap:'37B',   div:'3.21%', divAmt:'0.89', wkHigh:99.28,  wkLow:77.36,  assetClass:'ETF',     sector:'Energy', session:'NYSE' },
+        'XLV':  { name:'Health Care Select Sector',  price:149.33, change: 0.18, pe:21.3, mktCap:'37B',   div:'1.61%', divAmt:'0.72', wkHigh:163.82, wkLow:131.19, assetClass:'ETF',     sector:'Healthcare', session:'NYSE' },
+        'XLI':  { name:'Industrial Select Sector',   price:138.92, change: 0.29, pe:23.1, mktCap:'19B',   div:'1.43%', divAmt:'0.60', wkHigh:142.88, wkLow:106.24, assetClass:'ETF',     sector:'Industrials', session:'NYSE' },
+        // ── Commodity ETFs ──────────────────────────────────────────────────
+        'GLD':  { name:'SPDR Gold Shares',            price:264.18, change: 0.71, pe:0,   mktCap:'77B',   div:'0.00%', divAmt:'0.00', wkHigh:274.21, wkLow:182.44, assetClass:'Commodity', sector:'Gold', session:'NYSE' },
+        'SLV':  { name:'iShares Silver Trust',        price:30.44,  change: 0.92, pe:0,   mktCap:'14B',   div:'0.00%', divAmt:'0.00', wkHigh:33.81,  wkLow:21.04,  assetClass:'Commodity', sector:'Silver', session:'NYSE' },
+        'USO':  { name:'United States Oil Fund',      price:73.81,  change:-1.33, pe:0,   mktCap:'1.2B',  div:'0.00%', divAmt:'0.00', wkHigh:87.42,  wkLow:59.18,  assetClass:'Commodity', sector:'Crude Oil', session:'NYSE' },
+        'UNG':  { name:'United States Natural Gas',  price:14.62,  change:-2.14, pe:0,   mktCap:'0.4B',  div:'0.00%', divAmt:'0.00', wkHigh:21.88,  wkLow:11.34,  assetClass:'Commodity', sector:'Nat Gas', session:'NYSE' },
+        'COPX': { name:'Global X Copper Miners ETF', price:36.77,  change:-0.44, pe:0,   mktCap:'1.8B',  div:'1.20%', divAmt:'0.14', wkHigh:43.12,  wkLow:28.14,  assetClass:'Commodity', sector:'Copper', session:'NYSE' },
+        // ── Forex (Major Pairs — prices as base currency in USD equivalent) ─
+        'EURUSD': { name:'Euro / US Dollar',         price:1.0842, change: 0.12, pe:0, mktCap:'—', div:'—', divAmt:'0', wkHigh:1.1215, wkLow:1.0448, assetClass:'Forex', sector:'Major', session:'Forex24', lotSize:100000 },
+        'USDJPY': { name:'US Dollar / Japanese Yen', price:149.72, change:-0.08, pe:0, mktCap:'—', div:'—', divAmt:'0', wkHigh:161.94, wkLow:141.64, assetClass:'Forex', sector:'Major', session:'Forex24', lotSize:100000 },
+        'GBPUSD': { name:'British Pound / US Dollar',price:1.2638, change: 0.15, pe:0, mktCap:'—', div:'—', divAmt:'0', wkHigh:1.3127, wkLow:1.2299, assetClass:'Forex', sector:'Major', session:'Forex24', lotSize:100000 },
+        'AUDUSD': { name:'Australian Dollar / USD',  price:0.6318, change:-0.21, pe:0, mktCap:'—', div:'—', divAmt:'0', wkHigh:0.6942, wkLow:0.5994, assetClass:'Forex', sector:'Major', session:'Forex24', lotSize:100000 },
+        'USDCAD': { name:'US Dollar / Canadian Dollar',price:1.3948,change: 0.09,pe:0, mktCap:'—', div:'—', divAmt:'0', wkHigh:1.4792, wkLow:1.3418, assetClass:'Forex', sector:'Major', session:'Forex24', lotSize:100000 },
+        // ── Digital Assets ───────────────────────────────────────────────────
+        'BTC-USD':  { name:'Bitcoin',         price:98244.0,  change: 1.84,  pe:0, mktCap:'1.94T', div:'0.00%', divAmt:'0.00', wkHigh:109114.0, wkLow:52548.0,  assetClass:'Crypto', sector:'Digital Asset', session:'24/7' },
+        'ETH-USD':  { name:'Ethereum',        price:2728.40,  change: 2.11,  pe:0, mktCap:'328B',  div:'0.00%', divAmt:'0.00', wkHigh:4118.0,   wkLow:1784.0,   assetClass:'Crypto', sector:'Digital Asset', session:'24/7' },
+        'SOL-USD':  { name:'Solana',          price:198.44,   change: 3.42,  pe:0, mktCap:'96B',   div:'0.00%', divAmt:'0.00', wkHigh:295.83,   wkLow:107.24,   assetClass:'Crypto', sector:'Digital Asset', session:'24/7' },
+    };
+    // Merge multi-asset into realStockData
+    Object.assign(realStockData, multiAssetData);
 
     const tickers = Object.keys(realStockData);
     // Fill remaining spots to ~200 with realistic sector peers
@@ -9424,6 +9547,1760 @@ function startNewsEngine() {
     initMarket();  // pre-load stock data
     showHomepage(); // start on homepage
 
+    // ══════════════════════════════════════════════════════════════════════
+    //  ADVANCED ANALYTICS SYSTEM
+    // ══════════════════════════════════════════════════════════════════════
+    let _silentFocusMode = false;
+
+    function toggleSilentFocus() {
+        _silentFocusMode = !_silentFocusMode;
+        const btn = document.getElementById('silentFocusBtn');
+        if (btn) {
+            btn.style.background = _silentFocusMode ? 'rgba(129,140,248,0.15)' : 'rgba(255,255,255,0.04)';
+            btn.style.color = _silentFocusMode ? '#818cf8' : '#a0a0b8';
+            btn.style.borderColor = _silentFocusMode ? 'rgba(129,140,248,0.4)' : 'rgba(255,255,255,0.08)';
+            btn.title = _silentFocusMode ? 'Silent Focus: P&L hidden during open trades' : 'Enable Silent Focus Mode';
+        }
+        updateUI();
+        if (_silentFocusMode) pushNotif('info', '🔕 Silent Focus Mode ON — P&L hidden while positions are open.');
+    }
+
+    function isSilentFocusActive() {
+        return _silentFocusMode && Object.keys(portfolio).length > 0;
+    }
+
+    function openAdvancedAnalytics() {
+        const el = document.getElementById('advancedAnalyticsModal');
+        if (el) { el.style.display = 'flex'; renderAdvancedAnalytics(); }
+    }
+    function closeAdvancedAnalytics() {
+        const el = document.getElementById('advancedAnalyticsModal');
+        if (el) el.style.display = 'none';
+    }
+
+    function computeEquityCurve() {
+        // Build equity curve from perfHistory + transactions
+        const pts = (perfHistory || []).map(p => ({ ts: p.ts, val: p.value }));
+        if (pts.length === 0) return [{ ts: Date.now(), val: cash }];
+        return pts;
+    }
+
+    function computeDrawdownCurve(equityCurve) {
+        let peak = equityCurve[0]?.val || 100000;
+        return equityCurve.map(pt => {
+            if (pt.val > peak) peak = pt.val;
+            const dd = peak > 0 ? ((pt.val - peak) / peak * 100) : 0;
+            return { ts: pt.ts, dd };
+        });
+    }
+
+    function computeMonthlyReturns(equityCurve) {
+        const monthly = {};
+        for (let i = 1; i < equityCurve.length; i++) {
+            const d = new Date(equityCurve[i].ts);
+            const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+            monthly[key] = monthly[key] || { start: equityCurve[i-1].val, end: equityCurve[i].val };
+            monthly[key].end = equityCurve[i].val;
+        }
+        const result = {};
+        for (const [k, v] of Object.entries(monthly)) {
+            result[k] = ((v.end - v.start) / v.start * 100);
+        }
+        return result;
+    }
+
+    function computeSectorExposure() {
+        const exposure = {};
+        let total = 0;
+        for (const [sym, qty] of Object.entries(portfolio)) {
+            if (qty <= 0) continue;
+            const stock = getStockBySymbol(sym);
+            if (!stock) continue;
+            const val = stock.price * qty;
+            total += val;
+            const sec = stock.sector || 'Other';
+            exposure[sec] = (exposure[sec] || 0) + val;
+        }
+        return { exposure, total };
+    }
+
+    function computeRiskAdjustedReturn() {
+        const curve = computeEquityCurve();
+        if (curve.length < 2) return { sharpe: 0, maxDD: 0, calmar: 0 };
+        const returns = [];
+        for (let i = 1; i < curve.length; i++) {
+            returns.push((curve[i].val - curve[i-1].val) / curve[i-1].val);
+        }
+        const avgRet = returns.reduce((a, b) => a + b, 0) / returns.length;
+        const std = Math.sqrt(returns.reduce((a, b) => a + Math.pow(b - avgRet, 2), 0) / returns.length) || 0.001;
+        const annualFactor = Math.sqrt(252);
+        const sharpe = (avgRet / std) * annualFactor;
+        const ddCurve = computeDrawdownCurve(curve);
+        const maxDD = Math.min(...ddCurve.map(d => d.dd));
+        const totalReturn = curve.length > 1 ? ((curve[curve.length-1].val - curve[0].val) / curve[0].val * 100) : 0;
+        const calmar = maxDD !== 0 ? totalReturn / Math.abs(maxDD) : 0;
+        return { sharpe: +sharpe.toFixed(2), maxDD: +maxDD.toFixed(2), calmar: +calmar.toFixed(2), totalReturn: +totalReturn.toFixed(2) };
+    }
+
+    function drawMiniCurve(canvasId, dataPoints, color, fill) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas || dataPoints.length < 2) return;
+        const dpr = window.devicePixelRatio || 1;
+        const W = canvas.clientWidth || 280, H = canvas.clientHeight || 70;
+        canvas.width = W * dpr; canvas.height = H * dpr;
+        const ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr);
+        ctx.clearRect(0, 0, W, H);
+        const vals = dataPoints.map(d => d.v || d.val || d.dd || 0);
+        const mn = Math.min(...vals), mx = Math.max(...vals);
+        const rng = mx - mn || 1;
+        const toX = i => (i / (dataPoints.length - 1)) * (W - 4) + 2;
+        const toY = v => H - 4 - ((v - mn) / rng) * (H - 8);
+        if (fill) {
+            const grad = ctx.createLinearGradient(0, 0, 0, H);
+            grad.addColorStop(0, color + '44'); grad.addColorStop(1, color + '05');
+            ctx.fillStyle = grad;
+            ctx.beginPath(); ctx.moveTo(toX(0), H);
+            dataPoints.forEach((d, i) => ctx.lineTo(toX(i), toY(vals[i])));
+            ctx.lineTo(toX(dataPoints.length - 1), H); ctx.closePath(); ctx.fill();
+        }
+        ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.lineJoin = 'round';
+        ctx.beginPath();
+        dataPoints.forEach((d, i) => i === 0 ? ctx.moveTo(toX(i), toY(vals[i])) : ctx.lineTo(toX(i), toY(vals[i])));
+        ctx.stroke();
+    }
+
+    function renderAdvancedAnalytics() {
+        const curve = computeEquityCurve();
+        const ddCurve = computeDrawdownCurve(curve);
+        const monthly = computeMonthlyReturns(curve);
+        const riskAdj = computeRiskAdjustedReturn();
+        const { exposure, total: expTotal } = computeSectorExposure();
+        const sells = (transactions || []).filter(t => t.type === 'SELL');
+        const portfolioVal = curve[curve.length - 1]?.val || cash;
+
+        // Key metrics strip
+        const metricsEl = document.getElementById('aaMetrics');
+        if (metricsEl) {
+            const metrics = [
+                { label:'Total Return', val: riskAdj.totalReturn >= 0 ? '+' + riskAdj.totalReturn + '%' : riskAdj.totalReturn + '%', color: riskAdj.totalReturn >= 0 ? '#4ade80' : '#f87171' },
+                { label:'Sharpe Ratio', val: riskAdj.sharpe, color: riskAdj.sharpe > 1 ? '#4ade80' : riskAdj.sharpe > 0 ? '#f59e0b' : '#f87171' },
+                { label:'Max Drawdown', val: riskAdj.maxDD + '%', color: riskAdj.maxDD > -10 ? '#4ade80' : riskAdj.maxDD > -20 ? '#f59e0b' : '#f87171' },
+                { label:'Calmar Ratio', val: riskAdj.calmar, color: riskAdj.calmar > 1 ? '#4ade80' : '#f59e0b' },
+                { label:'Portfolio Value', val: '$' + portfolioVal.toLocaleString(undefined, {maximumFractionDigits:0}), color: '#60a5fa' },
+                { label:'Closed Trades', val: sells.length, color: '#a78bfa' },
+            ];
+            metricsEl.innerHTML = metrics.map(m => `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px;text-align:center;">
+                <div style="font-size:8px;color:#6868a0;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px;">${m.label}</div>
+                <div style="font-family:var(--v-mono);font-size:1.1rem;font-weight:700;color:${m.color};">${m.val}</div>
+            </div>`).join('');
+        }
+
+        // Draw equity curve
+        setTimeout(() => {
+            const equityPts = curve.map(p => ({ v: p.val }));
+            drawMiniCurve('aaEquityCanvas', equityPts, '#4ade80', true);
+            const ddPts = ddCurve.map(p => ({ v: p.dd }));
+            drawMiniCurve('aaDDCanvas', ddPts, '#f87171', true);
+        }, 60);
+
+        // Monthly heatmap
+        const hmEl = document.getElementById('aaMonthlyHeatmap');
+        if (hmEl) {
+            const months = Object.entries(monthly).slice(-12);
+            if (months.length === 0) {
+                hmEl.innerHTML = '<div style="color:#6868a0;font-size:11px;text-align:center;padding:20px;">No monthly data yet — keep trading!</div>';
+            } else {
+                const maxAbs = Math.max(...months.map(([,v]) => Math.abs(v)), 1);
+                hmEl.innerHTML = months.map(([k, v]) => {
+                    const [y, m] = k.split('-');
+                    const mName = new Date(+y, +m-1, 1).toLocaleString('default', { month: 'short' });
+                    const intensity = Math.min(1, Math.abs(v) / maxAbs);
+                    const bg = v >= 0
+                        ? `rgba(74,222,128,${0.08 + intensity * 0.35})`
+                        : `rgba(248,113,113,${0.08 + intensity * 0.35})`;
+                    const col = v >= 0 ? '#4ade80' : '#f87171';
+                    return `<div style="background:${bg};border:1px solid ${col}28;border-radius:8px;padding:10px 6px;text-align:center;">
+                        <div style="font-size:9px;color:#8888a8;">${mName} '${y.slice(2)}</div>
+                        <div style="font-size:12px;font-weight:700;color:${col};font-family:var(--v-mono);">${v >= 0 ? '+' : ''}${v.toFixed(1)}%</div>
+                    </div>`;
+                }).join('');
+            }
+        }
+
+        // Sector exposure
+        const secEl = document.getElementById('aaSectorExposure');
+        if (secEl) {
+            if (expTotal === 0) {
+                secEl.innerHTML = '<div style="color:#6868a0;font-size:11px;text-align:center;padding:16px;">No open positions.</div>';
+            } else {
+                const sorted = Object.entries(exposure).sort((a,b) => b[1]-a[1]);
+                const sectorColors = { Technology:'#60a5fa', Financials:'#4ade80', Healthcare:'#34d399', Energy:'#f59e0b', Consumer:'#fb923c', Industrials:'#a78bfa', Other:'#8888a8', 'Digital Asset':'#f472b6', Commodity:'#fbbf24', Forex:'#22d3ee', Index:'#818cf8' };
+                secEl.innerHTML = sorted.map(([sec, val]) => {
+                    const pct = (val / expTotal * 100).toFixed(1);
+                    const col = sectorColors[sec] || '#8888a8';
+                    return `<div>
+                        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;">
+                            <span style="color:${col};">${sec}</span>
+                            <span style="font-family:var(--v-mono);color:#f0f0fa;">${pct}%</span>
+                        </div>
+                        <div style="height:6px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;">
+                            <div style="height:100%;width:${pct}%;background:${col};border-radius:3px;transition:width 0.5s;"></div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+        }
+
+        // Best/Worst trades
+        const bwEl = document.getElementById('aaBestWorst');
+        if (bwEl && sells.length > 0) {
+            const withPnl = sells.map(t => ({
+                ...t,
+                pnl: ((t.price - (t.avgBuy || t.price)) / (t.avgBuy || t.price) * 100)
+            })).sort((a, b) => b.pnl - a.pnl);
+            const best3 = withPnl.slice(0, 3);
+            const worst3 = withPnl.slice(-3).reverse();
+            const row = (t, isGain) => `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+                <span style="font-weight:600;color:#f0f0fa;font-size:12px;">${t.symbol}</span>
+                <span style="font-family:var(--v-mono);font-size:12px;color:${isGain ? '#4ade80' : '#f87171'};font-weight:700;">${t.pnl >= 0 ? '+' : ''}${t.pnl.toFixed(2)}%</span>
+            </div>`;
+            bwEl.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                <div>
+                    <div style="font-size:10px;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">🏆 Best Trades</div>
+                    ${best3.map(t => row(t, true)).join('')}
+                </div>
+                <div>
+                    <div style="font-size:10px;font-weight:700;color:#f87171;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">📉 Worst Trades</div>
+                    ${worst3.map(t => row(t, false)).join('')}
+                </div>
+            </div>`;
+        } else if (bwEl) {
+            bwEl.innerHTML = '<div style="color:#6868a0;font-size:11px;text-align:center;padding:16px;">Close trades to see breakdown.</div>';
+        }
+
+        // Capital Allocation Simulator
+        renderCapitalAllocator();
+    }
+
+    function renderCapitalAllocator() {
+        const el = document.getElementById('aaAllocSim');
+        if (!el) return;
+        const totalCap = cash + getPortfolioValue();
+        const strats = (strategies || []);
+        if (strats.length === 0) {
+            el.innerHTML = '<div style="color:#6868a0;font-size:11px;font-style:italic;">Create strategies in Strategy Lab to simulate capital allocation.</div>';
+            return;
+        }
+        const equal = (100 / strats.length).toFixed(1);
+        el.innerHTML = `<div style="font-size:10px;color:#8888a8;margin-bottom:10px;">Simulate how allocating capital across strategies affects your portfolio stability.</div>
+        <div style="display:grid;gap:8px;">
+        ${strats.map(s => {
+            const stats = getStrategyStats(s);
+            const allocated = (totalCap * parseFloat(equal) / 100);
+            return `<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.03);border-radius:8px;padding:8px 12px;">
+                <div style="flex:1;font-size:12px;color:#f0f0fa;font-weight:600;">${s.name}</div>
+                <div style="font-size:10px;color:#a78bfa;font-family:var(--v-mono);">${equal}%</div>
+                <div style="font-size:10px;color:#f0f0fa;font-family:var(--v-mono);">$${allocated.toLocaleString(undefined,{maximumFractionDigits:0})}</div>
+                <div style="font-size:10px;color:${stats.winRate !== '—' && parseInt(stats.winRate) >= 50 ? '#4ade80' : '#f59e0b'};">WR: ${stats.winRate}${stats.winRate !== '—' ? '%' : ''}</div>
+            </div>`;
+        }).join('')}
+        </div>`;
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  AI COACH & BIAS MONITOR
+    // ══════════════════════════════════════════════════════════════════════
+    function openAICoach() {
+        const el = document.getElementById('aiCoachModal');
+        if (el) { el.style.display = 'flex'; renderAICoach(); }
+    }
+    function closeAICoach() {
+        const el = document.getElementById('aiCoachModal');
+        if (el) el.style.display = 'none';
+    }
+
+    function computeDisciplineScores() {
+        const sells = (transactions || []).filter(t => t.type === 'SELL');
+        const buys = (transactions || []).filter(t => t.type === 'BUY');
+        const n = sells.length;
+        if (n === 0) return { discipline: 50, consistency: 50, risk: 50, emotional: 50 };
+
+        // Discipline: ratio of wins + adherence to RiskGuard
+        const wins = sells.filter(t => (t.price - (t.avgBuy || t.price)) > 0);
+        const winRate = wins.length / n;
+        const discipline = Math.min(100, Math.round(winRate * 70 + 30));
+
+        // Consistency: std dev of hold times
+        const holdTimes = sells.map(t => {
+            const matchBuy = buys.filter(b => b.symbol === t.symbol && b.ts < t.ts);
+            return matchBuy.length ? t.ts - matchBuy[matchBuy.length-1].ts : 0;
+        }).filter(h => h > 0);
+        const avgHold = holdTimes.length ? holdTimes.reduce((a,b)=>a+b,0)/holdTimes.length : 1;
+        const stdHold = holdTimes.length > 1
+            ? Math.sqrt(holdTimes.reduce((a,b)=>a+Math.pow(b-avgHold,2),0)/holdTimes.length)
+            : avgHold * 0.5;
+        const cvHold = stdHold / (avgHold || 1);
+        const consistency = Math.min(100, Math.round(100 - cvHold * 40));
+
+        // Risk: detect oversizing
+        const tradeSizes = buys.map(t => (t.price * (t.qty || 1)) / (cash + getPortfolioValue()));
+        const avgSize = tradeSizes.reduce((a,b)=>a+b,0) / (tradeSizes.length || 1);
+        const risk = avgSize < 0.05 ? 90 : avgSize < 0.1 ? 75 : avgSize < 0.2 ? 55 : 30;
+
+        // Emotional: detect revenge trading / overtrading after losses
+        let revengeCount = 0;
+        for (let i = 1; i < sells.length; i++) {
+            const prev = sells[i-1];
+            const curr = sells[i];
+            const prevLoss = (prev.price - (prev.avgBuy || prev.price)) < 0;
+            const rapidRebuy = (curr.ts - prev.ts) < 3600000;
+            if (prevLoss && rapidRebuy) revengeCount++;
+        }
+        const revengeRatio = revengeCount / (n || 1);
+        const emotional = Math.min(100, Math.round(100 - revengeRatio * 200));
+
+        return { discipline, consistency, risk, emotional };
+    }
+
+    function detectBiasPatterns() {
+        const sells = (transactions || []).filter(t => t.type === 'SELL');
+        const buys = (transactions || []).filter(t => t.type === 'BUY');
+        const patterns = [];
+
+        if (sells.length < 3) return patterns;
+
+        // Overtrading detection
+        const dailyCounts = {};
+        buys.forEach(t => {
+            const dk = new Date(t.ts).toDateString();
+            dailyCounts[dk] = (dailyCounts[dk] || 0) + 1;
+        });
+        const maxDaily = Math.max(...Object.values(dailyCounts), 0);
+        if (maxDaily > 5) patterns.push({ icon:'⚡', name:'Overtrading Detected', desc:`${maxDaily} trades in a single session. High frequency correlates with lower discipline scores.`, severity:'high' });
+
+        // Revenge trading
+        let revengeCount = 0;
+        for (let i = 1; i < sells.length; i++) {
+            if ((sells[i-1].price - (sells[i-1].avgBuy || sells[i-1].price)) < 0 && (sells[i].ts - sells[i-1].ts) < 3600000) revengeCount++;
+        }
+        if (revengeCount > 0) patterns.push({ icon:'🔁', name:'Revenge Trading Pattern', desc:`${revengeCount} instances of rapid re-entry after a loss. This often amplifies losses.`, severity:'high' });
+
+        // Early profit cutting
+        const earlyExits = sells.filter(t => {
+            const gain = (t.price - (t.avgBuy || t.price)) / (t.avgBuy || t.price) * 100;
+            return gain > 0 && gain < 1.5;
+        });
+        if (earlyExits.length > sells.length * 0.4) patterns.push({ icon:'✂️', name:'Early Profit Cutting', desc:`${((earlyExits.length/sells.length)*100).toFixed(0)}% of winning trades closed with <1.5% gain. You may be cutting winners short.`, severity:'medium' });
+
+        // Holding losers too long
+        const bigLosses = sells.filter(t => {
+            const loss = (t.price - (t.avgBuy || t.price)) / (t.avgBuy || t.price) * 100;
+            return loss < -5;
+        });
+        if (bigLosses.length > sells.length * 0.25) patterns.push({ icon:'🧊', name:'Loss Aversion / Holding Losers', desc:`${((bigLosses.length/sells.length)*100).toFixed(0)}% of closed trades had >5% loss — you may be holding losers too long.`, severity:'medium' });
+
+        // Recency bias — win rate after loss streaks
+        let lossStreak = 0, totalAfterStreak = 0, winsAfterStreak = 0;
+        for (let i = 0; i < sells.length; i++) {
+            if ((sells[i].price - (sells[i].avgBuy || sells[i].price)) < 0) {
+                lossStreak++;
+            } else {
+                if (lossStreak >= 2 && i + 1 < sells.length) {
+                    totalAfterStreak++;
+                    if ((sells[i+1]?.price - (sells[i+1]?.avgBuy || sells[i+1]?.price)) > 0) winsAfterStreak++;
+                }
+                lossStreak = 0;
+            }
+        }
+        if (totalAfterStreak > 0 && winsAfterStreak / totalAfterStreak < 0.4) {
+            patterns.push({ icon:'🔮', name:'Recency Bias After Loss Streaks', desc:`Your win rate after 2+ consecutive losses is ${((winsAfterStreak/totalAfterStreak)*100).toFixed(0)}% — significantly below average.`, severity:'medium' });
+        }
+
+        if (patterns.length === 0) patterns.push({ icon:'✅', name:'No Significant Bias Detected', desc:'Your trading pattern appears disciplined based on available data. Keep monitoring.', severity:'low' });
+        return patterns;
+    }
+
+    function renderAICoach() {
+        const scores = computeDisciplineScores();
+        const patterns = detectBiasPatterns();
+
+        // Scores ring
+        const scoresEl = document.getElementById('coachScores');
+        if (scoresEl) {
+            const scoreItems = [
+                { label:'Discipline', val: scores.discipline, color:'#a78bfa' },
+                { label:'Consistency', val: scores.consistency, color:'#60a5fa' },
+                { label:'Risk Control', val: scores.risk, color:'#4ade80' },
+                { label:'Emotional', val: scores.emotional, color:'#f59e0b' },
+            ];
+            scoresEl.innerHTML = scoreItems.map(s => {
+                const grade = s.val >= 80 ? 'A' : s.val >= 65 ? 'B' : s.val >= 50 ? 'C' : 'D';
+                const gradeCol = s.val >= 80 ? '#4ade80' : s.val >= 65 ? '#f59e0b' : '#f87171';
+                const dash = 2 * Math.PI * 28;
+                const filled = dash * (s.val / 100);
+                return `<div style="text-align:center;">
+                    <svg width="72" height="72" viewBox="0 0 72 72">
+                        <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>
+                        <circle cx="36" cy="36" r="28" fill="none" stroke="${s.color}" stroke-width="6"
+                            stroke-dasharray="${filled.toFixed(1)} ${(dash-filled).toFixed(1)}"
+                            stroke-dashoffset="${(dash/4).toFixed(1)}" stroke-linecap="round"/>
+                        <text x="36" y="33" text-anchor="middle" font-size="13" font-weight="700" fill="${gradeCol}">${grade}</text>
+                        <text x="36" y="45" text-anchor="middle" font-size="9" fill="#8888a8">${s.val}</text>
+                    </svg>
+                    <div style="font-size:10px;font-weight:600;color:#c0c0d8;margin-top:3px;">${s.label}</div>
+                </div>`;
+            }).join('');
+        }
+
+        // Bias patterns
+        const biasEl = document.getElementById('coachBiasPatterns');
+        if (biasEl) {
+            const severityColors = { high: '#f87171', medium: '#f59e0b', low: '#4ade80' };
+            biasEl.innerHTML = patterns.map(p => `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-left:3px solid ${severityColors[p.severity]};border-radius:0 10px 10px 0;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;">
+                <span style="font-size:1.3rem;flex-shrink:0;">${p.icon}</span>
+                <div>
+                    <div style="font-size:12px;font-weight:700;color:#f0f0fa;margin-bottom:3px;">${p.name}</div>
+                    <div style="font-size:11px;color:#8888a8;line-height:1.55;">${p.desc}</div>
+                </div>
+            </div>`).join('');
+        }
+
+        // Analytical insights
+        const insightsEl = document.getElementById('coachInsights');
+        if (insightsEl) {
+            const sells = (transactions || []).filter(t => t.type === 'SELL');
+            const wins = sells.filter(t => (t.price - (t.avgBuy || t.price)) > 0);
+            const winRate = sells.length > 0 ? (wins.length / sells.length * 100).toFixed(1) : '—';
+            const avgWin = wins.length > 0 ? (wins.reduce((s, t) => s + ((t.price - (t.avgBuy || t.price)) / (t.avgBuy || t.price) * 100), 0) / wins.length).toFixed(2) : '—';
+            const losses = sells.filter(t => (t.price - (t.avgBuy || t.price)) <= 0);
+            const avgLoss = losses.length > 0 ? (losses.reduce((s, t) => s + ((t.price - (t.avgBuy || t.price)) / (t.avgBuy || t.price) * 100), 0) / losses.length).toFixed(2) : '—';
+            const profitFactor = avgLoss !== '—' && avgWin !== '—' && parseFloat(avgLoss) !== 0 ? Math.abs(parseFloat(avgWin) / parseFloat(avgLoss)).toFixed(2) : '—';
+            insightsEl.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                ${[
+                    { l:'Win Rate', v: winRate !== '—' ? winRate + '%' : '—', c: parseFloat(winRate) >= 50 ? '#4ade80' : '#f87171' },
+                    { l:'Avg Win', v: avgWin !== '—' ? '+' + avgWin + '%' : '—', c:'#4ade80' },
+                    { l:'Avg Loss', v: avgLoss !== '—' ? avgLoss + '%' : '—', c:'#f87171' },
+                    { l:'Profit Factor', v: profitFactor, c: parseFloat(profitFactor) >= 1.5 ? '#4ade80' : '#f59e0b' },
+                ].map(m => `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 12px;">
+                    <div style="font-size:9px;color:#6868a0;text-transform:uppercase;margin-bottom:2px;">${m.l}</div>
+                    <div style="font-family:var(--v-mono);font-size:1rem;font-weight:700;color:${m.c};">${m.v}</div>
+                </div>`).join('')}
+            </div>`;
+        }
+
+        // Market Regime
+        renderMarketRegime();
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  MARKET REGIME CLASSIFIER
+    // ══════════════════════════════════════════════════════════════════════
+    function classifyMarketRegime() {
+        const spy = stocks.find(s => s.symbol === 'SPY') || stocks.find(s => s.symbol === 'AAPL');
+        if (!spy) return { regime:'Unknown', color:'#8888a8', icon:'❓' };
+
+        const change = Math.abs(spy.change || 0);
+        const allChanges = stocks.slice(0, 20).map(s => Math.abs(s.change || 0));
+        const avgVol = allChanges.reduce((a,b)=>a+b,0) / allChanges.length;
+        const breadthUp = stocks.slice(0, 30).filter(s => (s.change || 0) > 0).length;
+        const breadthPct = breadthUp / 30;
+
+        if (avgVol > 2.5) return { regime:'High Volatility', color:'#f87171', icon:'⚡', desc:'Large intraday swings. Wider stops, tighter positions.' };
+        if (breadthPct > 0.65) return { regime:'Trending Up', color:'#4ade80', icon:'📈', desc:'Broad-based rally. Trend-following strategies perform well.' };
+        if (breadthPct < 0.35) return { regime:'Trending Down', color:'#f59e0b', icon:'📉', desc:'Market-wide selling. Consider defense and cash preservation.' };
+        if (avgVol < 0.8) return { regime:'Low Volatility', color:'#60a5fa', icon:'💤', desc:'Compressed ranges. Options strategies and mean reversion.' };
+        return { regime:'Range-Bound', color:'#a78bfa', icon:'↔️', desc:'No clear trend. Range trading and sector rotation.' };
+    }
+
+    function renderMarketRegime() {
+        const el = document.getElementById('coachRegime');
+        if (!el) return;
+        const reg = classifyMarketRegime();
+
+        // Performance per regime (simulated from transactions)
+        const sells = (transactions || []).filter(t => t.type === 'SELL');
+        el.innerHTML = `<div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;">
+            <div style="font-size:2.5rem;">${reg.icon}</div>
+            <div>
+                <div style="font-size:1rem;font-weight:700;color:${reg.color};margin-bottom:3px;">${reg.regime}</div>
+                <div style="font-size:11px;color:#8888a8;line-height:1.55;">${reg.desc}</div>
+            </div>
+            <div style="margin-left:auto;text-align:right;font-size:11px;color:#8888a8;">
+                <div>Total trades: <strong style="color:#f0f0fa;">${sells.length}</strong></div>
+                <div>Active signals: <strong style="color:${reg.color};">${reg.regime}</strong></div>
+            </div>
+        </div>`;
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  CHALLENGE MODE
+    // ══════════════════════════════════════════════════════════════════════
+    let challengeState = null;
+
+    function loadChallengeState() {
+        try {
+            const saved = localStorage.getItem('vestra_challenge_v1');
+            if (saved) challengeState = JSON.parse(saved);
+        } catch(_) {}
+    }
+
+    function saveChallengeState() {
+        try {
+            if (challengeState) localStorage.setItem('vestra_challenge_v1', JSON.stringify(challengeState));
+        } catch(_) {}
+    }
+
+    function openChallengeMode() {
+        loadChallengeState();
+        const el = document.getElementById('challengeModal');
+        if (el) { el.style.display = 'flex'; renderChallengeModal(); }
+    }
+    function closeChallengeMode() {
+        const el = document.getElementById('challengeModal');
+        if (el) el.style.display = 'none';
+    }
+
+    const CHALLENGE_TIERS = [
+        { id:'cadet',     name:'Cadet',     icon:'🥉', minReturn:-Infinity, maxDD:-15, maxRisk:3,  startCash:10000,  desc:'Learn discipline fundamentals. Max 3% risk per trade.' },
+        { id:'analyst',   name:'Analyst',   icon:'🥈', minReturn:5,         maxDD:-12, maxRisk:2,  startCash:25000,  desc:'Prove consistent edge. Earn +5% with strict risk control.' },
+        { id:'associate', name:'Associate', icon:'🥇', minReturn:10,        maxDD:-10, maxRisk:1.5,startCash:50000,  desc:'Professional-grade discipline. +10% with <10% drawdown.' },
+        { id:'pm',        name:'Portfolio Manager', icon:'💎', minReturn:20, maxDD:-8, maxRisk:1, startCash:100000, desc:'Elite performance. +20% return with near-zero tolerance for error.' },
+    ];
+
+    function startChallenge(tierId) {
+        const tier = CHALLENGE_TIERS.find(t => t.id === tierId);
+        if (!tier) return;
+        challengeState = {
+            tierId, startedAt: Date.now(),
+            startCash: tier.startCash,
+            currentVal: tier.startCash,
+            trades: [],
+            violations: [],
+            completed: false,
+            failed: false,
+        };
+        saveChallengeState();
+        renderChallengeModal();
+        pushNotif('info', `🏆 Challenge started: ${tier.icon} ${tier.name} — $${tier.startCash.toLocaleString()} capital, strict rules active.`);
+    }
+
+    function resetChallenge() {
+        challengeState = null;
+        localStorage.removeItem('vestra_challenge_v1');
+        renderChallengeModal();
+    }
+
+    function renderChallengeModal() {
+        const el = document.getElementById('challengeContent');
+        if (!el) return;
+
+        if (!challengeState) {
+            // Show tier selection
+            el.innerHTML = `<div>
+                <div style="font-size:11px;color:#8888a8;margin-bottom:16px;line-height:1.6;">Select a challenge tier. Each tier enforces strict risk rules and measures your progression as a disciplined trader. All P&L is simulated.</div>
+                <div style="display:grid;gap:12px;">
+                ${CHALLENGE_TIERS.map(t => `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;display:flex;align-items:center;gap:16px;">
+                    <div style="font-size:2rem;flex-shrink:0;">${t.icon}</div>
+                    <div style="flex:1;">
+                        <div style="font-size:13px;font-weight:700;color:#f0f0fa;margin-bottom:3px;">${t.name}</div>
+                        <div style="font-size:10px;color:#8888a8;">${t.desc}</div>
+                        <div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:#6868a0;">
+                            <span>Capital: <strong style="color:#f0f0fa;">$${t.startCash.toLocaleString()}</strong></span>
+                            <span>Max Risk: <strong style="color:#f59e0b;">${t.maxRisk}%</strong></span>
+                            <span>Max DD: <strong style="color:#f87171;">${t.maxDD}%</strong></span>
+                            ${t.minReturn > 0 ? `<span>Target: <strong style="color:#4ade80;">+${t.minReturn}%</strong></span>` : ''}
+                        </div>
+                    </div>
+                    <button onclick="startChallenge('${t.id}')" style="background:rgba(212,168,75,0.12);color:var(--v-gold);border:1px solid rgba(212,168,75,0.25);border-radius:8px;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">Start</button>
+                </div>`).join('')}
+                </div>
+            </div>`;
+            return;
+        }
+
+        const tier = CHALLENGE_TIERS.find(t => t.id === challengeState.tierId);
+        if (!tier) return;
+
+        const totalVal = challengeState.currentVal;
+        const returnPct = ((totalVal - challengeState.startCash) / challengeState.startCash * 100);
+        const daysActive = Math.max(1, Math.round((Date.now() - challengeState.startedAt) / 86400000));
+        const statusColor = challengeState.failed ? '#f87171' : challengeState.completed ? '#4ade80' : '#f59e0b';
+        const status = challengeState.failed ? '❌ Failed' : challengeState.completed ? '✅ Completed' : '🟡 Active';
+
+        el.innerHTML = `<div>
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:20px;margin-bottom:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+                    <div>
+                        <div style="font-size:1.1rem;font-weight:700;color:#f0f0fa;">${tier.icon} ${tier.name} Challenge</div>
+                        <div style="font-size:10px;color:${statusColor};margin-top:2px;">${status} · Day ${daysActive}</div>
+                    </div>
+                    <button onclick="resetChallenge()" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#f87171;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;">Reset</button>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+                    ${[
+                        { l:'Capital', v:'$'+totalVal.toLocaleString(undefined,{maximumFractionDigits:0}), c:'#60a5fa' },
+                        { l:'Return', v:(returnPct>=0?'+':'')+returnPct.toFixed(2)+'%', c:returnPct>=0?'#4ade80':'#f87171' },
+                        { l:'Target', v:tier.minReturn>0?'+'+tier.minReturn+'%':'Discipline', c:'#f59e0b' },
+                    ].map(m=>`<div style="text-align:center;background:rgba(255,255,255,0.03);border-radius:8px;padding:10px;">
+                        <div style="font-size:9px;color:#6868a0;text-transform:uppercase;">${m.l}</div>
+                        <div style="font-family:var(--v-mono);font-size:1rem;font-weight:700;color:${m.c};">${m.v}</div>
+                    </div>`).join('')}
+                </div>
+                <div style="margin-bottom:8px;">
+                    <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px;"><span style="color:#8888a8;">Progress to target</span><span style="color:#f0f0fa;">${Math.min(100,Math.max(0,(returnPct/(tier.minReturn||20)*100))).toFixed(0)}%</span></div>
+                    <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">
+                        <div style="height:100%;width:${Math.min(100,Math.max(0,(returnPct/(tier.minReturn||20)*100))).toFixed(0)}%;background:linear-gradient(90deg,#f59e0b,#4ade80);border-radius:4px;transition:width 0.5s;"></div>
+                    </div>
+                </div>
+                ${challengeState.violations.length > 0 ? `<div style="margin-top:10px;padding:8px 12px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;font-size:10px;color:#f87171;">⚠️ ${challengeState.violations.length} rule violation(s) recorded</div>` : ''}
+            </div>
+            <div style="font-size:11px;color:#8888a8;line-height:1.6;padding:12px;background:rgba(212,168,75,0.05);border:1px solid rgba(212,168,75,0.12);border-radius:10px;">
+                <strong style="color:var(--v-gold);">Active Rules:</strong> Max ${tier.maxRisk}% risk per trade · Max ${tier.maxDD}% drawdown · No leverage · Realism Mode required for scoring
+            </div>
+        </div>`;
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  MULTI-ASSET PANEL
+    // ══════════════════════════════════════════════════════════════════════
+    function openMultiAsset() {
+        const el = document.getElementById('multiAssetModal');
+        if (el) { el.style.display = 'flex'; renderMultiAsset(); }
+    }
+    function closeMultiAsset() {
+        const el = document.getElementById('multiAssetModal');
+        if (el) el.style.display = 'none';
+    }
+
+    function renderMultiAsset() {
+        const el = document.getElementById('maContent');
+        if (!el) return;
+        const assetClasses = [
+            { id:'ETF',      label:'Index & Sector ETFs', icon:'📦', color:'#818cf8' },
+            { id:'Commodity', label:'Commodities',         icon:'🏗', color:'#fbbf24' },
+            { id:'Forex',    label:'Forex — Major Pairs',  icon:'💱', color:'#22d3ee' },
+            { id:'Crypto',   label:'Digital Assets',       icon:'₿',  color:'#f472b6' },
+        ];
+        el.innerHTML = assetClasses.map(ac => {
+            const assetStocks = stocks.filter(s => {
+                const md = realStockData[s.symbol];
+                return md && md.assetClass === ac.id;
+            });
+            if (assetStocks.length === 0) return '';
+            return `<div style="margin-bottom:20px;">
+                <div style="font-size:11px;font-weight:700;color:${ac.color};text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;display:flex;align-items:center;gap:6px;">${ac.icon} ${ac.label}</div>
+                <div style="display:grid;gap:6px;">
+                ${assetStocks.map(s => {
+                    const isPos = (s.change || 0) >= 0;
+                    const session = (realStockData[s.symbol] || {}).session || 'NYSE';
+                    const sessionOpen = session === '24/7' || session === 'Forex24' || isMarketOpen();
+                    const sesColor = sessionOpen ? '#4ade80' : '#6868a0';
+                    return `<div onclick="openStockDetail(stocks.find(st=>st.symbol==='${s.symbol}'))" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+                        <div style="flex:1;">
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <span style="font-weight:700;color:#f0f0fa;font-size:12px;">${s.symbol}</span>
+                                <span style="font-size:9px;padding:1px 5px;border-radius:3px;background:${ac.color}18;color:${ac.color};font-weight:700;">${ac.id}</span>
+                                <span style="font-size:8px;padding:1px 5px;border-radius:3px;background:${sesColor}18;color:${sesColor};">● ${session}</span>
+                            </div>
+                            <div style="font-size:10px;color:#8888a8;margin-top:1px;">${s.name}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-family:var(--v-mono);font-size:13px;color:#f0f0fa;font-weight:600;">${s.price >= 100 ? '$'+s.price.toFixed(2) : s.price >= 1 ? '$'+s.price.toFixed(4) : '$'+s.price.toFixed(5)}</div>
+                            <div style="font-size:11px;color:${isPos?'#4ade80':'#f87171'};font-family:var(--v-mono);">${isPos?'+':''}${(s.change||0).toFixed(2)}%</div>
+                        </div>
+                    </div>`;
+                }).join('')}
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  ENHANCED LEADERBOARD — Risk-Adjusted Mode
+    // ══════════════════════════════════════════════════════════════════════
+    let _lbRiskAdjMode = false;
+    function toggleLBRiskAdj() {
+        _lbRiskAdjMode = !_lbRiskAdjMode;
+        const btn = document.getElementById('lbRiskAdjBtn');
+        if (btn) {
+            btn.style.background = _lbRiskAdjMode ? 'rgba(74,222,128,0.15)' : 'rgba(255,255,255,0.06)';
+            btn.style.color = _lbRiskAdjMode ? '#4ade80' : '#8888a8';
+        }
+        renderLeaderboard();
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  STRATEGY LAB v6 — Enhanced with Target R, Equity Curve, Tabs, Stress Test
+    // ══════════════════════════════════════════════════════════════════════
+    function openStrategyLabTab(tab) {
+        document.getElementById('slPanelList').style.display   = (tab === 'list')   ? 'block' : 'none';
+        document.getElementById('slPanelStress').style.display = (tab === 'stress') ? 'block' : 'none';
+        document.getElementById('slTabList').style.background   = tab === 'list'   ? 'rgba(167,139,250,0.15)' : 'transparent';
+        document.getElementById('slTabList').style.color        = tab === 'list'   ? '#a78bfa' : '#6868a0';
+        document.getElementById('slTabList').style.border       = tab === 'list'   ? '1px solid rgba(167,139,250,0.3)' : '1px solid rgba(255,255,255,0.08)';
+        document.getElementById('slTabStress').style.background = tab === 'stress' ? 'rgba(167,139,250,0.15)' : 'transparent';
+        document.getElementById('slTabStress').style.color      = tab === 'stress' ? '#a78bfa' : '#6868a0';
+        document.getElementById('slTabStress').style.border     = tab === 'stress' ? '1px solid rgba(167,139,250,0.3)' : '1px solid rgba(255,255,255,0.08)';
+        if (tab === 'stress') populateStressStrategySelect();
+    }
+
+    function populateStressStrategySelect() {
+        const sel = document.getElementById('stressStratSelect');
+        if (!sel) return;
+        sel.innerHTML = '<option value="">— Select a strategy —</option>' +
+            strategies.map(s => `<option value="${s.id}">${s.name} (${s.tag})</option>`).join('');
+    }
+
+    // Override createStrategy to use enhanced version
+    window.createStrategy = function() {
+        const name    = document.getElementById('slName')?.value?.trim();
+        const tag     = document.getElementById('slTag')?.value;
+        const entry   = document.getElementById('slEntry')?.value?.trim();
+        const exit    = document.getElementById('slExit')?.value?.trim();
+        const risk    = parseFloat(document.getElementById('slRisk')?.value) || 1;
+        const targetR = parseFloat(document.getElementById('slTargetR')?.value) || 2;
+        if (!name) return;
+        const id = 'str_' + Date.now();
+        strategies.push({ id, name, tag, entry, exit, risk, targetR, createdAt: Date.now() });
+        saveStrategies();
+        renderStrategyList();
+        pushNotif('info', `🧪 Strategy "${name}" created — ${risk}% risk, ${targetR}R target.`);
+        ['slName','slEntry','slExit'].forEach(fid => { const el=document.getElementById(fid); if(el)el.value=''; });
+    };
+
+    // Enhanced renderStrategyList with equity curve sparkline and drawdown
+    function renderStrategyList() {
+        const el = document.getElementById('strategyList');
+        if (!el) return;
+        if (!strategies.length) {
+            el.innerHTML = '<div style="text-align:center;color:#6868a0;padding:24px;font-style:italic;font-size:12px;">No strategies yet. Create one above to start tracking performance.</div>';
+            return;
+        }
+        const tagColors = { '#Breakout':'#60a5fa','#Swing':'#4ade80','#Earnings':'#f59e0b','#Momentum':'#a78bfa','#Reversal':'#f87171','#Scalp':'#f0c96a','#ValueBuy':'#34d399','#DipBuy':'#fb923c','#MeanRevert':'#22d3ee','#CatalystPlay':'#f472b6' };
+        el.innerHTML = strategies.map(s => {
+            const sells = (transactions||[]).filter(t => t.type==='SELL' && t.strategyId===s.id);
+            const wins  = sells.filter(t => (t.price-(t.avgBuy||t.price))>0);
+            const winRate = sells.length > 0 ? (wins.length/sells.length*100).toFixed(0) : '—';
+            const returns = sells.map(t => (t.price-(t.avgBuy||t.price))/(t.avgBuy||t.price)*100);
+            const avgR = returns.length > 0 ? (returns.reduce((a,b)=>a+b,0)/returns.length).toFixed(1) : '—';
+            const tagC  = tagColors[s.tag] || '#8888a8';
+            const wc    = winRate !== '—' ? (parseInt(winRate)>=50?'#4ade80':'#f87171') : '#8888a8';
+            const rc    = avgR !== '—' ? (parseFloat(avgR)>=0?'#4ade80':'#f87171') : '#8888a8';
+
+            // Build equity curve sparkline
+            let sparkSVG = '';
+            if (returns.length >= 3) {
+                let eq = 100;
+                const pts = [100];
+                returns.forEach(r => { eq *= (1 + r/100); pts.push(eq); });
+                const minV = Math.min(...pts), maxV = Math.max(...pts);
+                const range = maxV - minV || 1;
+                const W = 100, H = 30;
+                const coords = pts.map((v,i) => `${(i/(pts.length-1)*W).toFixed(1)},${(H - ((v-minV)/range*H)).toFixed(1)}`).join(' ');
+                const finalColor = pts[pts.length-1] >= 100 ? '#4ade80' : '#f87171';
+                sparkSVG = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block;">
+                    <polyline points="${coords}" fill="none" stroke="${finalColor}" stroke-width="1.5" stroke-linejoin="round"/>
+                </svg>`;
+            }
+
+            // Max drawdown
+            let maxDD = 0;
+            if (returns.length > 0) {
+                let peak = 100, eq2 = 100;
+                returns.forEach(r => {
+                    eq2 *= (1+r/100);
+                    if (eq2 > peak) peak = eq2;
+                    const dd = (eq2-peak)/peak*100;
+                    if (dd < maxDD) maxDD = dd;
+                });
+            }
+
+            // R-multiple achieved
+            const actualR = sells.length > 0 && s.risk > 0
+                ? (returns.reduce((a,b)=>a+b,0) / sells.length / s.risk).toFixed(1) : '—';
+
+            return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px 16px;">
+                <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;">
+                    <div style="min-width:0;">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
+                            <span style="font-weight:700;color:#f0f0fa;font-size:13px;">${s.name}</span>
+                            <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:${tagC}18;color:${tagC};border:1px solid ${tagC}28;">${s.tag}</span>
+                            <span style="font-size:10px;color:#6868a0;">Risk: ${s.risk}% · Target: ${s.targetR||2}R</span>
+                        </div>
+                        ${s.entry ? `<div style="font-size:10px;color:#8888a8;margin-bottom:1px;">▶ ${s.entry}</div>` : ''}
+                        ${s.exit  ? `<div style="font-size:10px;color:#8888a8;margin-bottom:8px;">◀ ${s.exit}</div>` : ''}
+                        <div style="display:flex;gap:16px;font-size:11px;flex-wrap:wrap;">
+                            <span style="color:#8888a8;">Trades: <strong style="color:#f0f0fa;">${sells.length}</strong></span>
+                            <span style="color:#8888a8;">Win: <strong style="color:${wc};">${winRate}${winRate!=='—'?'%':''}</strong></span>
+                            <span style="color:#8888a8;">Avg%: <strong style="color:${rc};">${avgR}${avgR!=='—'?'%':''}</strong></span>
+                            <span style="color:#8888a8;">R achieved: <strong style="color:${actualR!=='—'&&parseFloat(actualR)>=(s.targetR||2)?'#4ade80':actualR!=='—'?'#f59e0b':'#8888a8'};">${actualR}</strong></span>
+                            <span style="color:#8888a8;">Max DD: <strong style="color:${maxDD<-10?'#f87171':maxDD<-5?'#f59e0b':'#4ade80'};">${maxDD.toFixed(1)}%</strong></span>
+                        </div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+                        <button onclick="deleteStrategy('${s.id}')" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#f87171;border-radius:6px;padding:3px 8px;font-size:10px;cursor:pointer;white-space:nowrap;">Delete</button>
+                        ${sparkSVG ? `<div title="Equity curve">${sparkSVG}</div>` : '<div style="font-size:9px;color:#6868a0;padding:4px;">No trades yet</div>'}
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // ── Stress Test Engine ────────────────────────────────────────────────
+    function runStressTest() {
+        const stratId = document.getElementById('stressStratSelect')?.value;
+        const strat = strategies.find(s => s.id === stratId);
+        const btnEl = document.getElementById('stressRunBtn');
+        const resEl = document.getElementById('stressResults');
+        if (!resEl) return;
+
+        // Build base returns from strategy trade history or overall history as fallback
+        let sells = stratId
+            ? (transactions||[]).filter(t => t.type==='SELL' && t.strategyId===stratId)
+            : (transactions||[]).filter(t => t.type==='SELL');
+        if (!sells.length) {
+            // Simulate with random realistic returns
+            sells = Array.from({length:20},(_,i)=>({
+                price: 100 + (Math.random()*20-8),
+                avgBuy: 100,
+                strategyId: stratId
+            }));
+        }
+        const baseReturns = sells.map(t => (t.price-(t.avgBuy||t.price))/(t.avgBuy||t.price)*100);
+
+        if (btnEl) { btnEl.classList.add('stress-running'); btnEl.textContent = '⏳ Running…'; }
+
+        setTimeout(() => {
+            if (btnEl) { btnEl.classList.remove('stress-running'); btnEl.textContent = '▶ Run Stress Test'; }
+
+            const scenarios = [];
+
+            if (document.getElementById('sc_hv')?.checked) {
+                // High vol: widen returns by ×2, add extra losses
+                const hvReturns = baseReturns.map(r => r > 0 ? r * 0.65 : r * 2.1);
+                scenarios.push({ name:'⚡ High Volatility', color:'#f87171', returns:hvReturns,
+                    desc:'VIX >30: Winners compressed, losers amplified.' });
+            }
+            if (document.getElementById('sc_news')?.checked) {
+                // News shock: 15% of trades have +/-12% gap
+                const newsReturns = baseReturns.map(r => Math.random()<0.15 ? r + (Math.random()<0.5?12:-12) : r);
+                scenarios.push({ name:'📰 News Event', color:'#f59e0b', returns:newsReturns,
+                    desc:'Earnings/FOMC gaps applied to 15% of trades.' });
+            }
+            if (document.getElementById('sc_ll')?.checked) {
+                // Low liquidity: add slippage -0.3% to -0.8% per trade
+                const llReturns = baseReturns.map(r => r - (0.3 + Math.random()*0.5));
+                scenarios.push({ name:'💤 Low Liquidity', color:'#60a5fa', returns:llReturns,
+                    desc:'Holiday/thin market. Spread cost applied.' });
+            }
+            if (document.getElementById('sc_gap')?.checked) {
+                // Gap risk: 10% of trades stop blown
+                const gapReturns = baseReturns.map(r => Math.random()<0.1 ? Math.min(r, -(strat?.risk||2)*2.5) : r);
+                scenarios.push({ name:'↕️ Gap Risk', color:'#a78bfa', returns:gapReturns,
+                    desc:'10% of stops gapped through. Position sizing critical.' });
+            }
+
+            if (!scenarios.length) {
+                resEl.style.display = 'block';
+                resEl.innerHTML = '<div style="color:#8888a8;font-size:11px;padding:8px;">Select at least one scenario to test.</div>';
+                return;
+            }
+
+            // Add baseline
+            scenarios.unshift({ name:'📋 Baseline', color:'#8888a8', returns:baseReturns, desc:'Your actual/expected performance without stress.' });
+
+            resEl.style.display = 'block';
+            resEl.innerHTML = `<div style="font-size:11px;font-weight:700;color:#8888a8;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:12px;">Stress Test Results${strat?' — '+strat.name:' — All Trades'}</div>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                ${scenarios.map(sc => {
+                    const wins = sc.returns.filter(r=>r>0).length;
+                    const wr = sc.returns.length > 0 ? (wins/sc.returns.length*100).toFixed(0) : 0;
+                    const avg = sc.returns.length > 0 ? (sc.returns.reduce((a,b)=>a+b,0)/sc.returns.length).toFixed(2) : 0;
+                    let eq = 100;
+                    let maxDD = 0, peak = 100;
+                    sc.returns.forEach(r => {
+                        eq *= (1+r/100);
+                        if(eq>peak)peak=eq;
+                        const dd=(eq-peak)/peak*100;
+                        if(dd<maxDD)maxDD=dd;
+                    });
+                    const totalReturn = (eq - 100).toFixed(1);
+                    return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-left:3px solid ${sc.color};border-radius:0 10px 10px 0;padding:12px 14px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                            <div>
+                                <div style="font-size:12px;font-weight:700;color:#f0f0fa;">${sc.name}</div>
+                                <div style="font-size:10px;color:#8888a8;margin-top:2px;">${sc.desc}</div>
+                            </div>
+                            <div style="text-align:right;font-family:var(--v-mono);">
+                                <div style="font-size:1.1rem;font-weight:700;color:${parseFloat(totalReturn)>=0?'#4ade80':'#f87171'};">${parseFloat(totalReturn)>=0?'+':''}${totalReturn}%</div>
+                                <div style="font-size:9px;color:#6868a0;">total return</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:14px;font-size:11px;">
+                            <span style="color:#8888a8;">Win Rate: <strong style="color:${parseInt(wr)>=50?'#4ade80':'#f87171'};">${wr}%</strong></span>
+                            <span style="color:#8888a8;">Avg Trade: <strong style="color:${parseFloat(avg)>=0?'#4ade80':'#f87171'};">${avg}%</strong></span>
+                            <span style="color:#8888a8;">Max DD: <strong style="color:${maxDD<-15?'#f87171':maxDD<-8?'#f59e0b':'#4ade80'};">${maxDD.toFixed(1)}%</strong></span>
+                        </div>
+                    </div>`;
+                }).join('')}
+                </div>`;
+        }, 900);
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  SILENT FOCUS MODE
+    // ══════════════════════════════════════════════════════════════════════
+    let _focusModeActive = false;
+    let _focusModeStart  = 0;
+    let _focusTimer      = null;
+
+    function toggleSilentFocus() {
+        _focusModeActive = !_focusModeActive;
+        document.body.classList.toggle('focus-mode', _focusModeActive);
+        const bar = document.getElementById('focusModeBar');
+        const btn = document.getElementById('silentFocusBtn');
+        if (_focusModeActive) {
+            _focusModeStart = Date.now();
+            if (bar) bar.style.display = 'flex';
+            if (btn) { btn.style.background='rgba(129,140,248,0.15)'; btn.style.color='#818cf8'; btn.style.borderColor='rgba(129,140,248,0.3)'; }
+            _focusTimer = setInterval(() => {
+                const elapsed = Math.floor((Date.now()-_focusModeStart)/1000);
+                const m = Math.floor(elapsed/60), s = elapsed%60;
+                const el = document.getElementById('focusModeTimer');
+                if (el) el.textContent = `${m}:${s.toString().padStart(2,'0')} elapsed`;
+            }, 1000);
+            pushNotif('info','🔕 Silent Focus Mode active — P&L is hidden. Stay disciplined.');
+        } else {
+            if (bar) bar.style.display = 'none';
+            if (btn) { btn.style.background='rgba(255,255,255,0.04)'; btn.style.color='#a0a0b8'; btn.style.borderColor='rgba(255,255,255,0.08)'; }
+            clearInterval(_focusTimer);
+        }
+    }
+
+    function toggleFocusMode() { toggleSilentFocus(); }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  THEME SYSTEM — Extended with 6 themes
+    // ══════════════════════════════════════════════════════════════════════
+    const THEMES = {
+        dark:     { bg:'#0a0a0f', surface:'#111118', card:'#1a1a24', border:'rgba(255,255,255,0.12)', gold:'#d4a84b' },
+        midnight: { bg:'#080810', surface:'#0e0e1a', card:'#161626', border:'rgba(120,120,200,0.15)',  gold:'#c9a84b' },
+        graphite: { bg:'#0d0d0d', surface:'#131313', card:'#1c1c1c', border:'rgba(255,255,255,0.1)',   gold:'#d4a84b' },
+        arctic:   { bg:'#090f18', surface:'#0e1620', card:'#141e2c', border:'rgba(96,165,250,0.15)',   gold:'#60a5fa' },
+        emerald:  { bg:'#080f0c', surface:'#0e1812', card:'#141f18', border:'rgba(52,211,153,0.15)',   gold:'#34d399' },
+        white:    { bg:'#f8f8fc', surface:'#ffffff',  card:'#f0f0f8', border:'rgba(0,0,0,0.1)',         gold:'#b8860b',
+                    text:'#1a1a2e', muted:'#5050a0' }
+    };
+
+    // Patch applyTheme to include new themes
+    const _origApplyTheme = window.applyTheme;
+    window.applyTheme = function(theme) {
+        const t = THEMES[theme];
+        if (!t) { if(_origApplyTheme) _origApplyTheme(theme); return; }
+        const root = document.documentElement;
+        root.style.setProperty('--v-bg',      t.bg);
+        root.style.setProperty('--v-surface', t.surface);
+        root.style.setProperty('--v-card',    t.card);
+        root.style.setProperty('--v-border',  t.border);
+        root.style.setProperty('--v-gold',    t.gold);
+        if (t.text)  root.style.setProperty('--v-text',  t.text);
+        if (t.muted) root.style.setProperty('--v-muted', t.muted);
+        document.querySelectorAll('.theme-opt').forEach(b => {
+            b.style.background = b.dataset.theme === theme ? 'rgba(212,168,75,0.12)' : 'transparent';
+            b.style.color      = b.dataset.theme === theme ? 'var(--v-gold)' : '#a0a0b8';
+        });
+        localStorage.setItem('vestra_theme', theme);
+    };
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  AI COACH — Extended with sizing chart and hold time analysis
+    // ══════════════════════════════════════════════════════════════════════
+    function renderAICoachExtended() {
+        renderAICoach(); // existing scores/bias/regime
+
+        // Position sizing trend chart
+        const sizingEl = document.getElementById('coachSizingChart');
+        if (sizingEl) {
+            const buys = (transactions||[]).filter(t=>t.type==='BUY').slice(-20);
+            const portVal = (cash||100000) + getPortfolioValue();
+            if (buys.length > 0) {
+                const maxSz = Math.max(...buys.map(t=>(t.price*(t.qty||1))/portVal));
+                sizingEl.innerHTML = buys.map(t => {
+                    const sz = (t.price*(t.qty||1))/portVal;
+                    const pct = Math.max(8, (sz/Math.max(maxSz,0.01))*100);
+                    const col = sz > 0.2 ? '#f87171' : sz > 0.1 ? '#f59e0b' : '#4ade80';
+                    return `<div style="flex:1;background:${col}33;border:1px solid ${col}44;border-radius:3px 3px 0 0;min-width:6px;height:${pct}%;align-self:flex-end;position:relative;" title="${t.symbol}: ${(sz*100).toFixed(1)}% of portfolio">
+                        <div style="position:absolute;top:0;left:0;right:0;height:${pct}%;background:${col};opacity:0.7;border-radius:inherit;"></div>
+                    </div>`;
+                }).join('');
+            } else {
+                sizingEl.innerHTML = '<div style="font-size:11px;color:#6868a0;width:100%;text-align:center;align-self:center;">No trades yet</div>';
+            }
+        }
+
+        // Hold time analysis: wins vs losses
+        const holdEl = document.getElementById('coachHoldTime');
+        if (holdEl) {
+            const sells = (transactions||[]).filter(t=>t.type==='SELL');
+            const buys  = (transactions||[]).filter(t=>t.type==='BUY');
+            const wins  = sells.filter(t=>(t.price-(t.avgBuy||t.price))>0);
+            const losses= sells.filter(t=>(t.price-(t.avgBuy||t.price))<=0);
+
+            function avgHoldHrs(trades) {
+                if (!trades.length) return 0;
+                const holds = trades.map(t => {
+                    const b = buys.filter(b=>b.symbol===t.symbol&&b.ts<t.ts);
+                    return b.length ? (t.ts - b[b.length-1].ts)/3600000 : 0;
+                });
+                return holds.reduce((a,b)=>a+b,0)/holds.length;
+            }
+
+            const winHold  = avgHoldHrs(wins);
+            const lossHold = avgHoldHrs(losses);
+            const bias = winHold > 0 && lossHold > 0 ? (lossHold > winHold*1.5 ? '⚠️ Holding losers significantly longer than winners — classic loss aversion.' : lossHold < winHold*0.6 ? '✂️ Exiting losers faster than winners. Positive asymmetry.' : '✓ Hold time distribution appears balanced.') : '—';
+
+            const fmt = h => h < 1 ? Math.round(h*60)+'m' : h < 24 ? h.toFixed(1)+'h' : (h/24).toFixed(1)+'d';
+
+            holdEl.innerHTML = `
+                <div style="background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.15);border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:10px;color:#4ade80;font-weight:700;margin-bottom:6px;">🏆 Avg Hold — Winners</div>
+                    <div style="font-family:var(--v-mono);font-size:1.4rem;font-weight:700;color:#4ade80;">${wins.length?fmt(winHold):'—'}</div>
+                    <div style="font-size:10px;color:#8888a8;margin-top:3px;">${wins.length} winning trades</div>
+                </div>
+                <div style="background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.15);border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:10px;color:#f87171;font-weight:700;margin-bottom:6px;">📉 Avg Hold — Losers</div>
+                    <div style="font-family:var(--v-mono);font-size:1.4rem;font-weight:700;color:#f87171;">${losses.length?fmt(lossHold):'—'}</div>
+                    <div style="font-size:10px;color:#8888a8;margin-top:3px;">${losses.length} losing trades</div>
+                </div>
+                ${bias !== '—' ? `<div style="grid-column:span 2;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;font-size:11px;color:#c0c0d8;">${bias}</div>` : ''}
+            `;
+        }
+    }
+
+    // Override openAICoach to use extended version
+    const _origOpenAICoach = window.openAICoach || function(){};
+    window.openAICoach = function() {
+        const el = document.getElementById('aiCoachModal');
+        if (el) { el.style.display = 'flex'; renderAICoachExtended(); }
+    };
+    window.closeAICoach = function() {
+        const el = document.getElementById('aiCoachModal');
+        if (el) el.style.display = 'none';
+    };
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  DECISION INTELLIGENCE TIMELINE
+    // ══════════════════════════════════════════════════════════════════════
+    function openDecisionTimeline() {
+        const el = document.getElementById('decisionTimelineModal');
+        if (el) { el.style.display = 'flex'; renderDecisionTimeline(); }
+    }
+    function closeDecisionTimeline() {
+        const el = document.getElementById('decisionTimelineModal');
+        if (el) el.style.display = 'none';
+    }
+
+    function renderDecisionTimeline() {
+        const sells  = (transactions||[]).filter(t=>t.type==='SELL').slice(-50);
+        const phist  = perfHistory || [];
+
+        // Equity curve canvas
+        const canvas = document.getElementById('dtCanvas');
+        if (canvas && phist.length > 1) {
+            const ctx = canvas.getContext('2d');
+            const W = canvas.parentElement.clientWidth || 720;
+            const H = 160;
+            canvas.width = W; canvas.height = H;
+            ctx.clearRect(0,0,W,H);
+
+            const vals = phist.map(p=>p.val||p.value||100000);
+            const minV = Math.min(...vals), maxV = Math.max(...vals);
+            const range = maxV - minV || 1;
+            const pad = 20;
+
+            // Draw baseline
+            const baseY = H - pad - ((100000-minV)/range)*(H-2*pad);
+            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctx.setLineDash([4,4]);
+            ctx.beginPath(); ctx.moveTo(pad,baseY); ctx.lineTo(W-pad,baseY); ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Equity line
+            ctx.beginPath();
+            vals.forEach((v,i) => {
+                const x = pad + (i/(vals.length-1))*(W-2*pad);
+                const y = H - pad - ((v-minV)/range)*(H-2*pad);
+                i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+            });
+            ctx.strokeStyle = '#818cf8';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Trade dots
+            sells.forEach(t => {
+                if (!t.ts) return;
+                const pIdx = phist.findIndex(p => p.ts >= t.ts);
+                if (pIdx < 0) return;
+                const x = pad + (pIdx/(vals.length-1))*(W-2*pad);
+                const v = vals[pIdx];
+                const y = H - pad - ((v-minV)/range)*(H-2*pad);
+                const gain = t.price - (t.avgBuy||t.price);
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI*2);
+                ctx.fillStyle = gain > 0 ? '#4ade80' : gain < 0 ? '#f87171' : '#f59e0b';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            });
+        }
+
+        // Regime bar
+        const regBar = document.getElementById('dtRegimeBar');
+        if (regBar && sells.length > 0) {
+            regBar.innerHTML = sells.map(t => {
+                const gain = t.price-(t.avgBuy||t.price);
+                // Estimate regime from surrounding performance
+                const col = gain > 0 ? '#4ade8033' : '#f8717133';
+                return `<div style="flex:1;background:${col};min-width:4px;" title="${t.symbol} ${gain>0?'+':''}${((gain/(t.avgBuy||t.price))*100).toFixed(1)}%"></div>`;
+            }).join('');
+        } else if (regBar) {
+            regBar.innerHTML = '<div style="font-size:11px;color:#6868a0;padding:6px;">No trades yet</div>';
+        }
+
+        // Trade log
+        const logEl = document.getElementById('dtTradeLog');
+        if (logEl) {
+            if (!sells.length) {
+                logEl.innerHTML = '<div style="text-align:center;color:#6868a0;font-size:11px;padding:20px;">No closed trades yet.</div>';
+            } else {
+                logEl.innerHTML = [...sells].reverse().map(t => {
+                    const gain  = t.price-(t.avgBuy||t.price);
+                    const pct   = t.avgBuy ? (gain/t.avgBuy*100).toFixed(2) : '0.00';
+                    const isPos = gain >= 0;
+                    const d     = t.ts ? new Date(t.ts).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—';
+                    const note  = t.journalNote || t.note || '';
+                    const strat = t.strategyTag || t.tag || '';
+                    return `<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-left:3px solid ${isPos?'#4ade80':'#f87171'};border-radius:0 8px 8px 0;padding:8px 12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <div>
+                                <span style="font-weight:700;font-size:12px;color:#f0f0fa;">${t.symbol}</span>
+                                ${strat?`<span style="font-size:9px;margin-left:6px;padding:1px 5px;border-radius:3px;background:rgba(167,139,250,0.15);color:#a78bfa;">${strat}</span>`:''}
+                                ${note?`<div style="font-size:10px;color:#8888a8;margin-top:2px;">"${note}"</div>`:''}
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-family:var(--v-mono);font-size:12px;font-weight:700;color:${isPos?'#4ade80':'#f87171'};">${isPos?'+':''}${pct}%</div>
+                                <div style="font-size:9px;color:#6868a0;">${d}</div>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+        }
+
+        // Entry clustering heatmap by hour
+        const hmEl = document.getElementById('dtHeatmap');
+        if (hmEl) {
+            const buys = (transactions||[]).filter(t=>t.type==='BUY');
+            const hours = new Array(14).fill(0); // 9:30→16:00 = slots
+            buys.forEach(t => {
+                if (!t.ts) return;
+                const h = new Date(t.ts).getHours();
+                const idx = Math.min(13, Math.max(0, h - 9));
+                hours[idx]++;
+            });
+            const maxH = Math.max(...hours, 1);
+            hmEl.innerHTML = hours.map((count,i) => {
+                const pct = Math.max(10, (count/maxH)*100);
+                const label = `${9+i}:${i===0?'30':'00'}`;
+                return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;" title="${label}: ${count} trades">
+                    <div style="width:100%;background:rgba(96,165,250,${0.1+count/maxH*0.7});border-radius:3px;height:${pct}%;min-height:4px;"></div>
+                </div>`;
+            }).join('');
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  CAPITAL ALLOCATION SIMULATOR
+    // ══════════════════════════════════════════════════════════════════════
+    let _caAllocations = {};
+
+    function openCapitalAllocator() {
+        const el = document.getElementById('capitalAllocatorModal');
+        if (el) { el.style.display = 'flex'; renderCapitalAllocator(); }
+    }
+    function closeCapitalAllocator() {
+        const el = document.getElementById('capitalAllocatorModal');
+        if (el) el.style.display = 'none';
+    }
+
+    function useCurrentPortfolio() {
+        const el = document.getElementById('caCapital');
+        if (el) {
+            const pv = (cash||0) + getPortfolioValue();
+            el.value = Math.round(pv);
+            updateCapitalAllocator();
+        }
+    }
+
+    function renderCapitalAllocator() {
+        const slidersEl = document.getElementById('caStrategySliders');
+        if (!slidersEl) return;
+
+        // Initialize allocations evenly
+        const totalStrats = strategies.length;
+        if (totalStrats === 0) {
+            slidersEl.innerHTML = '<div style="font-size:11px;color:#6868a0;font-style:italic;">No strategies created yet. Create strategies in the Strategy Lab first.</div>';
+            return;
+        }
+
+        strategies.forEach(s => {
+            if (!(_caAllocations[s.id] >= 0)) _caAllocations[s.id] = Math.floor(100/totalStrats);
+        });
+
+        slidersEl.innerHTML = strategies.map(s => {
+            const pct = _caAllocations[s.id] || 0;
+            return `<div style="display:grid;grid-template-columns:140px 1fr 60px;gap:10px;align-items:center;">
+                <div style="font-size:11px;font-weight:600;color:#f0f0fa;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${s.name}">${s.name}</div>
+                <input type="range" min="0" max="100" value="${pct}" data-strat="${s.id}"
+                    oninput="_caAllocations['${s.id}']=parseInt(this.value);updateCapitalAllocator()"
+                    style="width:100%;accent-color:#818cf8;cursor:pointer;">
+                <div style="font-family:var(--v-mono);font-size:12px;font-weight:700;color:#818cf8;text-align:right;" id="caPct_${s.id}">${pct}%</div>
+            </div>`;
+        }).join('');
+
+        updateCapitalAllocator();
+    }
+
+    function updateCapitalAllocator() {
+        const capital = parseFloat(document.getElementById('caCapital')?.value) || 100000;
+        const total = Object.values(_caAllocations).reduce((a,b)=>a+b,0);
+
+        // Update % labels
+        strategies.forEach(s => {
+            const el = document.getElementById(`caPct_${s.id}`);
+            if (el) el.textContent = (_caAllocations[s.id]||0) + '%';
+        });
+
+        // Cash remainder
+        const cashPct = Math.max(0, 100 - total);
+        const cashAmt = capital * cashPct / 100;
+        const remEl = document.getElementById('caCashRemVal');
+        if (remEl) remEl.textContent = '$' + cashAmt.toLocaleString(undefined,{maximumFractionDigits:0});
+
+        // Bar chart
+        const barEl = document.getElementById('caBarChart');
+        if (barEl) {
+            const colors = ['#818cf8','#34d399','#f472b6','#f59e0b','#60a5fa','#a78bfa','#fb923c','#4ade80'];
+            const items = strategies.map((s,i) => ({
+                name:s.name, pct:_caAllocations[s.id]||0, color:colors[i%colors.length],
+                amt: capital * (_caAllocations[s.id]||0) / 100
+            }));
+            items.push({ name:'Cash', pct:cashPct, color:'#6868a0', amt:cashAmt });
+
+            barEl.innerHTML = items.filter(it=>it.pct>0).map(it => `<div>
+                <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px;">
+                    <span style="color:${it.color};font-weight:600;">${it.name}</span>
+                    <span style="color:#f0f0fa;font-family:var(--v-mono);">${it.pct}% — $${it.amt.toLocaleString(undefined,{maximumFractionDigits:0})}</span>
+                </div>
+                <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">
+                    <div class="alloc-bar" style="width:${it.pct}%;background:${it.color};"></div>
+                </div>
+            </div>`).join('');
+        }
+
+        // Projection
+        const projEl = document.getElementById('caProjection');
+        if (projEl) {
+            // Bear, Base, Bull scenarios
+            const scenarios = [
+                { name:'Bear', color:'#f87171', mult:0.6 },
+                { name:'Base', color:'#f59e0b', mult:1.0 },
+                { name:'Bull', color:'#4ade80', mult:1.4 },
+            ];
+            const allTradeReturns = (transactions||[]).filter(t=>t.type==='SELL').map(t=>(t.price-(t.avgBuy||t.price))/(t.avgBuy||t.price)*100);
+            const avgR = allTradeReturns.length > 0 ? allTradeReturns.reduce((a,b)=>a+b,0)/allTradeReturns.length : 1.5;
+            const tradesPerMonth = Math.max(4, allTradeReturns.length / 3);
+
+            projEl.innerHTML = scenarios.map(sc => {
+                const adjR = avgR * sc.mult;
+                let eq = capital;
+                for (let i = 0; i < tradesPerMonth * 3; i++) {
+                    eq *= (1 + (adjR/100 + (Math.random()-0.5)*0.02));
+                }
+                const ret = ((eq-capital)/capital*100).toFixed(1);
+                return `<div style="background:rgba(255,255,255,0.03);border:1px solid ${sc.color}22;border-radius:10px;padding:12px;text-align:center;">
+                    <div style="font-size:10px;font-weight:700;color:${sc.color};margin-bottom:6px;">${sc.name} Case</div>
+                    <div style="font-family:var(--v-mono);font-size:1.1rem;font-weight:700;color:${parseFloat(ret)>=0?sc.color:'#f87171'};">${parseFloat(ret)>=0?'+':''}${ret}%</div>
+                    <div style="font-size:10px;color:#8888a8;margin-top:2px;">$${Math.round(eq).toLocaleString()}</div>
+                </div>`;
+            }).join('');
+        }
+    }
+
+    function runRebalancingSim() {
+        const capital = parseFloat(document.getElementById('caCapital')?.value) || 100000;
+        const freq = document.getElementById('caRebalFreq')?.value || 'none';
+        const resEl = document.getElementById('caRebalResult');
+        if (!resEl) return;
+
+        const allReturns = (transactions||[]).filter(t=>t.type==='SELL').map(t=>(t.price-(t.avgBuy||t.price))/(t.avgBuy||t.price)*100);
+        const avgR = allReturns.length > 0 ? allReturns.reduce((a,b)=>a+b,0)/allReturns.length : 1.5;
+        const tradesPerMonth = Math.max(4, allReturns.length / 3);
+
+        // Simulate 12 months
+        let eqRebal = capital, eqNoRebal = capital;
+        const MONTHS = 12;
+        const rebalPeriod = freq === 'monthly' ? 1 : freq === 'quarterly' ? 3 : 999;
+
+        for (let m = 0; m < MONTHS; m++) {
+            for (let t = 0; t < tradesPerMonth; t++) {
+                const r = (avgR + (Math.random()-0.5)*4)/100;
+                eqRebal   *= (1 + r);
+                eqNoRebal *= (1 + r);
+            }
+            if ((m+1) % rebalPeriod === 0 && freq !== 'none') {
+                // Rebalancing adds ~0.2% friction but improves diversification
+                eqRebal *= 0.998;
+            }
+        }
+
+        const rebalRet   = ((eqRebal-capital)/capital*100).toFixed(1);
+        const noRebalRet = ((eqNoRebal-capital)/capital*100).toFixed(1);
+
+        resEl.innerHTML = freq === 'none'
+            ? `<span style="color:#8888a8;">Select a rebalancing frequency to see impact simulation.</span>`
+            : `<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;">
+                <span style="font-size:11px;color:#8888a8;">With ${freq} rebalancing: <strong style="color:#4ade80;">${rebalRet}%</strong> (12 months)</span>
+                <span style="font-size:11px;color:#8888a8;">Without: <strong style="color:#f59e0b;">${noRebalRet}%</strong></span>
+                <span style="font-size:10px;color:#6868a0;">Note: Rebalancing adds small friction but enforces position size discipline.</span>
+            </div>`;
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  ADVANCED ANALYTICS MODAL
+    // ══════════════════════════════════════════════════════════════════════
+    let _aaMode = 'equity'; // 'equity' or 'drawdown'
+
+    function openAdvancedAnalytics() {
+        const el = document.getElementById('advancedAnalyticsModal');
+        if (el) { el.style.display = 'flex'; renderAdvancedAnalytics(); }
+    }
+    function closeAdvancedAnalytics() {
+        const el = document.getElementById('advancedAnalyticsModal');
+        if (el) el.style.display = 'none';
+    }
+
+    function aaToggleCurve(mode) {
+        _aaMode = mode;
+        document.getElementById('aaBtnEquity').style.background   = mode==='equity'   ? 'rgba(244,114,182,0.15)' : 'transparent';
+        document.getElementById('aaBtnEquity').style.color        = mode==='equity'   ? '#f472b6' : '#6868a0';
+        document.getElementById('aaBtnDD').style.background       = mode==='drawdown' ? 'rgba(244,114,182,0.15)' : 'transparent';
+        document.getElementById('aaBtnDD').style.color            = mode==='drawdown' ? '#f472b6' : '#6868a0';
+        drawAACanvas();
+    }
+
+    function drawAACanvas() {
+        const canvas = document.getElementById('aaEquityCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const W = canvas.parentElement.clientWidth - 16 || 720;
+        const H = 144;
+        canvas.width = W; canvas.height = H;
+        ctx.clearRect(0,0,W,H);
+
+        const phist = perfHistory || [];
+        if (phist.length < 2) {
+            ctx.fillStyle = '#6868a0';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('No performance history yet — make some trades!', W/2, H/2);
+            return;
+        }
+
+        const vals = phist.map(p=>p.val||p.value||100000);
+        const base = vals[0] || 100000;
+
+        if (_aaMode === 'equity') {
+            const minV = Math.min(...vals), maxV = Math.max(...vals);
+            const range = maxV - minV || 1;
+            const pad = 16;
+
+            // Fill area
+            ctx.beginPath();
+            vals.forEach((v,i) => {
+                const x = pad + (i/(vals.length-1))*(W-2*pad);
+                const y = H - pad - ((v-minV)/range)*(H-2*pad);
+                i===0 ? ctx.moveTo(x,H-pad) : undefined;
+                i===0 ? ctx.lineTo(x,y) : ctx.lineTo(x,y);
+            });
+            ctx.lineTo(pad + (W-2*pad), H-pad);
+            ctx.closePath();
+            const grad = ctx.createLinearGradient(0,0,0,H);
+            grad.addColorStop(0, 'rgba(244,114,182,0.2)');
+            grad.addColorStop(1, 'rgba(244,114,182,0.02)');
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // Line
+            ctx.beginPath();
+            vals.forEach((v,i) => {
+                const x = pad + (i/(vals.length-1))*(W-2*pad);
+                const y = H - pad - ((v-minV)/range)*(H-2*pad);
+                i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+            });
+            ctx.strokeStyle = '#f472b6';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+        } else {
+            // Drawdown chart
+            let peak = base;
+            const dds = vals.map(v => { if(v>peak)peak=v; return (v-peak)/peak*100; });
+            const minDD = Math.min(...dds, -0.1);
+            const pad = 16;
+
+            ctx.beginPath();
+            dds.forEach((d,i) => {
+                const x = pad + (i/(dds.length-1))*(W-2*pad);
+                const y = pad + (1 - d/minDD) * (H - 2*pad);
+                i===0 ? ctx.moveTo(x,pad) : undefined;
+                i===0 ? ctx.lineTo(x,y) : ctx.lineTo(x,y);
+            });
+            ctx.lineTo(pad+(W-2*pad), pad);
+            ctx.closePath();
+            const gradDD = ctx.createLinearGradient(0,0,0,H);
+            gradDD.addColorStop(0, 'rgba(248,113,113,0.05)');
+            gradDD.addColorStop(1, 'rgba(248,113,113,0.3)');
+            ctx.fillStyle = gradDD;
+            ctx.fill();
+
+            ctx.beginPath();
+            dds.forEach((d,i) => {
+                const x = pad + (i/(dds.length-1))*(W-2*pad);
+                const y = pad + (1 - d/minDD) * (H - 2*pad);
+                i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+            });
+            ctx.strokeStyle = '#f87171';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+    }
+
+    function renderAdvancedAnalytics() {
+        const sells = (transactions||[]).filter(t=>t.type==='SELL');
+        const phist = perfHistory || [];
+        const portVal = (cash||0) + getPortfolioValue();
+        const startVal = phist.length > 0 ? (phist[0].val||100000) : 100000;
+
+        // Draw canvas
+        requestAnimationFrame(drawAACanvas);
+
+        // Risk-adjusted metrics
+        const metricsEl = document.getElementById('aaRiskMetrics');
+        if (metricsEl) {
+            const returns = sells.map(t=>(t.price-(t.avgBuy||t.price))/(t.avgBuy||t.price)*100);
+            const winRet  = returns.filter(r=>r>0);
+            const lossRet = returns.filter(r=>r<0);
+
+            const avgR    = returns.length > 0 ? returns.reduce((a,b)=>a+b,0)/returns.length : 0;
+            const stdDev  = returns.length > 1 ? Math.sqrt(returns.reduce((a,b)=>a+Math.pow(b-avgR,2),0)/returns.length) : 0;
+            const sharpe  = stdDev > 0 ? (avgR / stdDev * Math.sqrt(252)).toFixed(2) : '—';
+
+            const avgWin  = winRet.length > 0  ? winRet.reduce((a,b)=>a+b,0)/winRet.length   : 0;
+            const avgLoss = lossRet.length > 0 ? lossRet.reduce((a,b)=>a+b,0)/lossRet.length : 0;
+            const pf      = avgLoss !== 0 ? Math.abs(avgWin/avgLoss).toFixed(2) : '—';
+
+            let maxDD = 0, peak = startVal;
+            phist.forEach(p => {
+                const v = p.val||p.value||startVal;
+                if(v>peak)peak=v;
+                const dd=(v-peak)/peak*100;
+                if(dd<maxDD)maxDD=dd;
+            });
+
+            const calmar = maxDD !== 0 ? (((portVal-startVal)/startVal*100) / Math.abs(maxDD)).toFixed(2) : '—';
+
+            const items = [
+                { l:'Sharpe Ratio',   v:sharpe,  c:parseFloat(sharpe)>=1?'#4ade80':parseFloat(sharpe)>=0?'#f59e0b':'#f87171' },
+                { l:'Profit Factor',  v:pf,      c:parseFloat(pf)>=1.5?'#4ade80':parseFloat(pf)>=1?'#f59e0b':'#f87171' },
+                { l:'Max Drawdown',   v:maxDD.toFixed(1)+'%', c:maxDD>-10?'#4ade80':maxDD>-20?'#f59e0b':'#f87171' },
+                { l:'Calmar Ratio',   v:calmar,  c:parseFloat(calmar)>=0.5?'#4ade80':parseFloat(calmar)>=0?'#f59e0b':'#f87171' },
+            ];
+            metricsEl.innerHTML = items.map(m=>`<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px;text-align:center;">
+                <div style="font-size:9px;color:#6868a0;text-transform:uppercase;margin-bottom:5px;">${m.l}</div>
+                <div style="font-family:var(--v-mono);font-size:1.1rem;font-weight:700;color:${m.c};">${m.v}</div>
+            </div>`).join('');
+        }
+
+        // Monthly heatmap
+        renderAAMonthlyHeatmap();
+
+        // Sector exposure
+        renderAASectorExposure();
+
+        // Best/worst trades
+        const allSells = sells.slice();
+        allSells.sort((a,b) => {
+            const ra = (a.price-(a.avgBuy||a.price))/(a.avgBuy||a.price);
+            const rb = (b.price-(b.avgBuy||b.price))/(b.avgBuy||b.price);
+            return rb - ra;
+        });
+
+        function tradeRow(t) {
+            const gain = t.price-(t.avgBuy||t.price);
+            const pct  = t.avgBuy ? (gain/t.avgBuy*100).toFixed(2) : '0.00';
+            return `<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:7px;padding:7px 10px;display:flex;justify-content:space-between;font-size:11px;">
+                <span style="font-weight:600;color:#f0f0fa;">${t.symbol}</span>
+                <span style="font-family:var(--v-mono);color:${parseFloat(pct)>=0?'#4ade80':'#f87171'};">${parseFloat(pct)>=0?'+':''}${pct}%</span>
+            </div>`;
+        }
+
+        const bestEl  = document.getElementById('aaBestTrades');
+        const worstEl = document.getElementById('aaWorstTrades');
+        if (bestEl)  bestEl.innerHTML  = allSells.slice(0,5).map(tradeRow).join('') || '<div style="color:#6868a0;font-size:11px;">No trades yet</div>';
+        if (worstEl) worstEl.innerHTML = allSells.slice(-5).reverse().map(tradeRow).join('') || '<div style="color:#6868a0;font-size:11px;">No trades yet</div>';
+
+        // Benchmark compare
+        const benchEl = document.getElementById('aaBenchmarkCompare');
+        if (benchEl) {
+            const myReturn = ((portVal-startVal)/startVal*100).toFixed(1);
+            // SPY baseline assumption: ~8% annual, ~2% per trading month
+            const tradingDays = phist.length || 1;
+            const spyReturn   = (tradingDays / 252 * 8).toFixed(1);
+            const alpha       = (parseFloat(myReturn) - parseFloat(spyReturn)).toFixed(1);
+            benchEl.innerHTML = `<div style="font-size:12px;color:#8888a8;">Your return: <strong style="color:${parseFloat(myReturn)>=0?'#4ade80':'#f87171'};">${parseFloat(myReturn)>=0?'+':''}${myReturn}%</strong></div>
+                <div style="font-size:12px;color:#8888a8;margin-top:3px;">SPY (est.): <strong style="color:#60a5fa;">+${spyReturn}%</strong></div>
+                <div style="font-size:11px;margin-top:5px;">Alpha: <strong style="color:${parseFloat(alpha)>=0?'#4ade80':'#f87171'};">${parseFloat(alpha)>=0?'+':''}${alpha}%</strong></div>`;
+        }
+    }
+
+    function renderAAMonthlyHeatmap() {
+        const el = document.getElementById('aaMonthlyHeatmap');
+        if (!el) return;
+        const sells = (transactions||[]).filter(t=>t.type==='SELL');
+        const monthly = {};
+        sells.forEach(t => {
+            const d = new Date(t.ts||Date.now());
+            const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+            const r = (t.price-(t.avgBuy||t.price))/(t.avgBuy||t.price)*100;
+            monthly[key] = (monthly[key]||0) + r;
+        });
+
+        const keys = Object.keys(monthly).sort();
+        if (!keys.length) {
+            el.innerHTML = '<div style="color:#6868a0;font-size:11px;font-style:italic;">No closed trades to build heatmap.</div>';
+            return;
+        }
+
+        const maxAbs = Math.max(...Object.values(monthly).map(Math.abs), 0.1);
+        el.innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:6px;">
+            ${keys.map(k => {
+                const v = monthly[k];
+                const intensity = Math.abs(v) / maxAbs;
+                const bg = v >= 0 ? `rgba(74,222,128,${0.1+intensity*0.6})` : `rgba(248,113,113,${0.1+intensity*0.6})`;
+                const bc = v >= 0 ? `rgba(74,222,128,${0.2+intensity*0.4})` : `rgba(248,113,113,${0.2+intensity*0.4})`;
+                return `<div style="background:${bg};border:1px solid ${bc};border-radius:8px;padding:10px 14px;min-width:80px;text-align:center;" title="${k}: ${v.toFixed(1)}%">
+                    <div style="font-size:9px;color:#8888a8;margin-bottom:3px;">${k}</div>
+                    <div style="font-family:var(--v-mono);font-size:12px;font-weight:700;color:${v>=0?'#4ade80':'#f87171'};">${v>=0?'+':''}${v.toFixed(1)}%</div>
+                </div>`;
+            }).join('')}
+        </div>`;
+    }
+
+    function renderAASectorExposure() {
+        const el = document.getElementById('aaSectorExposure');
+        if (!el) return;
+        const sectorMap = {};
+        Object.keys(portfolio||{}).forEach(sym => {
+            const qty = portfolio[sym]?.qty || 0;
+            if (!qty) return;
+            const d = realStockData[sym] || {};
+            const sec = d.sector || 'Other';
+            const val = (stocks.find(s=>s.symbol===sym)?.price||0) * qty;
+            sectorMap[sec] = (sectorMap[sec]||0) + val;
+        });
+
+        const total = Object.values(sectorMap).reduce((a,b)=>a+b,0) || 1;
+        const sorted = Object.entries(sectorMap).sort((a,b)=>b[1]-a[1]);
+
+        if (!sorted.length) {
+            el.innerHTML = '<div style="color:#6868a0;font-size:11px;font-style:italic;">No open positions.</div>';
+            return;
+        }
+
+        const colors = ['#818cf8','#34d399','#f472b6','#f59e0b','#60a5fa','#a78bfa','#fb923c','#4ade80','#22d3ee','#f87171'];
+        el.innerHTML = sorted.map(([sec, val], i) => {
+            const pct = (val/total*100).toFixed(1);
+            return `<div>
+                <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;">
+                    <span style="color:${colors[i%colors.length]};font-weight:600;">${sec}</span>
+                    <span style="color:#f0f0fa;font-family:var(--v-mono);">${pct}% · $${val.toLocaleString(undefined,{maximumFractionDigits:0})}</span>
+                </div>
+                <div style="height:7px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">
+                    <div style="height:100%;width:${pct}%;background:${colors[i%colors.length]};border-radius:4px;transition:width 0.4s;"></div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  ENHANCED PROGRESS DASHBOARD — Long-term Discipline Score
+    // ══════════════════════════════════════════════════════════════════════
+    const _origRenderProgress = window.renderProgress;
+    window.renderProgress = function() {
+        if (_origRenderProgress) _origRenderProgress();
+        renderLongTermDisciplineScore();
+    };
+
+    function renderLongTermDisciplineScore() {
+        // Check if the discipline score section exists, inject if not
+        const progressModal = document.getElementById('progressModal');
+        if (!progressModal) return;
+        let ltEl = document.getElementById('ltDisciplineScore');
+        if (!ltEl) {
+            const inner = progressModal.querySelector('[style*="padding:20px 28px"]') || progressModal.querySelector('div[style*="gap:16px"]');
+            if (inner) {
+                const div = document.createElement('div');
+                div.id = 'ltDisciplineScore';
+                div.style.cssText = 'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;';
+                inner.appendChild(div);
+                ltEl = div;
+            } else return;
+        }
+
+        const scores = computeDisciplineScores ? computeDisciplineScores() : { discipline:50,consistency:50,risk:50,emotional:50 };
+        const overall = Math.round((scores.discipline + scores.consistency + scores.risk + scores.emotional) / 4);
+        const grade = overall >= 85 ? 'A+' : overall >= 75 ? 'A' : overall >= 65 ? 'B' : overall >= 55 ? 'C' : 'D';
+        const gradeColor = overall >= 75 ? '#4ade80' : overall >= 55 ? '#f59e0b' : '#f87171';
+
+        ltEl.innerHTML = `<div style="font-size:11px;font-weight:700;color:#8888a8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">🏅 Long-Term Discipline Rating</div>
+            <div style="display:flex;align-items:center;gap:20px;">
+                <div style="text-align:center;flex-shrink:0;">
+                    <div style="font-family:var(--v-serif);font-size:3rem;color:${gradeColor};line-height:1;">${grade}</div>
+                    <div style="font-size:9px;color:#6868a0;margin-top:2px;">${overall}/100</div>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+                    ${[
+                        {l:'Risk Control', v:scores.risk, d:'Position sizing vs RiskGuard adherence'},
+                        {l:'Drawdown Ctrl', v:Math.min(100,Math.round(Math.max(0,(20-Math.abs(computeMaxDD?.()??0))/20*100))), d:'Max drawdown vs 20% threshold'},
+                        {l:'Consistency',  v:scores.consistency, d:'Hold time and sizing variance'},
+                        {l:'Strategy Adherence', v:strategies.length?Math.min(100,Math.round((transactions||[]).filter(t=>t.strategyId).length/Math.max(1,(transactions||[]).filter(t=>t.type==='BUY').length)*100)):0, d:'% of trades tagged to a strategy'},
+                    ].map(m=>`<div>
+                        <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px;"><span style="color:#8888a8;">${m.l}</span><span style="color:${m.v>=70?'#4ade80':m.v>=50?'#f59e0b':'#f87171'};font-weight:700;">${m.v}%</span></div>
+                        <div style="height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${m.v}%;background:${m.v>=70?'#4ade80':m.v>=50?'#f59e0b':'#f87171'};border-radius:3px;transition:width 0.5s;"></div></div>
+                    </div>`).join('')}
+                </div>
+            </div>`;
+    }
+
+    function computeMaxDD() {
+        const phist = perfHistory || [];
+        if (phist.length < 2) return 0;
+        let maxDD = 0, peak = phist[0].val||100000;
+        phist.forEach(p => {
+            const v = p.val||p.value||100000;
+            if(v>peak)peak=v;
+            const dd=(v-peak)/peak*100;
+            if(dd<maxDD)maxDD=dd;
+        });
+        return maxDD;
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  ENHANCED LEADERBOARD — regime badge + verified mode + risk-adjusted
+    // ══════════════════════════════════════════════════════════════════════
+    // Patch renderLeaderboard to add regime badge (non-breaking extension)
+    const _origRenderLeaderboard = window.renderLeaderboard;
+    if (_origRenderLeaderboard) {
+        window.renderLeaderboard = function(...args) {
+            _origRenderLeaderboard(...args);
+            // Add regime badge to leaderboard header if it exists
+            const lbHead = document.querySelector('#leaderboardModal h2');
+            if (lbHead && !document.getElementById('lbRegimeBadge')) {
+                const reg = classifyMarketRegime ? classifyMarketRegime() : { regime:'Unknown', color:'#8888a8', icon:'❓' };
+                const badge = document.createElement('span');
+                badge.id = 'lbRegimeBadge';
+                badge.className = 'regime-badge';
+                badge.style.marginLeft = '10px';
+                badge.innerHTML = `${reg.icon} <span style="color:${reg.color};">${reg.regime}</span>`;
+                lbHead.appendChild(badge);
+            }
+        };
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  MACRO MARKET OVERVIEW — Enhanced with Sentiment meter & Breadth
+    // ══════════════════════════════════════════════════════════════════════
+    const _origRenderMacro = window.renderMacro;
+    window.renderMacro = function() {
+        if (_origRenderMacro) _origRenderMacro();
+        renderMacroExtras();
+    };
+
+    function renderMacroExtras() {
+        // Inject market breadth + sentiment if macro modal is open
+        const macroModal = document.getElementById('macroModal');
+        if (!macroModal || macroModal.style.display === 'none') return;
+
+        let extEl = document.getElementById('macroExtras');
+        if (!extEl) {
+            const inner = macroModal.querySelector('div[style*="padding:20px 28px"]');
+            if (inner) {
+                extEl = document.createElement('div');
+                extEl.id = 'macroExtras';
+                inner.appendChild(extEl);
+            } else return;
+        }
+
+        const breadthUp  = stocks.slice(0,50).filter(s=>(s.change||0)>0).length;
+        const breadthDn  = stocks.slice(0,50).filter(s=>(s.change||0)<0).length;
+        const breadthPct = (breadthUp/50*100).toFixed(0);
+        const sentScore  = Math.round(50 + (breadthUp-breadthDn)/50*50);
+        const sentLabel  = sentScore >= 65 ? 'Bullish' : sentScore >= 50 ? 'Neutral' : sentScore >= 35 ? 'Cautious' : 'Bearish';
+        const sentColor  = sentScore >= 65 ? '#4ade80' : sentScore >= 50 ? '#f0f0fa' : sentScore >= 35 ? '#f59e0b' : '#f87171';
+
+        const reg = classifyMarketRegime ? classifyMarketRegime() : { regime:'Unknown', color:'#8888a8', icon:'❓', desc:'' };
+
+        extEl.innerHTML = `
+        <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+            <!-- Breadth -->
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px;text-align:center;">
+                <div style="font-size:9px;color:#6868a0;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">Market Breadth</div>
+                <div style="font-family:var(--v-mono);font-size:1.4rem;font-weight:700;color:${parseInt(breadthPct)>=50?'#4ade80':'#f87171'};">${breadthPct}%</div>
+                <div style="font-size:10px;color:#8888a8;">${breadthUp} up · ${breadthDn} down</div>
+                <div style="height:5px;background:rgba(255,255,255,0.06);border-radius:3px;margin-top:8px;overflow:hidden;">
+                    <div style="height:100%;width:${breadthPct}%;background:${parseInt(breadthPct)>=50?'#4ade80':'#f87171'};border-radius:3px;"></div>
+                </div>
+            </div>
+            <!-- Sentiment -->
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px;text-align:center;">
+                <div style="font-size:9px;color:#6868a0;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">Sentiment Meter</div>
+                <div style="font-family:var(--v-mono);font-size:1.2rem;font-weight:700;color:${sentColor};">${sentLabel}</div>
+                <div style="font-size:10px;color:#8888a8;">${sentScore}/100</div>
+                <div style="height:5px;background:rgba(255,255,255,0.06);border-radius:3px;margin-top:8px;overflow:hidden;">
+                    <div style="height:100%;width:${sentScore}%;background:${sentColor};border-radius:3px;"></div>
+                </div>
+            </div>
+            <!-- Regime -->
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px;text-align:center;">
+                <div style="font-size:9px;color:#6868a0;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">Regime</div>
+                <div style="font-size:1.5rem;">${reg.icon}</div>
+                <div style="font-size:11px;font-weight:700;color:${reg.color};">${reg.regime}</div>
+            </div>
+        </div>`;
+    }
+
+    // Initialize challenge state on app load
+    loadChallengeState();
+
+    // Restore saved theme
+    (function() {
+        const saved = localStorage.getItem('vestra_theme');
+        if (saved && saved !== 'dark') window.applyTheme(saved);
+    })();
+
+
 </script>
 
 <!-- ═══ MONTHLY CHAMPIONS OVERLAY ═══ -->
@@ -9444,18 +11321,24 @@ function startNewsEngine() {
 
 
 <!-- ══════════════════════════════════════════════════════════════════════
-     STRATEGY LAB MODAL
+     STRATEGY LAB MODAL — v6 with equity curve, stress test, Target R
 ════════════════════════════════════════════════════════════════════════ -->
 <div id="strategyLabModal" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto;">
-    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(167,139,250,0.2);border-radius:24px;width:100%;max-width:700px;margin:0 auto 40px;overflow:hidden;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);">
+    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(167,139,250,0.2);border-radius:24px;width:100%;max-width:780px;margin:0 auto 40px;overflow:hidden;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);">
         <div style="padding:24px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(167,139,250,0.07),transparent);">
             <div>
                 <h2 style="font-family:var(--v-serif);font-size:1.4rem;color:#f0f0fa;margin:0 0 3px;">🧪 Strategy Lab</h2>
-                <p style="font-size:11px;color:#8888a8;margin:0;">Create, tag and analyse your trading strategies</p>
+                <p style="font-size:11px;color:#8888a8;margin:0;">Create, tag, analyse, and stress-test your trading strategies</p>
             </div>
-            <button onclick="closeStrategyLab()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;">&times;</button>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <button onclick="openStrategyLabTab('list')" id="slTabList" style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:7px;cursor:pointer;background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3);">Strategies</button>
+                <button onclick="openStrategyLabTab('stress')" id="slTabStress" style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:7px;cursor:pointer;background:transparent;color:#6868a0;border:1px solid rgba(255,255,255,0.08);">Stress Test</button>
+                <button onclick="closeStrategyLab()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;margin-left:4px;">&times;</button>
+            </div>
         </div>
-        <div style="padding:20px 28px;">
+
+        <!-- TAB: Strategy List -->
+        <div id="slPanelList" style="padding:20px 28px;">
             <!-- Create Strategy -->
             <div style="background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.15);border-radius:14px;padding:16px;margin-bottom:20px;">
                 <div style="font-size:11px;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:12px;">+ New Strategy</div>
@@ -9470,29 +11353,84 @@ function startNewsEngine() {
                         <option value="#Scalp">#Scalp</option>
                         <option value="#ValueBuy">#ValueBuy</option>
                         <option value="#DipBuy">#DipBuy</option>
+                        <option value="#MeanRevert">#MeanRevert</option>
+                        <option value="#CatalystPlay">#CatalystPlay</option>
                     </select>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
                     <div>
                         <label style="font-size:9px;color:#6868a0;text-transform:uppercase;margin-bottom:3px;display:block;">Entry Condition</label>
-                        <input id="slEntry" placeholder="RSI &lt; 30, price break..." style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:7px 10px;font-size:11px;color:#e0e0f5;outline:none;" onfocus="this.style.borderColor='#a78bfa'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+                        <input id="slEntry" placeholder="RSI &lt; 30, breakout..." style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:7px 10px;font-size:11px;color:#e0e0f5;outline:none;" onfocus="this.style.borderColor='#a78bfa'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
                     </div>
                     <div>
                         <label style="font-size:9px;color:#6868a0;text-transform:uppercase;margin-bottom:3px;display:block;">Exit Condition</label>
-                        <input id="slExit" placeholder="RSI &gt; 70, target hit..." style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:7px 10px;font-size:11px;color:#e0e0f5;outline:none;" onfocus="this.style.borderColor='#a78bfa'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+                        <input id="slExit" placeholder="RSI &gt; 70, target..." style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:7px 10px;font-size:11px;color:#e0e0f5;outline:none;" onfocus="this.style.borderColor='#a78bfa'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
                     </div>
                     <div>
                         <label style="font-size:9px;color:#6868a0;text-transform:uppercase;margin-bottom:3px;display:block;">Risk per Trade %</label>
                         <input id="slRisk" type="number" step="0.1" value="1" min="0.1" max="10" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:7px 10px;font-size:11px;color:#e0e0f5;outline:none;" onfocus="this.style.borderColor='#a78bfa'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
                     </div>
+                    <div>
+                        <label style="font-size:9px;color:#6868a0;text-transform:uppercase;margin-bottom:3px;display:block;">Target R</label>
+                        <input id="slTargetR" type="number" step="0.1" value="2" min="0.5" max="20" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:7px 10px;font-size:11px;color:#e0e0f5;outline:none;" onfocus="this.style.borderColor='#a78bfa'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" title="Reward-to-risk ratio target (e.g. 2 = 2:1 R:R)">
+                    </div>
                 </div>
                 <button onclick="createStrategy()" style="background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:8px 20px;font-size:12px;font-weight:700;cursor:pointer;">Create Strategy</button>
             </div>
-            <!-- Strategy Performance Dashboard -->
-            <div style="font-size:11px;font-weight:700;color:#8888a8;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;">Strategy Performance</div>
-            <div id="strategyList" style="display:flex;flex-direction:column;gap:10px;">
-                <div style="text-align:center;color:#6868a0;padding:20px;font-style:italic;font-size:12px;">No strategies yet. Create one above.</div>
+            <!-- Strategy Performance List -->
+            <div style="font-size:11px;font-weight:700;color:#8888a8;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;">Your Strategies</div>
+            <div id="strategyList" style="display:flex;flex-direction:column;gap:12px;">
+                <div style="text-align:center;color:#6868a0;padding:20px;font-style:italic;font-size:12px;">No strategies yet. Create one above to start tracking performance.</div>
             </div>
+        </div>
+
+        <!-- TAB: Stress Test Engine -->
+        <div id="slPanelStress" style="display:none;padding:20px 28px;">
+            <div style="font-size:11px;color:#8888a8;line-height:1.6;margin-bottom:16px;background:rgba(255,255,255,0.03);border-radius:10px;padding:12px 14px;border:1px solid rgba(255,255,255,0.06);">
+                The <strong style="color:#f0f0fa;">Stress Test Engine</strong> simulates your strategy performance under historical adverse conditions — high volatility regimes, earnings-driven gaps, low-liquidity days, and trending/ranging markets. Results are based on your actual trade history distributions.
+            </div>
+            <!-- Strategy selector -->
+            <div style="margin-bottom:16px;">
+                <label style="font-size:10px;color:#8888a8;display:block;margin-bottom:5px;">Select Strategy to Test</label>
+                <select id="stressStratSelect" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 12px;font-size:12px;color:#e0e0f5;outline:none;width:100%;max-width:300px;">
+                    <option value="">— Select a strategy —</option>
+                </select>
+            </div>
+            <!-- Scenarios -->
+            <div style="font-size:11px;font-weight:700;color:#8888a8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Test Scenarios</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;" id="stressScenarios">
+                <label style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;">
+                    <input type="checkbox" id="sc_hv" checked style="margin-top:2px;cursor:pointer;">
+                    <div>
+                        <div style="font-size:12px;font-weight:600;color:#f87171;">⚡ High Volatility</div>
+                        <div style="font-size:10px;color:#8888a8;margin-top:2px;">VIX >30 regime. Slippage ×3, gaps simulated.</div>
+                    </div>
+                </label>
+                <label style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;">
+                    <input type="checkbox" id="sc_news" checked style="margin-top:2px;cursor:pointer;">
+                    <div>
+                        <div style="font-size:12px;font-weight:600;color:#f59e0b;">📰 News Event Shock</div>
+                        <div style="font-size:10px;color:#8888a8;margin-top:2px;">Earnings/FOMC gap: ±5-15% overnight move.</div>
+                    </div>
+                </label>
+                <label style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;">
+                    <input type="checkbox" id="sc_ll" style="margin-top:2px;cursor:pointer;">
+                    <div>
+                        <div style="font-size:12px;font-weight:600;color:#60a5fa;">💤 Low Liquidity</div>
+                        <div style="font-size:10px;color:#8888a8;margin-top:2px;">Holiday/pre-market thin order book. Wider spreads.</div>
+                    </div>
+                </label>
+                <label style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;">
+                    <input type="checkbox" id="sc_gap" style="margin-top:2px;cursor:pointer;">
+                    <div>
+                        <div style="font-size:12px;font-weight:600;color:#a78bfa;">↕️ Gap Simulation</div>
+                        <div style="font-size:10px;color:#8888a8;margin-top:2px;">10% of trades open with a gap past stop-loss.</div>
+                    </div>
+                </label>
+            </div>
+            <button onclick="runStressTest()" style="background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:9px 24px;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:16px;" id="stressRunBtn">▶ Run Stress Test</button>
+            <!-- Results -->
+            <div id="stressResults" style="display:none;"></div>
         </div>
     </div>
 </div>
@@ -9913,7 +11851,7 @@ function startNewsEngine() {
       <button onclick="closeLegalPage('about')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#a0a0b8;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px;font-weight:600;">✕ Close</button>
     </div>
     <div class="legal-body">
-      <div class="highlight-box">Vestra v5.0 — Built for Education &amp; Skill Development</div>
+      <div class="highlight-box">Vestra v6.0 — Structured Trading Intelligence &amp; Skill Development Platform</div>
       <h2>Mission</h2>
       <p>Vestra exists to make professional-grade trading education accessible to everyone. We believe that the best way to learn markets is by doing — with realistic tools, structured feedback, and competitive motivation — without any financial risk.</p>
       <h2>What Vestra Is</h2>
@@ -9921,17 +11859,24 @@ function startNewsEngine() {
       <ul>
         <li>Real-time and historical market data (via Finnhub API)</li>
         <li>Advanced order types: market, limit, stop-loss, bracket, GTT</li>
-        <li>Strategy Lab with performance analytics per strategy</li>
-        <li>AI Trading Coach with behavioural pattern detection</li>
+        <li>Strategy Lab v6 with equity curves, drawdown tracking, Target R, and Stress Test Engine</li>
+        <li>AI Trading Coach 3.0 with cognitive bias detection, hold-time analysis, and sizing trend charts</li>
         <li>Risk Guard enforcement system for discipline training</li>
-        <li>Competitive monthly leaderboards with mode separation</li>
+        <li>Competitive monthly leaderboards with mode separation and risk-adjusted ranking</li>
         <li>Trade Replay Engine for practice on historical data</li>
-        <li>Portfolio Intelligence with Sharpe ratio, drawdown curves, monthly heatmaps</li>
+        <li>Advanced Portfolio Analytics: equity curve, drawdown, Sharpe ratio, monthly heatmap, sector exposure</li>
+        <li>Decision Intelligence Timeline: trade decisions plotted against equity curve with regime context</li>
+        <li>Capital Allocation Simulator with rebalancing simulation</li>
+        <li>Silent Focus Mode: P&L hidden during open positions for distraction-free trading</li>
+        <li>Multi-Asset simulation: Equities, ETFs, Commodities, Forex, Crypto</li>
+        <li>6 professional UI themes including Institutional Dark, Arctic Blue, and Emerald Pro</li>
+        <li>Structured Challenge Mode with 4 tier progression system</li>
       </ul>
       <h2>What Vestra Is Not</h2>
       <p>Vestra is not a brokerage, not a financial advisor, not an investment platform, and not a gambling application. No real money ever changes hands.</p>
       <h2>Version History</h2>
       <ul>
+        <li><strong>v6.0</strong> — Decision Intelligence, Capital Allocator, Advanced Analytics, Silent Focus Mode, Stress Test Engine, 6 Themes, Extended AI Coach, Long-term Discipline Score</li>
         <li><strong>v5.0</strong> — Strategy Lab, Replay Engine, Risk Guard, AI Coach 2.0, Legal Infrastructure</li>
         <li><strong>v4.0</strong> — Mode-split leaderboards, Realism Mode, Portfolio Intelligence</li>
         <li><strong>v3.0</strong> — Bracket orders, SIP plans, community layer, education academy</li>
@@ -10057,5 +12002,260 @@ function startNewsEngine() {
     </div>
   </div>
 </div>
+<!-- ═══ AI COACH MODAL ═══ -->
+<div id="aiCoachModal" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto;">
+    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(52,211,153,0.2);border-radius:24px;width:100%;max-width:720px;margin:0 auto 40px;overflow:hidden;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);">
+        <div style="padding:24px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(52,211,153,0.07),transparent);">
+            <div>
+                <h2 style="font-family:var(--v-serif);font-size:1.4rem;color:#f0f0fa;margin:0 0 3px;">🧠 AI Trade Coach</h2>
+                <p style="font-size:11px;color:#8888a8;margin:0;">Cognitive bias detection · Discipline scoring · Analytical insights</p>
+            </div>
+            <div style="display:flex;gap:8px;">
+                <button onclick="renderAICoach()" style="font-size:11px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);color:#34d399;border-radius:7px;padding:5px 12px;font-weight:700;cursor:pointer;">↻ Refresh</button>
+                <button onclick="closeAICoach()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;">&times;</button>
+            </div>
+        </div>
+        <div style="padding:20px 28px;display:grid;gap:20px;">
+            <!-- Score Rings -->
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">Discipline Scores</div>
+                <div id="coachScores" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;"></div>
+            </div>
+            <!-- Analytical Insights -->
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Performance Analytics</div>
+                <div id="coachInsights"></div>
+            </div>
+            <!-- Bias Patterns -->
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Cognitive Bias Monitor</div>
+                <div id="coachBiasPatterns" style="display:flex;flex-direction:column;gap:8px;"></div>
+            </div>
+            <!-- Market Regime -->
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Market Regime Classifier</div>
+                <div id="coachRegime"></div>
+            </div>
+            <!-- Extended: Sizing escalation chart -->
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Position Sizing Trend (last 20 trades)</div>
+                <div id="coachSizingChart" style="height:72px;display:flex;align-items:flex-end;gap:3px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:8px;overflow:hidden;"></div>
+                <div style="font-size:9px;color:#6868a0;margin-top:5px;">Green = within limit · Yellow = borderline · Red = oversized</div>
+            </div>
+            <!-- Hold time distortion -->
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Win vs Loss Hold Time Analysis</div>
+                <div id="coachHoldTime" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ CHALLENGE MODE MODAL ═══ -->
+<div id="challengeModal" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto;">
+    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(212,168,75,0.2);border-radius:24px;width:100%;max-width:600px;margin:0 auto 40px;overflow:hidden;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);">
+        <div style="padding:24px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(212,168,75,0.07),transparent);">
+            <div>
+                <h2 style="font-family:var(--v-serif);font-size:1.4rem;color:#f0f0fa;margin:0 0 3px;">🏆 Structured Challenge Mode</h2>
+                <p style="font-size:11px;color:#8888a8;margin:0;">Fixed capital · Strict rules · Tier progression · No gambling</p>
+            </div>
+            <button onclick="closeChallengeMode()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;">&times;</button>
+        </div>
+        <div id="challengeContent" style="padding:20px 28px;"></div>
+    </div>
+</div>
+
+<!-- ═══ MULTI-ASSET MODAL ═══ -->
+<div id="multiAssetModal" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto;">
+    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(34,211,238,0.2);border-radius:24px;width:100%;max-width:640px;margin:0 auto 40px;overflow:hidden;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);">
+        <div style="padding:24px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(34,211,238,0.06),transparent);">
+            <div>
+                <h2 style="font-family:var(--v-serif);font-size:1.4rem;color:#f0f0fa;margin:0 0 3px;">🌐 Multi-Asset Trading</h2>
+                <p style="font-size:11px;color:#8888a8;margin:0;">ETFs · Commodities · Forex · Digital Assets — all simulated</p>
+            </div>
+            <button onclick="closeMultiAsset()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;">&times;</button>
+        </div>
+        <!-- Market hours legend -->
+        <div style="padding:12px 28px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;gap:14px;flex-wrap:wrap;">
+            <span style="font-size:10px;color:#8888a8;display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#4ade80;display:inline-block;"></span>Market Open</span>
+            <span style="font-size:10px;color:#8888a8;display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#60a5fa;display:inline-block;"></span>24/7 (Crypto)</span>
+            <span style="font-size:10px;color:#8888a8;display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#22d3ee;display:inline-block;"></span>Forex Session</span>
+            <span style="font-size:10px;color:#8888a8;display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#6868a0;display:inline-block;"></span>Closed</span>
+        </div>
+        <div id="maContent" style="padding:20px 28px;max-height:65vh;overflow-y:auto;"></div>
+    </div>
+</div>
+
+<!-- ═══ DECISION TIMELINE MODAL ═══ -->
+<div id="decisionTimelineModal" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto;">
+    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(251,191,36,0.2);border-radius:24px;width:100%;max-width:780px;margin:0 auto 40px;overflow:hidden;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);">
+        <div style="padding:24px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(251,191,36,0.06),transparent);">
+            <div>
+                <h2 style="font-family:var(--v-serif);font-size:1.4rem;color:#f0f0fa;margin:0 0 3px;">🗓 Decision Intelligence Timeline</h2>
+                <p style="font-size:11px;color:#8888a8;margin:0;">Your trades plotted against equity curve · Market conditions · Journal tags</p>
+            </div>
+            <button onclick="closeDecisionTimeline()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;">&times;</button>
+        </div>
+        <div style="padding:20px 28px;display:grid;gap:18px;">
+            <!-- Equity curve with trade dots -->
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Equity Curve + Trade Decisions</div>
+                <div id="dtEquityCurve" style="position:relative;height:160px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;overflow:hidden;">
+                    <canvas id="dtCanvas" style="width:100%;height:100%;"></canvas>
+                </div>
+                <div style="display:flex;gap:14px;margin-top:8px;flex-wrap:wrap;">
+                    <span style="font-size:10px;color:#8888a8;display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#4ade80;display:inline-block;"></span>Winning trade</span>
+                    <span style="font-size:10px;color:#8888a8;display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#f87171;display:inline-block;"></span>Losing trade</span>
+                    <span style="font-size:10px;color:#8888a8;display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:inline-block;"></span>Neutral/open</span>
+                </div>
+            </div>
+            <!-- Market regime at each decision -->
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Regime at Time of Trade</div>
+                <div id="dtRegimeBar" style="height:28px;display:flex;border-radius:8px;overflow:hidden;"></div>
+            </div>
+            <!-- Trade decision log -->
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Trade Decision Log</div>
+                <div id="dtTradeLog" style="max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;"></div>
+            </div>
+            <!-- Entry/Exit Clustering -->
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Market Memory Heatmap — Entry Clustering by Hour</div>
+                <div id="dtHeatmap" style="display:flex;gap:3px;align-items:flex-end;height:50px;"></div>
+                <div style="display:flex;gap:0;margin-top:4px;">
+                    <span style="font-size:9px;color:#6868a0;flex:1;text-align:center;">9:30</span>
+                    <span style="font-size:9px;color:#6868a0;flex:1;text-align:center;">11</span>
+                    <span style="font-size:9px;color:#6868a0;flex:1;text-align:center;">13</span>
+                    <span style="font-size:9px;color:#6868a0;flex:1;text-align:center;">15</span>
+                    <span style="font-size:9px;color:#6868a0;flex:1;text-align:center;">16</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ CAPITAL ALLOCATOR MODAL ═══ -->
+<div id="capitalAllocatorModal" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto;">
+    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(99,102,241,0.2);border-radius:24px;width:100%;max-width:680px;margin:0 auto 40px;overflow:hidden;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);">
+        <div style="padding:24px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(99,102,241,0.07),transparent);">
+            <div>
+                <h2 style="font-family:var(--v-serif);font-size:1.4rem;color:#f0f0fa;margin:0 0 3px;">💼 Capital Allocation Simulator</h2>
+                <p style="font-size:11px;color:#8888a8;margin:0;">Allocate across strategies · Simulate rebalancing · Analyse drawdown stability</p>
+            </div>
+            <button onclick="closeCapitalAllocator()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;">&times;</button>
+        </div>
+        <div style="padding:20px 28px;display:grid;gap:18px;">
+            <!-- Total capital input -->
+            <div style="display:flex;align-items:center;gap:12px;">
+                <label style="font-size:11px;color:#8888a8;flex-shrink:0;">Total Capital:</label>
+                <input id="caCapital" type="number" value="100000" step="1000" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:7px 12px;font-size:13px;color:#f0f0fa;outline:none;font-family:var(--v-mono);width:140px;" oninput="updateCapitalAllocator()">
+                <span style="font-size:11px;color:#8888a8;">USD (virtual)</span>
+                <button onclick="useCurrentPortfolio()" style="font-size:11px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);color:#818cf8;border-radius:7px;padding:5px 10px;cursor:pointer;font-weight:700;">Use Portfolio Value</button>
+            </div>
+            <!-- Allocation sliders per strategy -->
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Strategy Allocations</div>
+                <div id="caStrategySliders" style="display:flex;flex-direction:column;gap:10px;"></div>
+                <!-- Cash remainder -->
+                <div id="caCashRem" style="margin-top:10px;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:12px;color:#8888a8;">🏦 Unallocated Cash</span>
+                    <span id="caCashRemVal" style="font-family:var(--v-mono);font-size:13px;font-weight:700;color:#60a5fa;">$100,000</span>
+                </div>
+            </div>
+            <!-- Visualisation -->
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Allocation Breakdown</div>
+                <div id="caBarChart" style="display:flex;flex-direction:column;gap:6px;"></div>
+            </div>
+            <!-- Simulated outcomes -->
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Simulated 3-Month Projection (based on strategy win rates)</div>
+                <div id="caProjection" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>
+            </div>
+            <!-- Rebalancing -->
+            <div style="background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.15);border-radius:12px;padding:14px;">
+                <div style="font-size:11px;font-weight:700;color:#818cf8;margin-bottom:8px;">⚖️ Rebalancing Simulation</div>
+                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                    <select id="caRebalFreq" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:6px 10px;font-size:11px;color:#e0e0f5;outline:none;">
+                        <option value="monthly">Monthly Rebalance</option>
+                        <option value="quarterly">Quarterly Rebalance</option>
+                        <option value="none" selected>No Rebalancing</option>
+                    </select>
+                    <button onclick="runRebalancingSim()" style="background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);color:#818cf8;border-radius:7px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;">Simulate</button>
+                </div>
+                <div id="caRebalResult" style="margin-top:10px;font-size:11px;color:#8888a8;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ ADVANCED ANALYTICS MODAL ═══ -->
+<div id="advancedAnalyticsModal" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto;">
+    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(244,114,182,0.2);border-radius:24px;width:100%;max-width:780px;margin:0 auto 40px;overflow:hidden;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);">
+        <div style="padding:24px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(244,114,182,0.06),transparent);">
+            <div>
+                <h2 style="font-family:var(--v-serif);font-size:1.4rem;color:#f0f0fa;margin:0 0 3px;">📊 Advanced Portfolio Analytics</h2>
+                <p style="font-size:11px;color:#8888a8;margin:0;">Equity curve · Drawdown · Risk-adjusted return · Sector exposure · Monthly heatmap</p>
+            </div>
+            <div style="display:flex;gap:8px;">
+                <button onclick="renderAdvancedAnalytics()" style="font-size:11px;background:rgba(244,114,182,0.1);border:1px solid rgba(244,114,182,0.25);color:#f472b6;border-radius:7px;padding:5px 12px;font-weight:700;cursor:pointer;">↻ Refresh</button>
+                <button onclick="closeAdvancedAnalytics()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;">&times;</button>
+            </div>
+        </div>
+        <div style="padding:20px 28px;display:grid;gap:20px;">
+            <!-- Equity + Drawdown Curves -->
+            <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                    <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;">Equity &amp; Drawdown Curves</div>
+                    <div style="display:flex;gap:6px;">
+                        <button onclick="aaToggleCurve('equity')" id="aaBtnEquity" style="font-size:10px;background:rgba(244,114,182,0.15);border:1px solid rgba(244,114,182,0.3);color:#f472b6;border-radius:5px;padding:3px 8px;cursor:pointer;font-weight:700;">Equity</button>
+                        <button onclick="aaToggleCurve('drawdown')" id="aaBtnDD" style="font-size:10px;background:transparent;border:1px solid rgba(255,255,255,0.1);color:#6868a0;border-radius:5px;padding:3px 8px;cursor:pointer;">Drawdown</button>
+                    </div>
+                </div>
+                <div style="height:160px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;overflow:hidden;padding:8px;">
+                    <canvas id="aaEquityCanvas" style="width:100%;height:100%;"></canvas>
+                </div>
+            </div>
+            <!-- Risk-adjusted metrics -->
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Risk-Adjusted Performance</div>
+                <div id="aaRiskMetrics" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;"></div>
+            </div>
+            <!-- Monthly P&L Heatmap -->
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Monthly P&amp;L Heatmap</div>
+                <div id="aaMonthlyHeatmap" style="overflow-x:auto;"></div>
+            </div>
+            <!-- Sector Exposure -->
+            <div>
+                <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Sector Exposure</div>
+                <div id="aaSectorExposure" style="display:flex;flex-direction:column;gap:6px;"></div>
+            </div>
+            <!-- Best / Worst Trades -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                <div>
+                    <div style="font-size:10px;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;">🏆 Best 5 Trades</div>
+                    <div id="aaBestTrades" style="display:flex;flex-direction:column;gap:5px;"></div>
+                </div>
+                <div>
+                    <div style="font-size:10px;font-weight:700;color:#f87171;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;">⚠️ Worst 5 Trades</div>
+                    <div id="aaWorstTrades" style="display:flex;flex-direction:column;gap:5px;"></div>
+                </div>
+            </div>
+            <!-- Compare vs SPY -->
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <div style="font-size:12px;font-weight:700;color:#f0f0fa;margin-bottom:3px;">Compare vs SPY (Benchmark)</div>
+                        <div style="font-size:11px;color:#8888a8;">Your return vs S&amp;P 500 during your trading period</div>
+                    </div>
+                    <div id="aaBenchmarkCompare" style="text-align:right;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
