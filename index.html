@@ -12126,7 +12126,7 @@ function startNewsEngine() {
         } catch(e) { return ''; }
     }
 
-    const _origRenderLeaderboard = window.renderLeaderboard || function(){};
+    // (leaderboard override already patched above)
 
     document.addEventListener('DOMContentLoaded', () => {
         setTimeout(startFeatureHints, 3000);
@@ -12686,8 +12686,7 @@ function startNewsEngine() {
         renderStrategyDecayAlerts();
     }
 
-    // Hook into executeOrderNow completion
-    const _origExecuteOrderNow = window.executeOrderNow;
+    // (executeOrderNow hook already wired above)
 
     // ═══════════════════════════════════════════════════════════════════════
     //  ADVANCED METRICS: RENDER IN AI COACH MODAL
@@ -12739,8 +12738,7 @@ function startNewsEngine() {
     // Load simulation mode from user prefs
     if (currentUser?.simulationMode) setSimulationMode(currentUser.simulationMode);
 
-    // Post-trade intelligence on every save
-    const _origSaveUserData = window.saveUserData;
+    // (saveUserData already patched above)
 
 </script>
 
