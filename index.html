@@ -1956,6 +1956,8 @@
           <!-- Candlestick canvas -->
           <div style="height:310px;position:relative;">
             <canvas id="stockChart" style="width:100%;height:100%;display:block;"></canvas>
+            <!-- Data range notice — shown when API tier limits history -->
+            <div id="chartDataRange" style="display:none;position:absolute;bottom:4px;left:8px;font-size:9px;color:#6868a0;font-style:italic;pointer-events:none;z-index:5;"></div>
           </div>
           <!-- RSI sub-panel -->
           <div id="rsiChartWrap" style="display:none;height:80px;border-top:1px solid rgba(255,255,255,0.05);position:relative;">
@@ -3012,6 +3014,7 @@ function startNewsEngine() {
                 <div><span style="color:#8888a8;">Split ×:</span> ${d.splitFactor||'—'}</div>
                 <div style="border-top:1px solid rgba(255,255,255,0.08);margin:3px 0;padding-top:3px;"></div>
                 <div><span style="color:#8888a8;">Data:</span> <span style="color:${d.isSimulated?'#f87171':'#4ade80'}">${d.isSimulated?'⚠ Simulated':'✓ Adj live'}</span> | <span style="color:#8888a8;">Cache:</span> ${cacheCount}</div>
+                ${d.tierLimited?`<div style="color:#f59e0b;">⚠ Free tier: data from ${d.dataFromYear}</div>`:''}
                 ${d.ytdPct!=null?`<div><span style="color:#8888a8;">YTD:</span> <span style="color:${parseFloat(d.ytdPct)>=0?'#4ade80':'#f87171'}">${d.ytdPct>=0?'+':''}${d.ytdPct}%</span></div>`:''}
                 ${mismatchRow}
                 <div style="color:#5050a0;margin-top:4px;font-size:8px;">Shift+D toggle · Shift+C clear cache</div>
@@ -3164,22 +3167,23 @@ function startNewsEngine() {
     }
 
     // ── Step 1 — fetchBase ────────────────────────────────────────────────────
-    //   Fetches 22 years of daily adjusted candles once per symbol.
-    //   Also calls /stock/split for informational split factor.
+    //   Fetches the maximum available daily adjusted candles for a symbol.
+    //   Finnhub free plan: ~10 years of daily data.
+    //   Finnhub premium:   full history (20+ years).
+    //   We always request 25 years and store whatever Finnhub returns.
+    //   The actual start date is stored in entry.dataFrom so the chart
+    //   can display a "data from YYYY" label instead of misleading blank space.
     async function fetchBase(symbol) {
         if(!RT||!RT.key) return null;
-        // Deduplication: concurrent calls for same symbol share one in-flight Promise
         if(_baseLoading[symbol]) return _baseLoading[symbol];
-        // Cache hit
         const ex=_baseStore[symbol];
         if(ex&&(Date.now()-ex.fetchedAt)<BASE_TTL) return ex;
 
-        // IMPORTANT: capture Promise in local var. The `finally` block deletes
-        // _baseLoading[symbol] before callers would read it via the property.
         const promise=(async()=>{
             try{
                 const toSec=Math.floor(Date.now()/1000);
-                const frSec=toSec-22*365*86400;  // 22 years of daily history
+                // Request 25 years — free tier returns what it can (typically ~10yr)
+                const frSec=toSec-25*365*86400;
                 const url=`https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(symbol)}&resolution=D&from=${frSec}&to=${toSec}&adjusted=true&token=${RT.key}`;
                 const r=await fetch(url);
                 if(r.status===429){showChartOverlay('ratelimit');setRateLimit();return null;}
@@ -3194,12 +3198,10 @@ function startNewsEngine() {
                 raw=validateRawCandles(raw,`${symbol}/base`);
                 if(raw.length<5) return null;
 
-                // Fetch split history for debug panel (informational only —
-                // candles already come split-adjusted via adjusted=true)
                 let splitFactor=1;
                 try{
                     const yr=new Date().getFullYear();
-                    const su=`https://finnhub.io/api/v1/stock/split?symbol=${encodeURIComponent(symbol)}&from=${yr-22}-01-01&to=${yr}-12-31&token=${RT.key}`;
+                    const su=`https://finnhub.io/api/v1/stock/split?symbol=${encodeURIComponent(symbol)}&from=${yr-25}-01-01&to=${yr}-12-31&token=${RT.key}`;
                     const sr=await fetch(su);
                     if(sr.ok){
                         const sd=await sr.json();
@@ -3207,7 +3209,7 @@ function startNewsEngine() {
                             splitFactor=sd.reduce((acc,s)=>acc*((s.toFactor||1)/(s.fromFactor||1)),1);
                         }
                     }
-                }catch(_){}  // split fetch never blocks chart
+                }catch(_){}
 
                 const candles=raw.map(c=>({
                     x:c.x,
@@ -3215,15 +3217,24 @@ function startNewsEngine() {
                     l:+c.l.toFixed(4),c:+c.c.toFixed(4),
                     v:Math.round(c.v||0),adjusted:true
                 }));
-                const entry={candles,fetchedAt:Date.now(),splitFactor,quote:null,symbol};
+
+                // Detect actual data range — Finnhub free tier caps at ~10 years
+                const dataFrom = candles[0].x;
+                const dataYears = (Date.now() - dataFrom) / (365.25 * 86400000);
+                const tierLimited = dataYears < 12; // free tier if < 12yr returned
+                const dataFromYear = new Date(dataFrom).getFullYear();
+
+                const entry={candles,fetchedAt:Date.now(),splitFactor,quote:null,symbol,
+                             dataFrom,dataFromYear,tierLimited};
                 _baseStore[symbol]=entry;
-                console.log(`[UDP] ${symbol}: ${candles.length} adj daily | split×${splitFactor.toFixed(4)} | $${candles[0].c.toFixed(2)}→$${candles[candles.length-1].c.toFixed(2)}`);
+                const tierNote = tierLimited ? ` [free tier: from ${dataFromYear}]` : '';
+                console.log(`[UDP] ${symbol}: ${candles.length} adj daily | ${dataFromYear}→now | split×${splitFactor.toFixed(4)}${tierNote}`);
                 return entry;
             }catch(e){console.warn('[UDP] fetchBase error:',e);return null;}
-            finally{delete _baseLoading[symbol];}  // release lock whether success or fail
+            finally{delete _baseLoading[symbol];}
         })();
-        _baseLoading[symbol]=promise;  // register for deduplication
-        return promise;                // return captured ref (not _baseLoading which was just deleted)
+        _baseLoading[symbol]=promise;
+        return promise;
     }
 
     // ── Step 2 — aggregateBase ────────────────────────────────────────────────
@@ -3501,6 +3512,8 @@ function startNewsEngine() {
             baseDays: entry?.candles.length || 0,
             integrityIssues: 0,
             ytdPct: null,
+            tierLimited: entry?.tierLimited || false,
+            dataFromYear: entry?.dataFromYear || null,
             priceMismatch: diff != null && diff > 0.01 ? (diff / livePrice * 100).toFixed(2) + '%' : null,
         };
         if (period === 'YTD' && candles.length > 1) {
@@ -3986,6 +3999,18 @@ function startNewsEngine() {
             }
 
             hideChartOverlay();
+
+            // Show "Data from YYYY" label for tier-limited periods (Max/5Y when free plan)
+            const baseEntry = _baseStore[stock.symbol];
+            const dataRangeEl = document.getElementById('chartDataRange');
+            if (dataRangeEl) {
+                if (baseEntry && baseEntry.tierLimited && (period === 'Max' || period === '5Y')) {
+                    dataRangeEl.textContent = `Data from ${baseEntry.dataFromYear} · Upgrade Finnhub for full history`;
+                    dataRangeEl.style.display = 'block';
+                } else {
+                    dataRangeEl.style.display = 'none';
+                }
+            }
         }
 
         buildDebugInfo(stock.symbol, period, res, candles, isSimulated);
