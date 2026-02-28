@@ -1886,16 +1886,21 @@
               <button onclick="toggleIndicator('MACD')"  id="ind-MACD"  class="ind-btn">MACD</button>
             </div>
           </div>
-          <!-- Row 2: intraday interval buttons — Finnhub resolution mapping -->
+          <!-- Row 2: candle resolution — always visible, context-aware per period -->
           <div id="intradayRow" style="display:flex;align-items:center;gap:0;padding:0 8px;border-top:1px solid rgba(255,255,255,0.04);">
-            <span style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.07em;padding:6px 10px 6px 2px;">Interval:</span>
-            <button onclick="setIntradayInterval('1')"  id="itv-1"  class="itv-btn" title="1 min — Finnhub res:1">1m</button>
-            <button onclick="setIntradayInterval('5')"  id="itv-5"  class="itv-btn itv-active" title="5 min — Finnhub res:5">5m</button>
-            <button onclick="setIntradayInterval('15')" id="itv-15" class="itv-btn" title="15 min — Finnhub res:15">15m</button>
-            <button onclick="setIntradayInterval('60')" id="itv-60" class="itv-btn" title="1 hour — Finnhub res:60">1H</button>
-            <button onclick="setIntradayInterval('D')"  id="itv-D"  class="itv-btn" title="Daily — Finnhub res:D">1D</button>
-            <button onclick="setIntradayInterval('W')"  id="itv-W"  class="itv-btn" title="Weekly — Finnhub res:W">1W</button>
-            <button onclick="setIntradayInterval('M')"  id="itv-M"  class="itv-btn" title="Monthly — Finnhub res:M">1M</button>
+            <span style="font-size:9px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.07em;padding:6px 10px 6px 2px;">Resolution:</span>
+            <!-- Intraday resolutions — shown for 1D and 5D -->
+            <button onclick="setResolution('1')"  id="itv-1"  class="itv-btn" title="1-minute candles" style="display:none;">1m</button>
+            <button onclick="setResolution('5')"  id="itv-5"  class="itv-btn" title="5-minute candles" style="display:none;">5m</button>
+            <button onclick="setResolution('15')" id="itv-15" class="itv-btn" title="15-minute candles" style="display:none;">15m</button>
+            <button onclick="setResolution('60')" id="itv-60" class="itv-btn" title="Hourly candles" style="display:none;">1H</button>
+            <!-- Daily resolution — shown for 1M / 6M / YTD -->
+            <button onclick="setResolution('D')"  id="itv-D"  class="itv-btn" title="Daily candles" style="display:none;">1D</button>
+            <!-- Weekly resolution — shown for 1Y / 5Y -->
+            <button onclick="setResolution('W')"  id="itv-W"  class="itv-btn" title="Weekly candles" style="display:none;">1W</button>
+            <!-- Monthly resolution — shown for Max -->
+            <button onclick="setResolution('M')"  id="itv-M"  class="itv-btn" title="Monthly candles" style="display:none;">1M</button>
+            <!-- Right-side meta -->
             <div id="chartLiveIndicator" style="margin-left:auto;display:none;align-items:center;gap:4px;padding-right:4px;">
               <div style="width:5px;height:5px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite;"></div>
               <span style="font-size:9px;color:#4ade80;font-weight:700;">LIVE</span>
@@ -2925,7 +2930,12 @@ function startNewsEngine() {
         // Draw chart after a microtask to allow the async fetchQuote (fired above)
         // to warm RT.cache before resolveCandles runs. The one-shot quote fetch
         // inside resolveCandles acts as a second safety net if the above is still pending.
-        Promise.resolve().then(() => drawChart(stock, '1D'));
+        Promise.resolve().then(() => {
+            // Initialize the resolution row for default period (1D) before drawing
+            _currentIntradayRes = '5';
+            _syncResolutionRow('1D');
+            drawChart(stock, '1D');
+        });
         // New feature panels
         renderAnalystRatings(stock);
         renderEarnings(stock);
@@ -3027,42 +3037,50 @@ function startNewsEngine() {
         }
     });
 
-    // ── Unified data pipeline config — immutable per period ─────────────────
-    // RULE: INTERVAL_CFG entries must NEVER be mutated at runtime.
-    // Resolution overrides (intraday buttons) are applied via _currentIntradayRes only.
-    // fromSec values include weekend/holiday buffer (+2 days for intraday, +15% for multi-day).
+    // ═══════════════════════════════════════════════════════════════════════════
+    //  UNIFIED PERIOD × RESOLUTION MATRIX  (single source of truth)
     //
-    // Aggregation contract (spec §3):
-    //   1D  → 5m intraday  (NYSE session candles only, adjusted=true)
-    //   5D  → 15m intraday (5 trading days ≈ 7 calendar days with buffer)
-    //   1M  → D  daily     (30 trading days)
-    //   6M  → D  daily     (≈130 trading days)
-    //   YTD → D  daily     (from Jan 1 00:00 ET — always EST, not EDT)
-    //   1Y  → W  weekly    (52 weeks)
-    //   5Y  → W  weekly    (260 weeks)
-    //   Max → M  monthly   (up to 20 years)
-    const INTERVAL_CFG = {
-        // Intraday resolution buttons (used when showItv periods delegate to them)
-        '1m':  { res:'1',  fromSec:3*86400,          unit:'minute', maxPts:480, showItv:true,  itvDef:'1'  },
-        '5m':  { res:'5',  fromSec:7*86400,          unit:'minute', maxPts:480, showItv:true,  itvDef:'5'  },
-        '15m': { res:'15', fromSec:14*86400,         unit:'minute', maxPts:480, showItv:true,  itvDef:'15' },
-        '1H':  { res:'60', fromSec:35*86400,         unit:'hour',   maxPts:480, showItv:true,  itvDef:'60' },
-        // Period tabs — correct resolution per spec §3, immutable at runtime
-        '1D':  { res:'5',  fromSec:3*86400,          unit:'minute', maxPts:200, showItv:true,  itvDef:'5'  },
-        '5D':  { res:'15', fromSec:9*86400,          unit:'minute', maxPts:250, showItv:true,  itvDef:'15' },
-        '1M':  { res:'D',  fromSec:40*86400,         unit:'day',    maxPts:35,  showItv:false, itvDef:'D'  },
-        '6M':  { res:'D',  fromSec:200*86400,        unit:'day',    maxPts:140, showItv:false, itvDef:'D'  },
-        'YTD': { res:'D',  fromSec:null,             unit:'day',    maxPts:260, showItv:false, itvDef:'D'  },
-        '1Y':  { res:'W',  fromSec:380*86400,        unit:'week',   maxPts:56,  showItv:false, itvDef:'W'  },
-        '5Y':  { res:'W',  fromSec:5*385*86400,      unit:'week',   maxPts:270, showItv:false, itvDef:'W'  },
-        'Max': { res:'M',  fromSec:22*365*86400,     unit:'month',  maxPts:264, showItv:false, itvDef:'M'  },
+    //  PERIOD_CFG[period] defines:
+    //    windowSec   — how far back to fetch from Finnhub (with calendar buffer)
+    //    defaultRes  — the Finnhub resolution used unless user overrides
+    //    allowedRes  — which resolution buttons are valid for this period
+    //    unit        — Chart.js time unit for axis labels
+    //    isIntraday  — true = use fetchIntraday path; false = use fetchBase path
+    //    maxPts      — max candles to keep (trim oldest if exceeded)
+    //
+    //  RESOLUTION OVERRIDE RULE:
+    //    The bottom row only changes resolution within the SAME period.
+    //    It never changes windowSec — that is controlled exclusively by the top row.
+    //    fetchIntraday receives (windowSec from period, res from user/default).
+    //    aggregateBase receives period for its date window, ignores res (daily base).
+    // ═══════════════════════════════════════════════════════════════════════════
+    const PERIOD_CFG = {
+        '1D':  { windowSec:3*86400,       defaultRes:'5',  allowedRes:['1','5','15','60'],  unit:'minute', isIntraday:true,  maxPts:500 },
+        '5D':  { windowSec:9*86400,       defaultRes:'15', allowedRes:['5','15','60'],      unit:'minute', isIntraday:true,  maxPts:500 },
+        '1M':  { windowSec:40*86400,      defaultRes:'D',  allowedRes:['D'],                unit:'day',    isIntraday:false, maxPts:35  },
+        '6M':  { windowSec:200*86400,     defaultRes:'D',  allowedRes:['D'],                unit:'day',    isIntraday:false, maxPts:140 },
+        'YTD': { windowSec:null,          defaultRes:'D',  allowedRes:['D'],                unit:'day',    isIntraday:false, maxPts:260 },
+        '1Y':  { windowSec:380*86400,     defaultRes:'W',  allowedRes:['D','W'],            unit:'week',   isIntraday:false, maxPts:56  },
+        '5Y':  { windowSec:5*385*86400,   defaultRes:'W',  allowedRes:['W'],                unit:'week',   isIntraday:false, maxPts:270 },
+        'Max': { windowSec:22*365*86400,  defaultRes:'M',  allowedRes:['M'],                unit:'month',  isIntraday:false, maxPts:264 },
     };
 
-    // resolution → Chart.js unit (for user-driven interval button overrides)
+    // Resolution → Chart.js time unit
     const RES_TO_UNIT = {
         '1':'minute','5':'minute','15':'minute','60':'hour',
         'D':'day','W':'week','M':'month',
-        '1m':'minute','5m':'minute','15m':'minute','1H':'hour',
+    };
+
+    // Keep INTERVAL_CFG as a compatibility alias (some legacy paths reference it)
+    const INTERVAL_CFG = {
+        '1D':  { res:'5',  fromSec:3*86400,      unit:'minute', maxPts:500, showItv:true,  itvDef:'5'  },
+        '5D':  { res:'15', fromSec:9*86400,      unit:'minute', maxPts:500, showItv:true,  itvDef:'15' },
+        '1M':  { res:'D',  fromSec:40*86400,     unit:'day',    maxPts:35,  showItv:false, itvDef:'D'  },
+        '6M':  { res:'D',  fromSec:200*86400,    unit:'day',    maxPts:140, showItv:false, itvDef:'D'  },
+        'YTD': { res:'D',  fromSec:null,         unit:'day',    maxPts:260, showItv:false, itvDef:'D'  },
+        '1Y':  { res:'W',  fromSec:380*86400,    unit:'week',   maxPts:56,  showItv:false, itvDef:'W'  },
+        '5Y':  { res:'W',  fromSec:5*385*86400,  unit:'week',   maxPts:270, showItv:false, itvDef:'W'  },
+        'Max': { res:'M',  fromSec:22*365*86400, unit:'month',  maxPts:264, showItv:false, itvDef:'M'  },
     };
 
     function isDark() { return !document.body.classList.contains('light-mode'); }
@@ -3369,70 +3387,92 @@ function startNewsEngine() {
     }
 
     // ── Master resolver ───────────────────────────────────────────────────────
-    //   Single entry point for all chart data. Period routing:
-    //     1D/5D → fetchIntraday (minute candles, correct window per period)
-    //     1M/6M/YTD/1Y → fetchBase daily, aggregateBase daily slices
-    //     5Y    → fetchBase daily, aggregateBase → ISO-week buckets
-    //     Max   → fetchBase daily, aggregateBase → calendar-month buckets
+    //   Single entry point. Enforces the contract:
+    //     period  → controls date window (windowSec / YTD / Max)
+    //     res     → controls candle granularity within that window
+    //   They are independent axes. Changing res never changes windowSec.
+    //
+    //   Routing:
+    //     1D / 5D  → fetchIntraday(symbol, res, windowSec, period)
+    //     1M–Max   → fetchBase (22yr daily) → aggregateBase(period) → done
+    //                 (res is informational only for daily+; aggregation handles it)
     //
     //   Quote sync guarantee:
-    //     If RT.cache is cold on first open, fires a one-shot /quote fetch so
-    //     the last candle close = header price BEFORE the batch cycle arrives.
-    async function resolveCandles(symbol, period, intradayRes) {
-        // ── Live price: RT.cache is the authoritative source after applyRealQuote.
-        //    On first open it may be 0. We warm it with a one-shot /quote fetch.
+    //     Live price is patched into the last candle after every resolve,
+    //     within $0.005 tolerance. After-hours appended as extended stub.
+    async function resolveCandles(symbol, period, res) {
+        const pcfg = PERIOD_CFG[period] || PERIOD_CFG['1D'];
+        // Effective resolution: user override if allowed for this period, else default
+        const allowedRes = pcfg.allowedRes || [pcfg.defaultRes];
+        const effectiveRes = (res && allowedRes.includes(res)) ? res : pcfg.defaultRes;
+
+        // ── Live price warm-up ────────────────────────────────────────────────
         let livePrice = RT.cache[symbol]?.price || 0;
-        if(livePrice <= 0 && RT && RT.key) {
+        if (livePrice <= 0 && RT && RT.key) {
             const qt = await fetchQuote(symbol);
-            if(qt && qt.c > 0) {
+            if (qt && qt.c > 0) {
                 livePrice = qt.c;
                 RT.cache[symbol] = { price: qt.c, change: (qt.dp||0), ts: Date.now() };
                 const stk = getStockBySymbol(symbol);
-                if(stk) {
+                if (stk) {
                     stk.price = qt.c;
-                    if(qt.dp != null) stk.change = qt.dp;
-                    if(qt.h)  stk.dayHigh   = qt.h;
-                    if(qt.l)  stk.dayLow    = qt.l;
-                    if(qt.o)  stk.dayOpen   = qt.o;
-                    if(qt.pc) stk.prevClose = qt.pc;
+                    if (qt.dp != null) stk.change = qt.dp;
+                    if (qt.h)  stk.dayHigh   = qt.h;
+                    if (qt.l)  stk.dayLow    = qt.l;
+                    if (qt.o)  stk.dayOpen   = qt.o;
+                    if (qt.pc) stk.prevClose = qt.pc;
                 }
             }
         }
 
-        // ── 1D and 5D: intraday candle fetch ───────────────────────────────────
-        if(period==='1D' || period==='5D') {
-            const res = intradayRes || (period==='5D' ? '15' : '5');
-            const windowSec = period==='5D' ? 9*86400 : 3*86400;
-            const candles = await fetchIntraday(symbol, res, windowSec, period);
-            if(!candles||candles.length<3) return null;
+        // ── INTRADAY PATH: 1D and 5D ─────────────────────────────────────────
+        //   windowSec comes from PERIOD_CFG[period].windowSec (never from res)
+        //   effectiveRes controls candle granularity only
+        if (pcfg.isIntraday) {
+            const candles = await fetchIntraday(symbol, effectiveRes, pcfg.windowSec, period);
+            if (!candles || candles.length < 3) return null;
             const synced = syncQuoteToCandles(candles, livePrice);
             validateDataset(synced, symbol, period, livePrice);
             return synced;
         }
 
-        // ── Daily+ periods: one shared base dataset, windowed by aggregateBase ─
+        // ── DAILY+ PATH: 1M, 6M, YTD, 1Y, 5Y, Max ───────────────────────────
+        //   Always uses 22-year daily base → aggregateBase slices by period window
+        //   Resolution is handled by aggregation (weekly/monthly bucketing in aggregateBase)
+        //   Never re-fetches at different granularity — base is always daily adjusted
         let entry = await fetchBase(symbol);
-        if(!entry) return null;
-        if(isBaseStale(entry)) {
+        if (!entry) return null;
+        if (isBaseStale(entry)) {
             delete _baseStore[symbol];
             entry = await fetchBase(symbol);
-            if(!entry) return null;
+            if (!entry) return null;
         }
-        if(entry.quote===null && livePrice>0) entry.quote = {c: livePrice};
+        if (entry.quote === null && livePrice > 0) entry.quote = { c: livePrice };
 
-        // Patch base store last candle with live quote so ALL derived windows
-        // (1M, 6M, YTD, 1Y, 5Y, Max) share the same corrected endpoint.
-        if(livePrice > 0 && entry.candles.length > 0) {
-            const lb = entry.candles[entry.candles.length-1];
-            if(Math.abs(lb.c - livePrice) >= 0.005) {
+        // Patch base store last candle with live quote — ALL derived windows share this
+        if (livePrice > 0 && entry.candles.length > 0) {
+            const lb = entry.candles[entry.candles.length - 1];
+            if (Math.abs(lb.c - livePrice) >= 0.005) {
                 lb.c = +livePrice.toFixed(4);
                 lb.h = Math.max(lb.h, livePrice);
                 lb.l = Math.min(lb.l, livePrice);
             }
         }
 
-        const view = aggregateBase(entry.candles, period);
-        if(!view||view.length<3) return null;
+        // For 1Y: if user selected 'D' resolution, return raw daily slice (no weekly agg)
+        // aggregateBase handles weekly/monthly bucketing for 5Y and Max
+        let view;
+        if (period === '1Y' && effectiveRes === 'D') {
+            // Override: show daily candles for 1Y instead of weekly
+            const now = Date.now();
+            const fromMs = now - 380 * 86400000;
+            view = entry.candles.filter(c => c.x >= fromMs);
+            if (!view || view.length < 3) view = aggregateBase(entry.candles, period);
+        } else {
+            view = aggregateBase(entry.candles, period);
+        }
+
+        if (!view || view.length < 3) return null;
         const synced = syncQuoteToCandles(view, livePrice);
         validateDataset(synced, symbol, period, livePrice);
         return synced;
@@ -3440,31 +3480,32 @@ function startNewsEngine() {
 
 
     // ── Debug info builder ─────────────────────────────────────────────────────
-    function buildDebugInfo(symbol,period,intradayRes,candles,isSimulated){
-        const entry=_baseStore[symbol];
-        const livePrice=RT.cache[symbol]?.price||0;
-        const last=candles[candles.length-1];
-        const diff=livePrice>0?Math.abs(last.c-livePrice):null;
-        _chartDebugInfo={
-            period,symbol,
-            res: (period==='1D'||period==='5D')?intradayRes:'D→agg',
-            count:candles.length,
-            first:candles[0],last,
-            minPrice:Math.min(...candles.map(c=>c.l)),
-            maxPrice:Math.max(...candles.map(c=>c.h)),
+    function buildDebugInfo(symbol, period, activeRes, candles, isSimulated) {
+        const entry = _baseStore[symbol];
+        const pcfg  = PERIOD_CFG[period] || PERIOD_CFG['1D'];
+        const livePrice = RT.cache[symbol]?.price || 0;
+        const last = candles[candles.length - 1];
+        const diff = livePrice > 0 ? Math.abs(last.c - livePrice) : null;
+        _chartDebugInfo = {
+            period, symbol,
+            res: pcfg.isIntraday ? activeRes : 'D→agg',
+            count: candles.length,
+            first: candles[0], last,
+            minPrice: Math.min(...candles.map(c => c.l)),
+            maxPrice: Math.max(...candles.map(c => c.h)),
             isSimulated,
-            splitFactor: entry?.splitFactor!=null?entry.splitFactor.toFixed(4):'—',
-            liveQuote: livePrice||'—',
+            splitFactor: entry?.splitFactor != null ? entry.splitFactor.toFixed(4) : '—',
+            liveQuote: livePrice || '—',
             lastClose: last.c,
-            quoteDiff: diff!=null?(diff<0.005?'✓ synced':'$'+diff.toFixed(4)):'—',
-            baseDays: entry?.candles.length||0,
-            integrityIssues:0,
-            ytdPct:null,
-            priceMismatch: diff!=null&&diff>0.01?(diff/livePrice*100).toFixed(2)+'%':null,
+            quoteDiff: diff != null ? (diff < 0.005 ? '✓ synced' : '$' + diff.toFixed(4)) : '—',
+            baseDays: entry?.candles.length || 0,
+            integrityIssues: 0,
+            ytdPct: null,
+            priceMismatch: diff != null && diff > 0.01 ? (diff / livePrice * 100).toFixed(2) + '%' : null,
         };
-        if(period==='YTD'&&candles.length>1){
-            const s=candles[0].c;
-            _chartDebugInfo.ytdPct=((last.c-s)/s*100).toFixed(2);
+        if (period === 'YTD' && candles.length > 1) {
+            const s = candles[0].c;
+            _chartDebugInfo.ytdPct = ((last.c - s) / s * 100).toFixed(2);
         }
         updateChartDebugOverlay();
     }
@@ -3884,9 +3925,15 @@ function startNewsEngine() {
         showChartOverlay('loading');
         updateTzLabel();
 
-        const cfg = INTERVAL_CFG[period] || INTERVAL_CFG['1D'];
-        // Use the period's default resolution; respect intraday override ONLY for showItv periods
-        const res = cfg.showItv ? _currentIntradayRes : cfg.itvDef;
+        const pcfg = PERIOD_CFG[period] || PERIOD_CFG['1D'];
+        const cfg   = INTERVAL_CFG[period] || INTERVAL_CFG['1D']; // compat alias for Chart.js unit
+
+        // Effective resolution: user's current selection if allowed for this period, else default
+        const allowedRes = pcfg.allowedRes || [pcfg.defaultRes];
+        const res = (allowedRes.includes(_currentIntradayRes)) ? _currentIntradayRes : pcfg.defaultRes;
+
+        // Chart.js time unit derives from effective resolution (not period default)
+        const chartUnit = RES_TO_UNIT[res] || pcfg.unit;
 
         // ── Cache isolation: clear stale cross-interval data ─────────────────
         // Different periods must never share candle data. Each key is unique.
@@ -3974,7 +4021,7 @@ function startNewsEngine() {
             const prevUnit = sChart?._vestraUnit;
             const needRecreate = !sChart || sChart._destroyed ||
                                  sChart.canvas !== candleCanvas ||
-                                 prevUnit !== cfg.unit;
+                                 prevUnit !== chartUnit;
 
             if (!needRecreate) {
                 // ── NO-FLICKER SAME-UNIT UPDATE: swap data in place ────────────
@@ -3988,7 +4035,7 @@ function startNewsEngine() {
                 }
                 overlays.forEach(ds=>sChart.data.datasets.push(ds));
                 // Update time unit and Y-axis bounds from actual dataset
-                sChart.options.scales.x.time.unit = cfg.unit;
+                sChart.options.scales.x.time.unit = chartUnit;
                 const lo = Math.min(...candles.map(c=>c.l));
                 const hi = Math.max(...candles.map(c=>c.h));
                 const pad = (hi-lo)*0.02 || hi*0.01;
@@ -4025,7 +4072,7 @@ function startNewsEngine() {
                                     title:ctx=>{
                                         const raw=ctx[0];
                                         const d=new Date(raw.parsed?.x||raw.raw?.x||0);
-                                        const intra=['1D','5D'].includes(period)||['1','5','15','60'].includes(_currentIntradayRes);
+                                        const intra = pcfg.isIntraday || ['1','5','15','60'].includes(res);
                                         return d.toLocaleString([],intra
                                             ?{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}
                                             :{weekday:'short',month:'short',day:'numeric',year:'numeric'});
@@ -4049,9 +4096,9 @@ function startNewsEngine() {
                             x:{
                                 type:'time',
                                 time:{
-                                    unit: cfg.unit,
-                                    tooltipFormat: (['day','week'].includes(cfg.unit)) ? 'MMM d, yyyy' :
-                                                   cfg.unit === 'month' ? 'MMM yyyy' : 'MMM d, yyyy HH:mm'
+                                    unit: chartUnit,
+                                    tooltipFormat: (['day','week'].includes(chartUnit)) ? 'MMM d, yyyy' :
+                                                   chartUnit === 'month' ? 'MMM yyyy' : 'MMM d, yyyy HH:mm'
                                 },
                                 adapters:{ date:{} },
                                 ticks:{ color:tc.text, maxTicksLimit:9, maxRotation:0, source:'auto', autoSkip:true },
@@ -4085,7 +4132,7 @@ function startNewsEngine() {
                         }
                     }
                 });
-                sChart._vestraUnit = cfg.unit;  // stamp for recreation guard
+                sChart._vestraUnit = chartUnit;  // stamp for recreation guard
             }
 
             // Volume is now embedded in sChart as dataset index 1 (yAxisID:'vol')
@@ -4142,82 +4189,129 @@ function startNewsEngine() {
         }
     }
 
-    // ── Intraday interval button system ───────────────────────────────────────
-    const PERIOD_INTRADAY_MAP = {
-        // 1D and 5D: show intraday interval selector
-        '1D':  { showItv:true,  itvDef:'5'  },
-        '5D':  { showItv:true,  itvDef:'15' },
-        // 1M and above: use fixed resolutions (no interval button row)
-        '1M':  { showItv:false, itvDef:'D'  },  // daily candles per spec §3
-        '6M':  { showItv:false, itvDef:'D'  },
-        'YTD': { showItv:false, itvDef:'D'  },
-        '1Y':  { showItv:false, itvDef:'W'  },
-        '5Y':  { showItv:false, itvDef:'W'  },  // weekly per spec §3
-        'Max': { showItv:false, itvDef:'M'  },
-        // Intraday resolution buttons map to themselves
-        '1m':  { showItv:true,  itvDef:'1'  },
-        '5m':  { showItv:true,  itvDef:'5'  },
-        '15m': { showItv:true,  itvDef:'15' },
-        '1H':  { showItv:true,  itvDef:'60' },
-    };
+    // ═══════════════════════════════════════════════════════════════════════════
+    //  UNIFIED PERIOD + RESOLUTION HANDLERS
+    //
+    //  Contract:
+    //    setChartPeriod(period, btn)  — top row: changes date window only
+    //      • Updates _currentIntradayRes to the default for that period
+    //      • Shows only resolution buttons valid for that period
+    //      • Clears intraday cache (never base cache) and redraws
+    //
+    //    setResolution(res)           — bottom row: changes candle granularity only
+    //      • windowSec never changes — it stays bound to the current period
+    //      • Clears only the intraday cache for the current period+res
+    //      • Redraws with the same period, new resolution
+    //
+    //  NO independent data sources. NO cross-contamination between rows.
+    // ═══════════════════════════════════════════════════════════════════════════
 
-    function setIntradayInterval(res) {
-        _currentIntradayRes = res;
-        document.querySelectorAll('.itv-btn').forEach(b=>b.classList.remove('itv-active'));
-        const b=document.getElementById('itv-'+res); if(b) b.classList.add('itv-active');
-        if(detailStock) {
-            // Invalidate cache for this exact combination — force fresh fetch
-            delete candleCache[`${detailStock.symbol}||${currentChartPeriod}||${res}`];
-            // Also clear any old-format keys to prevent stale data
-            Object.keys(candleCache).forEach(k => {
-                if (k.startsWith(detailStock.symbol + '||' + currentChartPeriod)) {
-                    delete candleCache[k];
-                }
-            });
-            drawChart(detailStock, currentChartPeriod);
-        }
+    function _syncResolutionRow(period) {
+        const pcfg = PERIOD_CFG[period] || PERIOD_CFG['1D'];
+        const allowed = pcfg.allowedRes || [pcfg.defaultRes];
+
+        // Show/hide each button based on whether it's valid for this period
+        const ALL_RES = ['1','5','15','60','D','W','M'];
+        ALL_RES.forEach(r => {
+            const btn = document.getElementById('itv-' + r);
+            if (!btn) return;
+            btn.style.display = allowed.includes(r) ? '' : 'none';
+            btn.classList.remove('itv-active');
+        });
+
+        // Activate the current resolution button (or default if current isn't allowed)
+        const active = allowed.includes(_currentIntradayRes) ? _currentIntradayRes : pcfg.defaultRes;
+        _currentIntradayRes = active;
+        const activeBtn = document.getElementById('itv-' + active);
+        if (activeBtn) activeBtn.classList.add('itv-active');
+
+        // Always show the resolution row (it always has at least one button)
+        const row = document.getElementById('intradayRow');
+        if (row) row.style.display = 'flex';
     }
 
-    // ── Period tab handler ────────────────────────────────────────────────────
     function setChartPeriod(period, btn) {
-        // Style tabs
-        document.querySelectorAll('.ctab').forEach(b=>{
-            b.style.color='#6868a0'; b.style.borderBottomColor='transparent'; b.style.fontWeight='600';
+        // Style period tabs
+        document.querySelectorAll('.ctab').forEach(b => {
+            b.style.color = '#6868a0';
+            b.style.borderBottomColor = 'transparent';
+            b.style.fontWeight = '600';
         });
-        btn.style.color='#8ab4f8'; btn.style.borderBottomColor='#8ab4f8'; btn.style.fontWeight='700';
+        if (btn) {
+            btn.style.color = '#8ab4f8';
+            btn.style.borderBottomColor = '#8ab4f8';
+            btn.style.fontWeight = '700';
+        }
         currentChartPeriod = period;
 
-        // Intraday interval row — driven by PERIOD_INTRADAY_MAP
-        const icfg = PERIOD_INTRADAY_MAP[period] || {showItv:false, itvDef:'D'};
-        const itvRow = document.getElementById('intradayRow');
-        if(itvRow) itvRow.style.display = icfg.showItv ? 'flex' : 'none';
-        _currentIntradayRes = icfg.itvDef;
-        document.querySelectorAll('.itv-btn').forEach(b=>b.classList.remove('itv-active'));
-        const db=document.getElementById('itv-'+icfg.itvDef); if(db) db.classList.add('itv-active');
+        // Reset resolution to period default, then sync the button row
+        const pcfg = PERIOD_CFG[period] || PERIOD_CFG['1D'];
+        _currentIntradayRes = pcfg.defaultRes;
+        _syncResolutionRow(period);
 
-        // ── Cache isolation on period switch ─────────────────────────────────
-        // Clear candleCache shim for the new period.
-        // For 1D/5D (intraday): also clear _intradayStore to force a fresh fetch.
-        // Never clear _baseStore — the daily base is shared across all daily+ periods.
+        // Cache invalidation:
+        //   Intraday (1D/5D): clear _intradayStore so fresh fetch happens
+        //   Daily+ periods: never clear _baseStore (it's shared)
         if (detailStock) {
             const sym = detailStock.symbol;
-            const p1 = sym + '||' + period;
-            const p2 = sym + '_' + period;
-            Object.keys(candleCache).forEach(k => {
-                if (k.startsWith(p1) || k.startsWith(p2)) delete candleCache[k];
-            });
-            if (period === '1D' || period === '5D') {
-                // Clear all intraday keys for this symbol so fetchIntraday re-fetches
+            if (pcfg.isIntraday) {
                 Object.keys(_intradayStore).forEach(k => {
                     if (k.startsWith(sym + '||')) delete _intradayStore[k];
                 });
             }
+            // Always clear candleCache shim for this period
+            Object.keys(candleCache).forEach(k => {
+                if (k.startsWith(sym + '||' + period)) delete candleCache[k];
+            });
         }
 
-        // Debounce 80ms (prevents double-fetch on rapid tab clicks)
+        showChartOverlay('loading');
         clearTimeout(_periodDebounce);
-        _periodDebounce = setTimeout(() => { if(detailStock) drawChart(detailStock, period); }, 80);
+        _periodDebounce = setTimeout(() => {
+            if (detailStock) drawChart(detailStock, period);
+        }, 80);
     }
+
+    // setResolution: bottom row — changes candle granularity ONLY, not date window
+    let _itvDebounce = null;
+    function setResolution(res) {
+        const pcfg = PERIOD_CFG[currentChartPeriod] || PERIOD_CFG['1D'];
+        const allowed = pcfg.allowedRes || [pcfg.defaultRes];
+
+        // Ignore clicks on resolutions not valid for this period (shouldn't happen
+        // since the buttons are hidden, but guard defensively)
+        if (!allowed.includes(res)) return;
+
+        _currentIntradayRes = res;
+
+        // Update button states
+        document.querySelectorAll('.itv-btn').forEach(b => b.classList.remove('itv-active'));
+        const btn = document.getElementById('itv-' + res);
+        if (btn) btn.classList.add('itv-active');
+
+        if (!detailStock) return;
+        const sym = detailStock.symbol;
+
+        // Clear only the specific intraday cache entry for this period+res
+        // Never clear _baseStore — daily+ periods re-aggregate from the same base
+        if (pcfg.isIntraday) {
+            const key = `${sym}||${res}||${currentChartPeriod}`;
+            delete _intradayStore[key];
+        }
+        // Clear candleCache shim for this combination
+        Object.keys(candleCache).forEach(k => {
+            if (k.startsWith(sym + '||' + currentChartPeriod)) delete candleCache[k];
+        });
+
+        showChartOverlay('loading');
+        clearTimeout(_itvDebounce);
+        _itvDebounce = setTimeout(() => {
+            if (detailStock) drawChart(detailStock, currentChartPeriod);
+        }, 120);
+    }
+
+    // Legacy alias — keeps any existing onclick="setIntradayInterval(...)" refs working
+    function setIntradayInterval(res) { setResolution(res); }
 
     // ── Indicator toggle ──────────────────────────────────────────────────────
     function toggleIndicator(name) {
@@ -4358,41 +4452,7 @@ function startNewsEngine() {
         banner.innerHTML = `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${color};margin-right:5px;${open?'animation:pulse 2s infinite':''}"></span>${state}`;
     }
 
-    // ── Improved setChartPeriod with proper loading state ─────────────────────
-    const _baseSetChartPeriod2 = setChartPeriod;
-    setChartPeriod = function(period, btn) {
-        showChartOverlay('loading');
-        _baseSetChartPeriod2(period, btn);
-    };
-
-    // ── Improved setIntradayInterval with loading + debounce ─────────────────
-    // IMPORTANT: Does NOT mutate INTERVAL_CFG — period configs are immutable.
-    // Resolution overrides are applied only inside fetchCandles via _currentIntradayRes.
-    let _itvDebounce = null;
-    setIntradayInterval = function(res) {
-        // Update buttons immediately (no wait)
-        document.querySelectorAll('.itv-btn').forEach(b => b.classList.remove('itv-active'));
-        const b = document.getElementById('itv-'+res); if(b) b.classList.add('itv-active');
-        _currentIntradayRes = res;
-        showChartOverlay('loading');
-        clearTimeout(_itvDebounce);
-        _itvDebounce = setTimeout(() => {
-            if (detailStock) {
-                const sym = detailStock.symbol;
-                // Clear candleCache shim + _intradayStore for all intraday periods
-                const symPfx1 = sym + '||' + currentChartPeriod;
-                const symPfx2 = sym + '_' + currentChartPeriod;
-                Object.keys(candleCache).forEach(k => {
-                    if (k.startsWith(symPfx1) || k.startsWith(symPfx2)) delete candleCache[k];
-                });
-                // Always clear _intradayStore for this symbol (covers 1D and 5D)
-                Object.keys(_intradayStore).forEach(k => {
-                    if (k.startsWith(sym + '||')) delete _intradayStore[k];
-                });
-                drawChart(detailStock, currentChartPeriod);
-            }
-        }, 120);
-    };
+    // (setChartPeriod and setResolution are fully defined above — no patches needed)
 
     // ── Attach crosshair to sChart after drawChart completes ─────────────────
     const _baseDrawChart = drawChart;
@@ -4433,8 +4493,8 @@ function startNewsEngine() {
 
     // ── Max candle guard: slice if over limit before rendering ────────────────
     function enforceMaxCandles(candles, period) {
-        const intraday = ['1D','5D'].includes(period) || ['1','5','15','60'].includes(_currentIntradayRes);
-        const limit = intraday ? 500 : 300;
+        const pcfg = PERIOD_CFG[period] || PERIOD_CFG['1D'];
+        const limit = pcfg.maxPts || 500;
         if (candles.length > limit) return candles.slice(candles.length - limit);
         return candles;
     }
@@ -4519,9 +4579,9 @@ function startNewsEngine() {
             return;
         }
         // Tertiary: cache lookup using correct key format
-        const cfg = INTERVAL_CFG[period] || INTERVAL_CFG['1D'];
-        const res  = (cfg.showItv ? _currentIntradayRes : cfg.itvDef);
-        const cacheKey = `${stock.symbol}||${period}||${res}`;
+        const pcfg2 = PERIOD_CFG[period] || PERIOD_CFG['1D'];
+        const res2  = pcfg2.allowedRes.includes(_currentIntradayRes) ? _currentIntradayRes : pcfg2.defaultRes;
+        const cacheKey = `${stock.symbol}||${period}||${res2}`;
         if (candleCache[cacheKey]) updateOHLCSummary(candleCache[cacheKey].data);
     };
 
