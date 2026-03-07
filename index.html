@@ -15961,7 +15961,7 @@ window.vestraDesign = { animateValue, animateStockGrid };
         const gainPct = (totalVal - oldCapital) / oldCapital;
         cash = newTier.capital * (1 + gainPct * 0.5); // Reset with partial carried gains
         currentUser.cash = cash;
-        saveUsers();
+        saveUserData(false);
 
         // Show the animation
         showLevelUpAnimation(newTier, oldCapital, newTier.capital);
@@ -16072,7 +16072,7 @@ window.vestraDesign = { animateValue, animateStockGrid };
             currentUser.tierRank = 1;
             currentUser.tierId = 'cadet';
             currentUser.startCash = 10000;
-            saveUsers();
+            saveUserData(false);
         }
     }
 
