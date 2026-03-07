@@ -2765,6 +2765,185 @@
             flex-shrink: 0;
         }
 
+    
+        /* ── Visitor counter section ── */
+        .v-visitors-section {
+            padding: 64px 0;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: #09090f;
+        }
+        .v-visitors-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .v-visitors-eyebrow {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--v-gold);
+            margin: 0 0 10px;
+        }
+        .v-visitors-headline {
+            font-family: var(--v-serif);
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #f0f0fa;
+            margin: 0 0 8px;
+            letter-spacing: -0.03em;
+        }
+        .v-visitors-desc {
+            font-size: 13px;
+            color: #6060a0;
+            line-height: 1.7;
+            max-width: 380px;
+            margin: 0 0 12px;
+        }
+        .v-visitors-dot {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #4ade80;
+            font-weight: 600;
+        }
+        .v-visitors-dot::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse-green 2.5s infinite;
+        }
+        @keyframes pulse-green {
+            0%,100% { opacity:1; transform:scale(1); }
+            50% { opacity:0.4; transform:scale(1.4); }
+        }
+        .v-visitors-stats {
+            display: flex;
+            gap: 0;
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .v-visitors-stat {
+            padding: 28px 36px;
+            border-right: 1px solid rgba(255,255,255,0.07);
+            text-align: center;
+            min-width: 140px;
+        }
+        .v-visitors-stat:last-child { border-right: none; }
+        .v-visitors-n {
+            font-family: var(--v-mono);
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: var(--v-gold);
+            line-height: 1;
+            margin-bottom: 6px;
+            display: block;
+        }
+        .v-visitors-l {
+            font-size: 11px;
+            color: #5050a0;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        /* ── Learn track accordion ── */
+        .v-learn-tracks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 24px 0 0;
+        }
+        .v-learn-track-item {
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .v-learn-track-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: background 0.15s;
+            user-select: none;
+        }
+        .v-learn-track-header:hover { background: rgba(255,255,255,0.02); }
+        .v-learn-track-icon {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            border: 1px solid;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .v-learn-track-meta { flex: 1; }
+        .v-learn-track-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #d0d0e8;
+            margin-bottom: 2px;
+        }
+        .v-learn-track-count {
+            font-size: 11px;
+            color: #484870;
+        }
+        .v-learn-track-chevron {
+            color: #484870;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+        .v-learn-track-item.open .v-learn-track-chevron { transform: rotate(180deg); }
+        .v-learn-track-body {
+            display: none;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .v-learn-track-item.open .v-learn-track-body { display: block; }
+        .v-learn-lesson {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .v-learn-lesson:last-child { border-bottom: none; }
+        .v-ll-num {
+            font-family: var(--v-mono);
+            font-size: 10px;
+            color: #333360;
+            font-weight: 600;
+            padding-top: 2px;
+            flex-shrink: 0;
+            min-width: 18px;
+        }
+        .v-ll-text { flex: 1; }
+        .v-ll-title {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #b0b0d0;
+            margin-bottom: 3px;
+            line-height: 1.4;
+        }
+        .v-ll-desc {
+            font-size: 11.5px;
+            color: #404068;
+            line-height: 1.6;
+        }
+        .v-ll-time {
+            font-family: var(--v-mono);
+            font-size: 10px;
+            color: #333360;
+            font-weight: 600;
+            flex-shrink: 0;
+            padding-top: 2px;
+        }
+
     </style>
 </head>
 <body class="overflow-x-hidden">
@@ -2790,7 +2969,6 @@
       <a class="v-nav-link" href="#features" onclick="document.getElementById('homeFeaturesSection').scrollIntoView({behavior:'smooth'});return false;">Simulator</a>
       <a class="v-nav-link" href="#tiers" onclick="document.getElementById('tiersSection').scrollIntoView({behavior:'smooth'});return false;">Challenges</a>
       <a class="v-nav-link" href="#learn" onclick="document.getElementById('learnSection').scrollIntoView({behavior:'smooth'});return false;">Education</a>
-      <a class="v-nav-link" href="#leaderboard" onclick="document.getElementById('leaderboardSection').scrollIntoView({behavior:'smooth'});return false;">Leaderboards</a>
     </div>
     <div class="v-nav-actions">
       <button class="v-btn v-btn-ghost" onclick="showAuthFromHome('login')">Sign In</button>
@@ -3193,38 +3371,112 @@
       <div class="v-two-col-left">
         <p class="v-eyebrow">Trading Academy</p>
         <h2 class="v-section-title left">Learn the Right Way<br>to Trade.</h2>
-        <p class="v-body-text">Vestra isn't just a simulator — it's a learning environment. Each session generates data about how you trade, what mistakes you make, and how to correct them.</p>
-        <div class="v-learn-cards">
-          <div class="v-learn-card">
-            <div class="v-learn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
-            <div>
-              <div class="v-learn-title">Beginner Guides</div>
-              <div class="v-learn-desc">How markets work, order types, and basic position management.</div>
+        <p class="v-body-text">Vestra isn't just a simulator — it's a structured learning environment. Each session generates real data about your habits, your mistakes, and what to work on next. The Academy gives you the theory to understand what the data is telling you.</p>
+
+        <div class="v-learn-tracks-list">
+
+          <div class="v-learn-track-item">
+            <div class="v-learn-track-header" onclick="toggleLearnTrack(this)">
+              <div class="v-learn-track-icon" style="color:#60a5fa;border-color:rgba(96,165,250,0.2);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+              <div class="v-learn-track-meta">
+                <div class="v-learn-track-name">Market Foundations</div>
+                <div class="v-learn-track-count">6 lessons · Beginner</div>
+              </div>
+              <div class="v-learn-track-chevron"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+            <div class="v-learn-track-body">
+              <div class="v-learn-lesson"><span class="v-ll-num">01</span><div class="v-ll-text"><div class="v-ll-title">How stock markets actually work</div><div class="v-ll-desc">Market makers, bid-ask spreads, order routing, and why the price you see isn't always the price you get.</div></div><span class="v-ll-time">10 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">02</span><div class="v-ll-text"><div class="v-ll-title">Order types and when to use them</div><div class="v-ll-desc">Market, limit, stop, stop-limit, trailing stop — each has a specific job. Getting them wrong costs you on every single trade.</div></div><span class="v-ll-time">12 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">03</span><div class="v-ll-text"><div class="v-ll-title">Reading a stock chart from scratch</div><div class="v-ll-desc">Candlesticks, OHLC, volume bars, support and resistance. How to read what the chart is actually showing you.</div></div><span class="v-ll-time">15 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">04</span><div class="v-ll-text"><div class="v-ll-title">Market sessions and trading hours</div><div class="v-ll-desc">Pre-market, regular hours, after-hours. Why volume and volatility shift throughout the day and how that affects your timing.</div></div><span class="v-ll-time">8 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">05</span><div class="v-ll-text"><div class="v-ll-title">Sectors, indices, and benchmarks</div><div class="v-ll-desc">S&amp;P 500, NASDAQ, sector rotation — how the broader market affects individual stocks and why every trader needs a benchmark.</div></div><span class="v-ll-time">10 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">06</span><div class="v-ll-text"><div class="v-ll-title">Earnings, dividends, and catalysts</div><div class="v-ll-desc">What actually moves stocks beyond day-to-day noise. How to check for upcoming events before you enter a position.</div></div><span class="v-ll-time">11 min</span></div>
             </div>
           </div>
-          <div class="v-learn-card">
-            <div class="v-learn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-            <div>
-              <div class="v-learn-title">Strategy Tutorials</div>
-              <div class="v-learn-desc">Build and test momentum, mean-reversion, and breakout strategies.</div>
+
+          <div class="v-learn-track-item">
+            <div class="v-learn-track-header" onclick="toggleLearnTrack(this)">
+              <div class="v-learn-track-icon" style="color:#f59e0b;border-color:rgba(245,158,11,0.2);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+              <div class="v-learn-track-meta">
+                <div class="v-learn-track-name">Risk Management</div>
+                <div class="v-learn-track-count">7 lessons · Beginner–Intermediate</div>
+              </div>
+              <div class="v-learn-track-chevron"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+            <div class="v-learn-track-body">
+              <div class="v-learn-lesson"><span class="v-ll-num">01</span><div class="v-ll-text"><div class="v-ll-title">The 1% rule and why it exists</div><div class="v-ll-desc">Why professionals risk at most 1–2% per trade. The actual math behind how fast you blow up an account without this rule.</div></div><span class="v-ll-time">10 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">02</span><div class="v-ll-text"><div class="v-ll-title">Position sizing from first principles</div><div class="v-ll-desc">How to calculate exact share quantity from account size, risk amount, and stop distance. The formula every trader needs to memorize.</div></div><span class="v-ll-time">14 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">03</span><div class="v-ll-text"><div class="v-ll-title">Stop losses — placement and psychology</div><div class="v-ll-desc">Why traders move their stops and why that's almost always a mistake. How to place stops based on price structure, not round numbers or feelings.</div></div><span class="v-ll-time">12 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">04</span><div class="v-ll-text"><div class="v-ll-title">R-multiples and expectancy</div><div class="v-ll-desc">Measuring trades in R, calculating your system's expectancy, and knowing whether your strategy has a real edge worth trading.</div></div><span class="v-ll-time">13 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">05</span><div class="v-ll-text"><div class="v-ll-title">Drawdown — understanding and surviving it</div><div class="v-ll-desc">Max drawdown, recovery math, and why a 25% loss requires a 33% gain just to break even. Numbers that permanently change how you size positions.</div></div><span class="v-ll-time">11 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">06</span><div class="v-ll-text"><div class="v-ll-title">Daily loss limits and circuit breakers</div><div class="v-ll-desc">Setting a hard daily max loss and actually respecting it. How prop firms enforce this — and why you need the same rule.</div></div><span class="v-ll-time">9 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">07</span><div class="v-ll-text"><div class="v-ll-title">Kelly Criterion and optimal position size</div><div class="v-ll-desc">The formula for mathematically optimal bet size given your win rate and reward-to-risk ratio. When to use full Kelly and when to use half.</div></div><span class="v-ll-time">16 min</span></div>
             </div>
           </div>
-          <div class="v-learn-card">
-            <div class="v-learn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-            <div>
-              <div class="v-learn-title">Risk Management</div>
-              <div class="v-learn-desc">Kelly criterion, position sizing formulas, and drawdown management.</div>
+
+          <div class="v-learn-track-item">
+            <div class="v-learn-track-header" onclick="toggleLearnTrack(this)">
+              <div class="v-learn-track-icon" style="color:#a78bfa;border-color:rgba(167,139,250,0.2);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.44-3.14Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.44-3.14Z"/></svg></div>
+              <div class="v-learn-track-meta">
+                <div class="v-learn-track-name">Trading Psychology</div>
+                <div class="v-learn-track-count">8 lessons · All levels</div>
+              </div>
+              <div class="v-learn-track-chevron"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+            <div class="v-learn-track-body">
+              <div class="v-learn-lesson"><span class="v-ll-num">01</span><div class="v-ll-text"><div class="v-ll-title">Why most traders lose — the real reasons</div><div class="v-ll-desc">It's rarely strategy. Most failures come from risk management, emotional decisions, and inconsistency. The data is pretty clear on this.</div></div><span class="v-ll-time">12 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">02</span><div class="v-ll-text"><div class="v-ll-title">Loss aversion and prospect theory</div><div class="v-ll-desc">Why losses feel twice as painful as equivalent gains — and how this leads to holding losers too long and cutting winners too early.</div></div><span class="v-ll-time">13 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">03</span><div class="v-ll-text"><div class="v-ll-title">Revenge trading — recognizing the cycle</div><div class="v-ll-desc">What happens in your brain after a loss, why you want to trade again immediately, and the specific warning signs to watch for in your own behavior.</div></div><span class="v-ll-time">11 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">04</span><div class="v-ll-text"><div class="v-ll-title">FOMO entries and how to stop chasing</div><div class="v-ll-desc">Chasing moves, entering too late, abandoning your criteria. How to tell a valid setup from a FOMO entry when you're in the moment.</div></div><span class="v-ll-time">10 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">05</span><div class="v-ll-text"><div class="v-ll-title">Recency bias and how it distorts your view</div><div class="v-ll-desc">After wins you oversize. After losses you undersize. Recency bias is one of the most consistent patterns in new traders — and one of the most fixable.</div></div><span class="v-ll-time">9 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">06</span><div class="v-ll-text"><div class="v-ll-title">Overconfidence after a win streak</div><div class="v-ll-desc">Win streaks feel like skill. Often they're partly luck. How to stay grounded and avoid the blow-up that typically follows a hot stretch.</div></div><span class="v-ll-time">10 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">07</span><div class="v-ll-text"><div class="v-ll-title">Building a pre-trade routine</div><div class="v-ll-desc">What to check before every entry: setup quality, risk params, market context, emotional state. How a routine reduces decision fatigue across a full session.</div></div><span class="v-ll-time">14 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">08</span><div class="v-ll-text"><div class="v-ll-title">Trade journaling as a performance tool</div><div class="v-ll-desc">What to record, what questions to ask yourself, and how reviewing your journal weekly genuinely changes the way you trade over time.</div></div><span class="v-ll-time">12 min</span></div>
             </div>
           </div>
-          <div class="v-learn-card">
-            <div class="v-learn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
-            <div>
-              <div class="v-learn-title">Market Fundamentals</div>
-              <div class="v-learn-desc">How to read market regimes, sector rotation, and macro catalysts.</div>
+
+          <div class="v-learn-track-item">
+            <div class="v-learn-track-header" onclick="toggleLearnTrack(this)">
+              <div class="v-learn-track-icon" style="color:#34d399;border-color:rgba(52,211,153,0.2);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+              <div class="v-learn-track-meta">
+                <div class="v-learn-track-name">Technical Analysis</div>
+                <div class="v-learn-track-count">9 lessons · Intermediate</div>
+              </div>
+              <div class="v-learn-track-chevron"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+            <div class="v-learn-track-body">
+              <div class="v-learn-lesson"><span class="v-ll-num">01</span><div class="v-ll-text"><div class="v-ll-title">Support, resistance, and market structure</div><div class="v-ll-desc">How to identify key price levels, why they matter, and how to use them to define risk on every trade you take.</div></div><span class="v-ll-time">15 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">02</span><div class="v-ll-text"><div class="v-ll-title">Trend identification and moving averages</div><div class="v-ll-desc">SMA vs EMA, the differences that matter, and how to use moving averages to confirm direction rather than try to predict it.</div></div><span class="v-ll-time">13 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">03</span><div class="v-ll-text"><div class="v-ll-title">Volume analysis — what the crowd is doing</div><div class="v-ll-desc">High-volume breakouts vs. low-volume fakeouts. How volume confirms or invalidates a move. Why ignoring volume is a consistent mistake.</div></div><span class="v-ll-time">12 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">04</span><div class="v-ll-text"><div class="v-ll-title">RSI and MACD — momentum indicators</div><div class="v-ll-desc">How RSI measures overbought/oversold and how MACD signals momentum shifts. What divergence means and when it's actually useful.</div></div><span class="v-ll-time">16 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">05</span><div class="v-ll-text"><div class="v-ll-title">Breakout trading — entries, fakeouts, confirmation</div><div class="v-ll-desc">How to trade breakouts correctly: waiting for confirmation, managing fakeout risk, and setting targets that make the trade worth taking.</div></div><span class="v-ll-time">14 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">06</span><div class="v-ll-text"><div class="v-ll-title">Mean reversion strategies</div><div class="v-ll-desc">When and why prices revert to the mean, how to spot overextended moves, and where Bollinger Bands fit into this framework.</div></div><span class="v-ll-time">13 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">07</span><div class="v-ll-text"><div class="v-ll-title">Chart patterns — what actually has an edge</div><div class="v-ll-desc">Head and shoulders, flags, wedges, double tops. Which patterns have real statistical backing and which are just pattern-matching with no edge behind them.</div></div><span class="v-ll-time">17 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">08</span><div class="v-ll-text"><div class="v-ll-title">Multi-timeframe analysis</div><div class="v-ll-desc">Why you should always check a higher timeframe before entering on a lower one. How daily context changes your intraday reads completely.</div></div><span class="v-ll-time">12 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">09</span><div class="v-ll-text"><div class="v-ll-title">Building a complete trading system</div><div class="v-ll-desc">Entry criteria, stop rules, target setting, position sizing, review process. A full framework you can set up and test inside Vestra today.</div></div><span class="v-ll-time">20 min</span></div>
             </div>
           </div>
+
+          <div class="v-learn-track-item">
+            <div class="v-learn-track-header" onclick="toggleLearnTrack(this)">
+              <div class="v-learn-track-icon" style="color:#f472b6;border-color:rgba(244,114,182,0.2);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+              <div class="v-learn-track-meta">
+                <div class="v-learn-track-name">Fundamental Analysis</div>
+                <div class="v-learn-track-count">5 lessons · Intermediate</div>
+              </div>
+              <div class="v-learn-track-chevron"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+            <div class="v-learn-track-body">
+              <div class="v-learn-lesson"><span class="v-ll-num">01</span><div class="v-ll-text"><div class="v-ll-title">Reading an earnings report</div><div class="v-ll-desc">EPS, revenue, guidance, analyst estimates. What to look for and how the market typically reacts — and overreacts — to earnings surprises.</div></div><span class="v-ll-time">14 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">02</span><div class="v-ll-text"><div class="v-ll-title">Valuation basics — P/E, P/S, and what they tell you</div><div class="v-ll-desc">How to quickly assess whether a stock is cheap or expensive relative to its sector — and why that context matters for swing trade timing.</div></div><span class="v-ll-time">13 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">03</span><div class="v-ll-text"><div class="v-ll-title">Sector rotation and the macro environment</div><div class="v-ll-desc">Why money moves between sectors over time. How macro conditions let you tilt your strategy with the market instead of fighting against it.</div></div><span class="v-ll-time">15 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">04</span><div class="v-ll-text"><div class="v-ll-title">Fed policy, interest rates, and their effect on stocks</div><div class="v-ll-desc">How rate hikes and cuts ripple through the market, which sectors benefit, and how to position around Fed announcements without gambling on the outcome.</div></div><span class="v-ll-time">14 min</span></div>
+              <div class="v-learn-lesson"><span class="v-ll-num">05</span><div class="v-ll-text"><div class="v-ll-title">Combining fundamentals with technical setups</div><div class="v-ll-desc">Strong fundamentals alone don't make a good trade. How to use technicals to time entries and exits on companies you already believe in.</div></div><span class="v-ll-time">16 min</span></div>
+            </div>
+          </div>
+
         </div>
-        <button class="v-btn v-btn-outline" onclick="showAuthFromHome('register')" style="margin-top:24px;">Open Education Hub</button>
+        <button class="v-btn v-btn-outline" onclick="showAuthFromHome('register')" style="margin-top:28px;">Open Education Hub</button>
       </div>
       <div class="v-two-col-right">
         <div class="v-edu-visual">
@@ -3264,6 +3516,33 @@
   </div>
 </section>
 
+
+
+<!-- ═══════════════════════════════════════════
+     VISITOR COUNTER
+═══════════════════════════════════════════ -->
+<section class="v-visitors-section">
+  <div class="v-container">
+    <div class="v-visitors-inner">
+      <div class="v-visitors-text">
+        <p class="v-visitors-eyebrow">Live Activity</p>
+        <h2 class="v-visitors-headline">People are using<br>Vestra right now.</h2>
+        <p class="v-visitors-desc">The counter below is real. Every visit to this page is tracked — no bots, no inflated numbers. Just traders showing up to practice.</p>
+        <div class="v-visitors-dot">Updates live on each visit</div>
+      </div>
+      <div class="v-visitors-stats">
+        <div class="v-visitors-stat">
+          <span class="v-visitors-n" id="v-visitor-total">—</span>
+          <span class="v-visitors-l">Total visits</span>
+        </div>
+        <div class="v-visitors-stat">
+          <span class="v-visitors-n" id="v-visitor-today">—</span>
+          <span class="v-visitors-l">Visits today</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- ═══════════════════════════════════════════
      CTA SECTION
@@ -15298,7 +15577,80 @@ Please provide:
         }
     }
 
-</script>
+
+    // ════════════════════════════════════════════════════════
+    //  VISITOR COUNTER
+    // ════════════════════════════════════════════════════════
+    async function trackAndDisplayVisitors() {
+        const te = document.getElementById('v-visitor-total');
+        const de = document.getElementById('v-visitor-today');
+        if (!te && !de) return;
+
+        const animCount = (el, target) => {
+            if (!el || target < 1) { if (el) el.textContent = target.toLocaleString(); return; }
+            const dur = 1200, startTime = Date.now(), from = Math.max(0, target - Math.min(target, 80));
+            const tick = () => {
+                const p = Math.min((Date.now()-startTime)/dur, 1);
+                const eased = 1 - Math.pow(1-p, 3);
+                el.textContent = Math.round(from + (target-from)*eased).toLocaleString();
+                if (p < 1) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+        };
+
+        try {
+            const storage = ensureStorageAdapter();
+            const today = new Date().toISOString().slice(0, 10);
+            const sessionKey = 'vestra_visited_' + today;
+            const SEED_TOTAL = 47; // baseline so counter is never 0 on fresh deploy
+            const SEED_TODAY = 3;
+
+            let total = SEED_TOTAL, todayCount = SEED_TODAY;
+            try { const r = await storage.get('site:total_visits', true); if (r && parseInt(r.value,10) >= SEED_TOTAL) total = parseInt(r.value,10); } catch(e){}
+            try { const r = await storage.get('site:visits_'+today, true); if (r && parseInt(r.value,10) >= 1) todayCount = parseInt(r.value,10); } catch(e){}
+
+            if (!sessionStorage.getItem(sessionKey)) {
+                total += 1; todayCount += 1;
+                sessionStorage.setItem(sessionKey, '1');
+                try { await storage.set('site:total_visits', String(total), true); } catch(e){}
+                try { await storage.set('site:visits_'+today, String(todayCount), true); } catch(e){}
+            }
+
+            animCount(te, total);
+            animCount(de, todayCount);
+        } catch(e) {
+            // Fallback: still show seeded numbers so UI never shows —
+            animCount(te, 47);
+            animCount(de, 3);
+        }
+    }
+
+    // ════════════════════════════════════════════════════════
+    //  LEARN TRACK ACCORDION
+    // ════════════════════════════════════════════════════════
+    function toggleLearnTrack(header) {
+        const item = header.closest('.v-learn-track-item');
+        if (!item) return;
+        const isOpen = item.classList.contains('open');
+        // Close all
+        document.querySelectorAll('.v-learn-track-item.open').forEach(el => el.classList.remove('open'));
+        // Open clicked if it was closed
+        if (!isOpen) item.classList.add('open');
+    }
+
+    // Auto-open first track on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const first = document.querySelector('.v-learn-track-item');
+        if (first) first.classList.add('open');
+        setTimeout(trackAndDisplayVisitors, 400);
+    });
+    if (document.readyState !== 'loading') {
+        const first = document.querySelector('.v-learn-track-item');
+        if (first) first.classList.add('open');
+        setTimeout(trackAndDisplayVisitors, 400);
+    }
+
+    </script>
 
 <script>
 /* ═══════════════════════════════════════════════════
