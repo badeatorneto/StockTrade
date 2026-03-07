@@ -539,7 +539,7 @@
         }
 
         /* ── Portfolio Performance Chart ── */
-        #perfChartWrap { position: relative; height: 160px; margin-top: 8px; }
+        #perfChartWrap { position: relative; height: 160px; margin-top: 8px; overflow: hidden; }
 
         /* ── Mobile Layout ── */
         #mobileNav {
@@ -1394,9 +1394,8 @@
         }
 
         /* ── Chart containers ── */
-        #perfChartWrap, canvas {
-            border-radius: var(--v-radius-sm);
-        }
+        #perfChartWrap { border-radius: var(--v-radius-sm); }
+        #perfChart { border-radius: var(--v-radius-sm); display: block; }
 
         /* ── Step numbers on how-it-works ── */
         .step-num {
@@ -4067,7 +4066,7 @@
                     <button onclick="setPerfPeriod('1Y',this)" class="perf-btn" style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#8888a8;cursor:pointer;">1Y</button>
                 </div>
             </div>
-            <div id="perfChartWrap" style="height:110px;"><canvas id="perfChart"></canvas></div>
+            <div id="perfChartWrap" style="height:110px;overflow:hidden;position:relative;"><canvas id="perfChart" style="display:block;"></canvas></div>
         </div>
 
         <!-- Allocation chart -->
@@ -8397,17 +8396,19 @@ function startNewsEngine() {
         const badge = document.getElementById('dataSourceBadge');
         const btn   = document.getElementById('liveDataBtn');
         if (!badge) return;
+        const boltSVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>';
         if (RT.key && RT.liveCount > 0) {
             badge.textContent = 'LIVE';
             badge.className = 'text-xs font-bold px-2 py-1 rounded badge-live';
-            if (btn) { btn.textContent = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Live: ON'; btn.style.cssText = 'font-size:11px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.35);color:#4ade80;padding:4px 10px;border-radius:6px;font-weight:700;cursor:pointer;'; }
+            if (btn) { btn.innerHTML = boltSVG + ' Live: ON'; btn.style.cssText = 'font-size:11px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.35);color:#4ade80;padding:4px 10px;border-radius:6px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;'; }
         } else if (RT.key) {
             badge.textContent = '↻ Fetching…';
             badge.className = 'text-xs font-bold px-2 py-1 rounded badge-stale';
+            if (btn) { btn.innerHTML = boltSVG + ' Connecting…'; btn.style.cssText = 'font-size:11px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);color:#f59e0b;padding:4px 10px;border-radius:6px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;'; }
         } else {
             badge.textContent = 'SIM';
             badge.className = 'text-xs font-bold px-2 py-1 rounded badge-sim';
-            if (btn) { btn.textContent = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Live Data'; btn.style.cssText = 'font-size:11px;background:rgba(212,168,75,0.12);border:1px solid rgba(212,168,75,0.3);color:var(--v-gold);padding:4px 10px;border-radius:6px;font-weight:700;cursor:pointer;'; }
+            if (btn) { btn.innerHTML = boltSVG + ' Live Data'; btn.style.cssText = 'font-size:11px;background:rgba(212,168,75,0.12);border:1px solid rgba(212,168,75,0.3);color:var(--v-gold);padding:4px 10px;border-radius:6px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;'; }
         }
     }
 
@@ -8725,7 +8726,11 @@ function startNewsEngine() {
                 .sort((a, b) => a.ts - b.ts);
         }
 
-        const W = wrap.clientWidth || 260;
+        // Clear any stale canvas state before drawing
+        const ctx0 = canvas.getContext('2d');
+        if (ctx0) ctx0.clearRect(0, 0, canvas.width, canvas.height);
+
+        const W = wrap.clientWidth || wrap.offsetWidth || 260;
         const H = 150;
         const dpr = window.devicePixelRatio || 1;
         canvas.width = W * dpr; canvas.height = H * dpr;
@@ -15384,7 +15389,10 @@ Guidelines:
 
             const response = await fetch('https://api.anthropic.com/v1/messages', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'anthropic-dangerous-direct-browser-access': 'true'
+                },
                 body: JSON.stringify({
                     model: 'claude-sonnet-4-20250514',
                     max_tokens: 600,
