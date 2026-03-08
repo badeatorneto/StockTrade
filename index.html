@@ -8337,11 +8337,11 @@ function startNewsEngine() {
         });
 
         if (symsInPortfolio.length === 0) {
-            list.innerHTML = \`<div class="empty-state" style="padding:24px 0;">
+            list.innerHTML = `<div class="empty-state" style="padding:24px 0;">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="color:#6868a0;"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
                 <div class="empty-state-title">No open positions</div>
                 <div class="empty-state-desc">Search for a stock above and make your first trade.</div>
-            </div>\`;
+            </div>`;
         }
 
         // Total equity + P&L
@@ -10577,7 +10577,7 @@ function startNewsEngine() {
                 <svg class="v-empty-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 <div class="v-empty-title">No auto-rules</div>
                 <div class="v-empty-desc">Set price conditions to trigger trades automatically.</div>
-            </div>`;</div>';
+            </div>`;
             return;
         }
         const condLabel = { above:'rises above', below:'falls below', up_pct:'gains ≥', down_pct:'drops ≥' };
