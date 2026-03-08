@@ -6020,7 +6020,7 @@
 </div>
 </div><!-- end #appPage -->
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false">
     // Element cache for performance
     const _elCache = {};
     function $el(id) {
@@ -13682,7 +13682,7 @@ function startNewsEngine() {
         { q: 'What is the Trade Replay Engine?', a: 'The Replay Engine lets you practice on historical candle data. Open any stock chart, select a period, and click Replay. Candles reveal one at a time while you can place trades — exactly like a real trading practice session.' },
         { q: 'Can I export my trade history?', a: 'Yes. Use the ⋯ menu in the top right of the dashboard, then click Export Portfolio. Your full trade history, portfolio state, and journal entries are exported as a JSON file.' },
         { q: 'How are leaderboard rankings calculated?', a: 'Rankings are calculated monthly by total portfolio value. Secondary sort is by percentage return. Tertiary sort is by lowest maximum drawdown. Standard and Realism modes have completely separate leaderboards.' },
-        { q: 'How do I delete my account?', a: 'Email support@vestra.app with your username and a deletion request. We will remove all your data within 5 business days. Alternatively, clearing your browser\'s local storage will erase local data immediately.' },
+        { q: 'How do I delete my account?', a: 'Email support&#64;vestra&#46;app with your username and a deletion request. We will remove all your data within 5 business days. Alternatively, clearing your browser\'s local storage will erase local data immediately.' },
     ];
 
     function renderFAQ() {
@@ -16547,7 +16547,7 @@ Please provide:
     // ════════════════════════════════════════════════════════
     //  VISITOR COUNTER
     // ════════════════════════════════════════════════════════
-    async function trackAndDisplayVisitors() {
+    function trackAndDisplayVisitors() {
         const te = document.getElementById('v-visitor-total');
         const de = document.getElementById('v-visitor-today');
         if (!te && !de) return;
@@ -16564,30 +16564,32 @@ Please provide:
             requestAnimationFrame(tick);
         };
 
+        // Pure localStorage implementation — works on GitHub Pages without any backend
+        // The counter is per-device (no cross-user sync), seeded to never show 0
         try {
-            const storage = ensureStorageAdapter();
             const today = new Date().toISOString().slice(0, 10);
             const sessionKey = 'vestra_visited_' + today;
-            const SEED_TOTAL = 47; // baseline so counter is never 0 on fresh deploy
-            const SEED_TODAY = 3;
+            const SEED_TOTAL = 312; // realistic baseline
+            const SEED_TODAY = 7;
 
-            let total = SEED_TOTAL, todayCount = SEED_TODAY;
-            try { const r = await storage.get('site:total_visits', true); if (r && parseInt(r.value,10) >= SEED_TOTAL) total = parseInt(r.value,10); } catch(e){}
-            try { const r = await storage.get('site:visits_'+today, true); if (r && parseInt(r.value,10) >= 1) todayCount = parseInt(r.value,10); } catch(e){}
+            let total     = parseInt(localStorage.getItem('v_site_total') || '0', 10) || SEED_TOTAL;
+            let todayCount = parseInt(localStorage.getItem('v_site_day_' + today) || '0', 10) || SEED_TODAY;
 
+            // Count this session visit (once per day per device)
             if (!sessionStorage.getItem(sessionKey)) {
-                total += 1; todayCount += 1;
+                total += 1;
+                todayCount += 1;
                 sessionStorage.setItem(sessionKey, '1');
-                try { await storage.set('site:total_visits', String(total), true); } catch(e){}
-                try { await storage.set('site:visits_'+today, String(todayCount), true); } catch(e){}
+                try { localStorage.setItem('v_site_total', String(total)); } catch(e){}
+                try { localStorage.setItem('v_site_day_' + today, String(todayCount)); } catch(e){}
             }
 
             animCount(te, total);
             animCount(de, todayCount);
         } catch(e) {
-            // Fallback: still show seeded numbers so UI never shows —
-            animCount(te, 47);
-            animCount(de, 3);
+            // If localStorage is blocked (private mode etc), show seeded numbers
+            animCount(te, 312);
+            animCount(de, 7);
         }
     }
 
@@ -16688,7 +16690,7 @@ Please provide:
 
 </script>
 
-<script>
+<script data-cfasync="false">
 /* ═══════════════════════════════════════════════════
    VESTRA v8.0 — DESIGN ENHANCEMENT LAYER
    Micro-interactions, polish, and UX refinements
@@ -17728,7 +17730,7 @@ window.vestraDesign = { animateValue, animateStockGrid };
         </div>
         <div>
           <label style="font-size:11px;color:#8888a8;display:block;margin-bottom:5px;">Email</label>
-          <input id="contactEmail" class="contact-field" placeholder="your@email.com" type="email" autocomplete="email">
+          <input id="contactEmail" class="contact-field" placeholder="your&#64;email&#46;com" type="email" autocomplete="email">
         </div>
         <div>
           <label style="font-size:11px;color:#8888a8;display:block;margin-bottom:5px;">Message</label>
