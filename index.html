@@ -28,8 +28,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.1.1/dist/chartjs-chart-financial.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        @keyframes modePulse { 0%,100%{box-shadow:0 0 0 0 rgba(212,168,75,0.4)} 50%{box-shadow:0 0 0 7px rgba(212,168,75,0)} }
-
         /* ═══ ACADEMY LESSON STYLES ═══ */
         .va-lesson-body { font-family: Georgia, 'Times New Roman', serif; font-size: 15.5px; line-height: 1.78; color: #d0d0e8; }
         .va-lesson-body h2 { font-family: 'Sora', sans-serif; font-size: 1.45rem; font-weight: 700; color: #f0f0fa; margin: 0 0 16px; letter-spacing: -0.02em; }
@@ -314,9 +312,14 @@
             background: #0e0e16; border: 1px solid rgba(255,255,255,0.08);
             border-radius: 20px; width: 100%; max-width: 720px;
             margin: 0 auto 40px; overflow: hidden;
+            max-height: calc(100vh - 80px); display: flex; flex-direction: column;
             animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
         }
+        .legal-body {
+            flex: 1; overflow-y: auto; padding: 24px 36px 32px;
+        }
         .legal-header {
+            flex-shrink: 0;
             padding: 28px 36px 22px; border-bottom: 1px solid rgba(255,255,255,0.07);
             display: flex; justify-content: space-between; align-items: flex-start;
             position: sticky; top: 0; background: #0e0e16; z-index: 2;
@@ -4776,8 +4779,8 @@
             <!-- Realism Mode Card -->
             <div onclick="confirmModeSelect('realism')" style="cursor:pointer;background:rgba(96,165,250,0.06);border:2px solid rgba(96,165,250,0.25);border-radius:16px;padding:20px;transition:all 0.2s;" onmouseover="this.style.borderColor='#60a5fa';this.style.background='rgba(96,165,250,0.1)'" onmouseout="this.style.borderColor='rgba(96,165,250,0.25)';this.style.background='rgba(96,165,250,0.06)'">
                 <div style="margin-bottom:12px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20"/></svg></div>
-                <div style="font-weight:700;color:#60a5fa;font-size:1rem;margin-bottom:4px;">Realism Mode</div>
-                <div style="display:inline-block;font-size:9px;font-weight:800;color:#4ade80;background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.3);border-radius:4px;padding:2px 7px;letter-spacing:.07em;margin-bottom:7px;">⭐ RECOMMENDED</div>
+                <div style="font-weight:700;color:#60a5fa;font-size:1rem;margin-bottom:6px;">Realism Mode</div>
+<span style="display:inline-block;font-size:9px;font-weight:800;color:#4ade80;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);border-radius:4px;padding:2px 8px;letter-spacing:.07em;margin:4px 0 6px;">RECOMMENDED</span>
                 <ul style="font-size:11px;color:#a0a0b8;line-height:1.7;margin:0;padding:0;list-style:none;">
                     <li style="display:flex;align-items:center;gap:6px;"><span style="color:#4ade80;font-size:11px;">&#10003;</span> Market hours enforced</li>
                     <li style="display:flex;align-items:center;gap:6px;"><span style="color:#4ade80;font-size:11px;">&#10003;</span> Real spread simulation</li>
@@ -4983,9 +4986,9 @@
             <!-- Help button -->
             <button onclick="openHelpCenter()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" title="Help Center &amp; Feature Guide" onmouseover="this.style.borderColor='var(--v-gold)';this.style.color='var(--v-gold)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Help</button>
                 <button onclick="openMultiAsset()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#22d3ee';this.style.color='#22d3ee'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Multi-Asset</button>
-                <!-- Mode Switcher Pill -->
-                <button id="modeSwitcherBtn" onclick="showModeSelectModal();this.style.animation='none'" style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;color:#d4a84b;background:rgba(212,168,75,0.1);border:1.5px solid rgba(212,168,75,0.4);padding:4px 12px;border-radius:6px;cursor:pointer;letter-spacing:.04em;animation:modePulse 2s ease-in-out 3;transition:all .15s;" title="Click to switch trading mode — Standard or Realism" onmouseover="this.style.background='rgba(212,168,75,0.2)'" onmouseout="this.style.background='rgba(212,168,75,0.1)'">
-                    <span id="modeSwitcherDot" style="width:7px;height:7px;border-radius:50%;background:#d4a84b;flex-shrink:0;box-shadow:0 0 6px rgba(212,168,75,0.7);"></span>
+                <!-- Mode Switcher -->
+                <button id="modeSwitcherBtn" onclick="showModeSelectModal()" title="Switch trading mode" style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;color:#d4a84b;background:rgba(212,168,75,0.1);border:1.5px solid rgba(212,168,75,0.4);padding:5px 11px;border-radius:6px;cursor:pointer;letter-spacing:.04em;transition:all .15s;">
+                    <span id="modeSwitcherDot" style="width:7px;height:7px;border-radius:50%;background:#d4a84b;flex-shrink:0;"></span>
                     <span id="modeSwitcherLabel">SIM</span>
                 </button>
                 <!-- API Health -->
@@ -5601,38 +5604,31 @@
 
 <!-- ═══ IMMERSIVE TUTORIAL OVERLAY ═══ -->
 <div id="tutorialOverlay" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.78);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:16px;">
-    <div style="background:#111118;border:1px solid rgba(167,139,250,0.2);border-radius:20px;width:100%;max-width:680px;max-height:calc(100vh - 32px);overflow:hidden;display:flex;flex-direction:column;animation:slideUp .35s cubic-bezier(.16,1,.3,1);box-shadow:0 32px 80px rgba(0,0,0,0.7);">
-        <!-- Header row -->
-        <div style="padding:16px 22px 12px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-            <div style="display:flex;align-items:center;gap:9px;">
-                <div style="width:7px;height:7px;border-radius:50%;background:#a78bfa;box-shadow:0 0 8px rgba(167,139,250,0.8);"></div>
+    <div style="background:#111118;border:1px solid rgba(167,139,250,0.22);border-radius:20px;width:100%;max-width:660px;max-height:calc(100vh - 32px);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(0,0,0,0.8);">
+        <div style="padding:14px 20px 10px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:7px;height:7px;border-radius:50%;background:#a78bfa;box-shadow:0 0 8px #a78bfa;"></div>
                 <span style="font-size:10px;font-weight:800;color:#a78bfa;text-transform:uppercase;letter-spacing:.09em;">Feature Tour</span>
             </div>
             <div style="display:flex;align-items:center;gap:10px;">
-                <span id="tutorialStepCounter" style="font-size:11px;color:#6060a0;font-weight:600;"></span>
-                <button onclick="skipTutorial()" style="background:none;border:none;color:#5050a0;cursor:pointer;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;" onmouseover="this.style.color='#9090c0'" onmouseout="this.style.color='#5050a0'">Skip</button>
+                <span id="tutorialStepCounter" style="font-size:11px;color:#5858a0;font-weight:600;"></span>
+                <button onclick="skipTutorial()" style="background:none;border:none;color:#5050a0;cursor:pointer;font-size:11px;font-weight:600;padding:3px 8px;">Skip</button>
             </div>
         </div>
-        <!-- Progress bar -->
-        <div style="height:2px;background:rgba(255,255,255,0.06);">
-            <div id="tutorialProgressFill" style="height:100%;width:0%;background:linear-gradient(90deg,#7c3aed,#a78bfa);transition:width .4s cubic-bezier(.16,1,.3,1);"></div>
+        <div style="height:2px;background:rgba(255,255,255,0.05);flex-shrink:0;">
+            <div id="tutorialProgressFill" style="height:100%;width:0%;background:linear-gradient(90deg,#7c3aed,#a78bfa);transition:width .4s;"></div>
         </div>
-        <!-- Dots -->
-        <div id="tutorialDots" style="display:flex;gap:4px;padding:10px 22px 0;flex-wrap:wrap;justify-content:center;"></div>
-        <!-- Content -->
-        <div style="padding:18px 26px 14px;overflow-y:auto;flex:1;text-align:center;">
-            <div id="tutorialIcon" style="font-size:2.6rem;margin-bottom:10px;line-height:1;"></div>
-            <h2 id="tutorialTitle" style="font-family:var(--v-serif);font-size:1.25rem;font-weight:700;color:#f0f0fa;margin:0 0 10px;line-height:1.3;"></h2>
-            <div id="tutorialDesc" style="font-size:13px;color:#9898c0;line-height:1.72;max-width:520px;margin:0 auto;"></div>
-            <div id="tutorialFeatureBadge" style="display:none;margin-top:10px;">
-                <span id="tutorialFeatureLabel" style="display:inline-block;font-size:10px;font-weight:700;padding:3px 12px;border-radius:20px;background:rgba(167,139,250,0.1);color:#a78bfa;border:1px solid rgba(167,139,250,0.22);letter-spacing:.06em;text-transform:uppercase;"></span>
-            </div>
-            <div id="tutorialHint" style="display:none;margin-top:14px;background:rgba(167,139,250,0.07);border:1px solid rgba(167,139,250,0.18);border-radius:10px;padding:10px 16px;font-size:12px;color:#c0aaf8;font-weight:500;"></div>
+        <div id="tutorialDots" style="display:flex;gap:3px;padding:8px 20px 0;flex-wrap:wrap;justify-content:center;flex-shrink:0;"></div>
+        <div style="padding:18px 26px 12px;overflow-y:auto;flex:1;text-align:center;">
+            <div id="tutorialIcon" style="font-size:2.4rem;margin-bottom:10px;line-height:1;"></div>
+            <h2 id="tutorialTitle" style="font-family:var(--v-serif);font-size:1.2rem;font-weight:700;color:#f0f0fa;margin:0 0 10px;"></h2>
+            <div id="tutorialDesc" style="font-size:13px;color:#9090b8;line-height:1.72;max-width:500px;margin:0 auto;"></div>
+            <div id="tutorialFeatureBadge" style="display:none;margin-top:10px;"><span id="tutorialFeatureLabel" style="display:inline-block;font-size:10px;font-weight:700;padding:3px 12px;border-radius:20px;background:rgba(167,139,250,0.1);color:#a78bfa;border:1px solid rgba(167,139,250,0.22);letter-spacing:.06em;text-transform:uppercase;"></span></div>
+            <div id="tutorialHint" style="display:none;margin-top:12px;background:rgba(167,139,250,0.07);border:1px solid rgba(167,139,250,0.18);border-radius:10px;padding:10px 16px;font-size:12px;color:#b8a8f0;font-weight:500;"></div>
         </div>
-        <!-- Nav buttons -->
-        <div style="padding:12px 22px 18px;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:10px;flex-shrink:0;">
-            <button id="tutorialPrevBtn" onclick="tutorialPrev()" style="display:none;flex:0 0 auto;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#8080b8;border-radius:10px;padding:10px 18px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--v-sans);">← Back</button>
-            <button id="tutorialNextBtn" onclick="tutorialNext()" style="flex:1;background:linear-gradient(135deg,#7c3aed,#a78bfa);border:none;color:#fff;border-radius:10px;padding:12px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--v-sans);">Continue →</button>
+        <div style="padding:12px 20px 16px;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:10px;flex-shrink:0;">
+            <button id="tutorialPrevBtn" onclick="tutorialPrev()" style="display:none;flex:0 0 auto;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#7878b0;border-radius:10px;padding:10px 18px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--v-sans);">Back</button>
+            <button id="tutorialNextBtn" onclick="tutorialNext()" style="flex:1;background:linear-gradient(135deg,#7c3aed,#a78bfa);border:none;color:#fff;border-radius:10px;padding:12px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--v-sans);">Continue</button>
         </div>
     </div>
 </div>
@@ -9743,193 +9739,76 @@ function startNewsEngine() {
     }
 
     const tutorialSteps = [
-        {
-            icon: '🎯',
-            title: 'Welcome to Vestra',
-            desc: 'You have $10,000 in virtual capital and access to professional-grade trading tools. This tutorial will walk you through every major feature — completing each step unlocks the next, building your understanding progressively. No real money. No risk. Pure skill development.',
-            hint: 'Complete all steps to finish onboarding and unlock the full dashboard.',
-            event: null,
-            feature: 'welcome'
-        },
-        {
-            icon: '⚡',
-            title: 'Step 1 — Connect Live Data',
-            desc: 'Click the <strong>⚡ Live Data</strong> button in the top header to add your free Finnhub API key. This enables real-time prices, candlestick charts, and live trade execution. Get a free key at <strong>finnhub.io</strong> in 60 seconds. Without it, prices are simulated.',
-            hint: 'Trading is available with or without an API key — live data just makes it more realistic.',
-            event: null,
-            feature: 'live_data'
-        },
-        {
-            icon: '🛡️',
-            title: 'Step 2 — Set Your Risk Rules',
-            desc: 'Click <strong>Risk Guard</strong> in the toolbar. Set a maximum risk per trade (recommended: 1–2% of account), a daily loss limit, and max open positions. These rules are actively enforced — the platform will block trades that violate them. This is what separates disciplined traders from gamblers.',
-            hint: 'Risk Guard is the most important tool in the platform. Set it before your first trade.',
-            event: null,
-            feature: 'risk_guard'
-        },
-        {
-            icon: '📋',
-            title: 'Step 3 — Create Your First Strategy',
-            desc: 'Open <strong>Strategy Lab</strong> in the toolbar. Create a strategy with a name, entry rules, and risk-per-trade target. Every trade you place should be tagged to a strategy. This is how you measure what actually works — untagged trades are noise, not data.',
-            hint: `Traders who define their strategy first consistently outperform those who don't.`,
-            event: null,
-            feature: 'strategy_lab'
-        },
-        {
-            icon: '📊',
-            title: 'Step 4 — Read the Market',
-            desc: 'The main panel shows live stocks. Click any stock card to see price action. Use <strong>Screener</strong> to filter by sector, volume, or momentum. Check the <strong>Macro</strong> tab for market overview and economic calendar. Understanding market context is essential before placing any trade.',
-            hint: 'Never trade without checking the broader market context first.',
-            event: null,
-            feature: 'screener'
-        },
-        {
-            icon: '💰',
-            title: 'Step 5 — Place Your First Trade',
-            desc: `Click any stock, set quantity, choose order type (<strong>Market</strong> for immediate fill, <strong>Limit</strong> to set a price), and hit Buy. A journal prompt appears — write your trade thesis: why this stock, what's the setup, where is your stop loss, what could go wrong. This pre-trade writing is the core of the discipline system.`,
-            hint: 'Market orders fill immediately. Limit orders wait for your price.',
-            event: 'buy_trade',
-            feature: 'trade'
-        },
-        {
-            icon: '📓',
-            title: 'Step 6 — Journal Your Trades',
-            desc: 'After closing a position, a reflection prompt appears. Record what happened vs. what you expected, any emotional influences, and your execution quality. Open the <strong>Progress</strong> tab to see your full trade history and journal entries. The journal is where learning actually happens.',
-            hint: `Traders who journal improve 3x faster than those who don't.`,
-            event: null,
-            feature: 'journal'
-        },
-        {
-            icon: '🤖',
-            title: 'Step 7 — Get AI Analysis',
-            desc: 'Open the <strong>AI Coach</strong> in the toolbar. After 3+ trades, it can analyze your position sizing patterns, hold-time biases, overtrading tendencies, and detect emotional patterns like revenge trading. Ask it anything: "Am I sizing correctly?" or "What is my biggest psychological weakness?"',
-            hint: 'The AI Coach requires at least 3 completed trades for bias detection.',
-            event: null,
-            feature: 'ai_coach'
-        },
-        {
-            icon: '📈',
-            title: 'Step 8 — Review Your Analytics',
-            desc: 'Click <strong>Analytics</strong> in the toolbar to view your equity curve, drawdown chart, Sharpe ratio, win rate, and expectancy across all your trades and strategies. These metrics tell you whether your results are from skill or luck, and where your edge is — if you have one.',
-            hint: 'Focus on expectancy and risk-adjusted return, not raw profit.',
-            event: null,
-            feature: 'analytics'
-        },
-        {
-            icon: '🔵',
-            title: 'Step 9 — Try Realism Mode',
-            desc: 'In the toolbar, click the <strong>• SIM</strong> badge (bottom right) to switch between <strong>Standard</strong> and <strong>Realism</strong> mode. Realism Mode enforces market hours, real bid-ask spreads, slippage, and order queue simulation — making the experience close to a live account. Challenge tier scoring requires Realism Mode.',
-            hint: 'Switch to Realism Mode to prepare for real-account conditions.',
-            event: null,
-            feature: 'realism_mode'
-        },
-        {
-            icon: '🏆',
-            title: 'Step 10 — Take on a Challenge',
-            desc: 'Click <strong>Challenge</strong> in the toolbar to enter a structured challenge tier. Each tier gives you a starting capital and enforces strict risk rules — max risk per trade, max drawdown, profit target. Start with <strong>Cadet</strong> to learn discipline fundamentals, then progress to Pro and Elite as your skills improve.',
-            hint: 'Challenges are scored on risk-adjusted performance, not raw P&L.',
-            event: null,
-            feature: 'challenge'
-        },
-        {
-            icon: '📚',
-            title: 'Step 11 — Study the Academy',
-            desc: 'Open the <strong>Academy</strong> to access 35 structured lessons across 5 courses: Market Foundations, Risk Management, Trading Psychology, Technical Analysis, and Fundamental Analysis. Each lesson builds on the last. Complete courses to develop the theoretical foundation behind every tool in this platform.',
-            hint: `The Academy covers the "why" behind every feature you're using.`,
-            event: 'open_academy',
-            feature: 'academy'
-        },
-        {
-            icon: '🎯',
-            title: 'Step 12 — Compete on the Leaderboard',
-            desc: 'Click the <strong>leaderboard icon</strong> in the header to see where you rank. The leaderboard ranks traders by risk-adjusted return, not raw profit — making it impossible to game by taking reckless positions. Switch between Standard and Realism mode leaderboards. Compete monthly.',
-            hint: 'Consistent disciplined traders rise to the top. High-risk gamblers fall out.',
-            event: null,
-            feature: 'leaderboard'
-        },
-        {
-            icon: '👁️',
-            title: 'Step 13 — Use Focus Mode',
-            desc: 'Click <strong>Focus</strong> in the toolbar to enter Silent Focus Mode. This hides all P&L while positions are open, forcing you to focus on process — entry quality, stop placement, thesis validity — rather than watching dollar signs. P&L is revealed only when you close a position. Elite traders use this daily.',
-            hint: 'Focus Mode is the highest-leverage discipline tool in the platform.',
-            event: null,
-            feature: 'focus_mode'
-        },
-        {
-            icon: '✅',
-            title: 'Onboarding Complete — Build Your Edge',
-            desc: `You've seen every major feature. Now use them together: journal every trade, review your analytics weekly, advance through challenge tiers, and let the AI Coach identify your blind spots. The goal is not to win — it's to get measurably better, trade by trade.`,
-            hint: 'The best traders are the most self-aware ones.',
-            event: null,
-            feature: 'complete'
-        }
+        { icon:'🎯', feature:'welcome', title:'Welcome to Vestra',
+          desc:'You have $10,000 in virtual capital and access to professional-grade trading tools. This tour walks you through every major feature. No real money — just skill development.',
+          hint:'Complete all steps to finish onboarding.' },
+        { icon:'⚡', feature:'live_data', title:'Step 1 — Connect Live Data',
+          desc:'Click the <strong>⚡ Live</strong> button in the top header to add your free Finnhub API key. This enables real-time prices. Get a free key at <strong>finnhub.io</strong> in 60 seconds.',
+          hint:'Trading works fine without an API key — prices will be simulated.' },
+        { icon:'🛡️', feature:'risk_guard', title:'Step 2 — Set Your Risk Rules',
+          desc:'Click <strong>Risk Guard</strong> in the toolbar. Set max risk per trade (1-2%), daily loss limit, and max open positions. These rules are enforced — the platform blocks trades that violate them.',
+          hint:'Set Risk Guard before your first trade. It is the most important step.' },
+        { icon:'📋', feature:'strategy_lab', title:'Step 3 — Create a Strategy',
+          desc:'Open <strong>Strategy Lab</strong> in the toolbar. Create a strategy with a name and entry rules. Tag every trade to a strategy — this is how you measure what actually works.',
+          hint:'Unnamed trades are noise, not data.' },
+        { icon:'📊', feature:'screener', title:'Step 4 — Read the Market',
+          desc:'Use the <strong>Screener</strong> to filter stocks by sector and momentum. Check <strong>Macro</strong> for market overview and the economic calendar before any trade.',
+          hint:'Never trade without checking broader market context first.' },
+        { icon:'💰', feature:'trade', title:'Step 5 — Place Your First Trade',
+          desc:'Click any stock, set quantity, choose order type (Market or Limit), and hit Buy. A journal prompt appears — write your trade thesis before confirming.',
+          hint:'Market orders fill immediately. Limit orders wait for your price.' },
+        { icon:'📓', feature:'journal', title:'Step 6 — Journal Your Trades',
+          desc:'After closing a position, write your reflection: what happened vs what you expected, any emotional factors, and your execution quality. Open <strong>Progress</strong> to review your history.',
+          hint:'Traders who journal consistently improve 3x faster.' },
+        { icon:'🤖', feature:'ai_coach', title:'Step 7 — Get AI Analysis',
+          desc:'Open <strong>AI Coach</strong> in the toolbar. After a few trades it analyzes your patterns: position sizing, hold-time, and emotional trading biases. Ask it anything about your behavior.',
+          hint:'The AI Coach detects revenge trading, overtrading, and inconsistent sizing.' },
+        { icon:'📈', feature:'analytics', title:'Step 8 — Review Analytics',
+          desc:'Click <strong>Analytics</strong> in the toolbar for your equity curve, drawdown chart, Sharpe ratio, win rate, and expectancy. These metrics reveal whether results come from skill or luck.',
+          hint:'Focus on expectancy and risk-adjusted return, not just raw profit.' },
+        { icon:'🔵', feature:'realism_mode', title:'Step 9 — Switch to Realism Mode',
+          desc:'Click the <strong>SIM / REALISM</strong> button in the toolbar. Realism Mode enforces market hours, real spreads, and slippage — making conditions close to a live account.',
+          hint:'Realism Mode is recommended for serious training.' },
+        { icon:'🏆', feature:'challenge', title:'Step 10 — Take a Challenge',
+          desc:'Click <strong>Challenge</strong> in the toolbar to enter a structured tier. Each tier gives starting capital and enforces strict risk rules. Start with <strong>Cadet</strong> to learn discipline fundamentals.',
+          hint:'Challenges are scored on risk-adjusted performance, not raw P&L.' },
+        { icon:'📚', feature:'academy', title:'Step 11 — Study the Academy',
+          desc:'Open <strong>Academy</strong> to access 35 structured lessons across 5 courses: Market Foundations, Risk Management, Trading Psychology, Technical Analysis, and Fundamental Analysis.',
+          event:'open_academy', hint:'The Academy covers the theory behind every tool in this platform.' },
+        { icon:'🏅', feature:'leaderboard', title:'Step 12 — Check the Leaderboard',
+          desc:'Click the <strong>leaderboard icon</strong> in the header to see your ranking. Rankings are risk-adjusted — not just raw profit. Separate leaderboards for Standard and Realism Mode.',
+          hint:'You need at least 1 trade to appear on the leaderboard.' },
+        { icon:'👁️', feature:'focus_mode', title:'Step 13 — Use Focus Mode',
+          desc:'Click <strong>Focus</strong> in the toolbar to hide all P&L while positions are open. This trains process-over-outcome discipline — P&L is revealed when you close a position.',
+          hint:'Elite traders focus on decisions, not dollar signs.' },
+        { icon:'✅', feature:'complete', title:'Onboarding Complete',
+          desc:'You have seen every major feature. Journal every trade, review analytics weekly, advance through Challenge tiers, and let the AI Coach find your blind spots. Build your edge.',
+          hint:'The best traders are the most self-aware ones.' },
     ];
 
     function renderTutorialStep() {
-        const step  = tutorialState.step;
-        const s     = tutorialSteps[step];
-        const total = tutorialSteps.length;
+        var step=tutorialState.step, s=tutorialSteps[step], total=tutorialSteps.length;
         if (!s) return;
-
-        document.getElementById('tutorialIcon').textContent  = s.icon || '';
-        document.getElementById('tutorialTitle').textContent = s.title;
-        document.getElementById('tutorialDesc').innerHTML    = s.desc;
-        document.getElementById('tutorialStepCounter').textContent = (step + 1) + ' / ' + total;
-
-        // Hint
-        const hintEl = document.getElementById('tutorialHint');
-        if (s.hint) { hintEl.textContent = s.hint; hintEl.style.display = 'block'; }
-        else        { hintEl.style.display = 'none'; }
-
-        // Feature badge
-        const featureNames = {
-            welcome:'Welcome', live_data:'Live Data', risk_guard:'Risk Guard',
-            strategy_lab:'Strategy Lab', screener:'Screener & Macro', trade:'Place a Trade',
-            journal:'Trade Journal', ai_coach:'AI Coach', analytics:'Portfolio Analytics',
-            realism_mode:'Realism Mode', challenge:'Challenge Tiers', academy:'Trading Academy',
-            leaderboard:'Leaderboard', focus_mode:'Focus Mode', complete:'Tour Complete'
-        };
-        const fb = document.getElementById('tutorialFeatureBadge');
-        const fl = document.getElementById('tutorialFeatureLabel');
-        if (fb && fl && s.feature && featureNames[s.feature]) {
-            fl.textContent = featureNames[s.feature];
-            fb.style.display = 'block';
-        } else if (fb) { fb.style.display = 'none'; }
-
-        // Progress bar
-        document.getElementById('tutorialProgressFill').style.width = ((step / (total - 1)) * 100) + '%';
-
-        // Dots
-        const dotsEl = document.getElementById('tutorialDots');
-        if (dotsEl) dotsEl.innerHTML = tutorialSteps.map((_, i) =>
-            '<div style="width:' + (i===step?'18px':'6px') + ';height:6px;border-radius:3px;background:' + (i===step?'#a78bfa':i<step?'rgba(167,139,250,0.5)':'rgba(255,255,255,0.1)') + ';transition:all .3s;flex-shrink:0;"></div>'
-        ).join('');
-
-        // Prev button
-        const prevBtn = document.getElementById('tutorialPrevBtn');
-        if (prevBtn) prevBtn.style.display = step > 0 ? 'block' : 'none';
-
-        // Next button
-        const nextBtn = document.getElementById('tutorialNextBtn');
-        if (nextBtn) {
-            if (s.event === 'open_academy') {
-                nextBtn.textContent = 'Open Academy →';
-            } else if (step === total - 1) {
-                nextBtn.textContent = '🚀 Start Trading';
-                nextBtn.style.background = 'linear-gradient(135deg,#059669,#34d399)';
-            } else {
-                nextBtn.textContent = 'Continue →';
-                nextBtn.style.background = 'linear-gradient(135deg,#7c3aed,#a78bfa)';
-            }
-        }
+        var el;
+        el=document.getElementById('tutorialIcon'); if(el) el.textContent=s.icon||'';
+        el=document.getElementById('tutorialTitle'); if(el) el.textContent=s.title||'';
+        el=document.getElementById('tutorialDesc'); if(el) el.innerHTML=s.desc||'';
+        el=document.getElementById('tutorialStepCounter'); if(el) el.textContent=(step+1)+' / '+total;
+        el=document.getElementById('tutorialHint'); if(el){if(s.hint){el.textContent=s.hint;el.style.display='block';}else el.style.display='none';}
+        var FNAMES={welcome:'Welcome',live_data:'Live Data',risk_guard:'Risk Guard',strategy_lab:'Strategy Lab',screener:'Screener',trade:'Place a Trade',journal:'Trade Journal',ai_coach:'AI Coach',analytics:'Analytics',realism_mode:'Realism Mode',challenge:'Challenges',academy:'Academy',leaderboard:'Leaderboard',focus_mode:'Focus Mode',complete:'Complete'};
+        var fb=document.getElementById('tutorialFeatureBadge'),fl=document.getElementById('tutorialFeatureLabel');
+        if(fb&&fl){if(s.feature&&FNAMES[s.feature]){fl.textContent=FNAMES[s.feature];fb.style.display='block';}else fb.style.display='none';}
+        el=document.getElementById('tutorialProgressFill'); if(el) el.style.width=((step/(total-1))*100)+'%';
+        el=document.getElementById('tutorialDots'); if(el) el.innerHTML=tutorialSteps.map(function(_,i){return '<div style="width:'+(i===step?'18px':'6px')+';height:6px;border-radius:3px;background:'+(i===step?'#a78bfa':i<step?'rgba(167,139,250,0.5)':'rgba(255,255,255,0.1)')+';transition:all .3s;flex-shrink:0;display:inline-block;margin:1px;"></div>';}).join('');
+        el=document.getElementById('tutorialPrevBtn'); if(el) el.style.display=step>0?'inline-block':'none';
+        el=document.getElementById('tutorialNextBtn'); if(el){if(step===total-1){el.textContent='Start Trading';el.style.background='linear-gradient(135deg,#059669,#34d399)';}else{el.textContent='Continue';el.style.background='linear-gradient(135deg,#7c3aed,#a78bfa)';}}
     }
 
     function startTutorial(forceOpen) {
         if (!forceOpen && currentUser && currentUser.tutorialDone) return;
         tutorialState.active = true;
         tutorialState.step   = 0;
-        const tEl = document.getElementById('tutorialOverlay');
-        if (tEl) { tEl.style.display = 'flex'; }
+        var _to=document.getElementById('tutorialOverlay'); if(_to)_to.style.display='flex';
         renderTutorialStep();
     }
 
@@ -9955,8 +9834,7 @@ function startNewsEngine() {
 
     function skipTutorial() {
         tutorialState.active = false;
-        const tEl = document.getElementById('tutorialOverlay');
-        if (tEl) { tEl.style.display = 'none'; }
+        var _to2=document.getElementById('tutorialOverlay'); if(_to2)_to2.style.display='none';
         if (currentUser) { currentUser.tutorialDone = true; saveUserData(false); }
     }
 
@@ -12070,30 +11948,10 @@ function startNewsEngine() {
 
         // slippageEnabled mirrors realism mode
         slippageEnabled = true;  // always on in both modes; realism adds more
-
-        // ── Drive prominent toolbar mode switcher ─────────────────
-        const msBtn   = document.getElementById('modeSwitcherBtn');
-        const msLabel = document.getElementById('modeSwitcherLabel');
-        const msDot   = document.getElementById('modeSwitcherDot');
-        if (msBtn && msLabel && msDot) {
-            if (isR) {
-                msBtn.style.color       = '#60a5fa';
-                msBtn.style.background  = 'rgba(96,165,250,0.12)';
-                msBtn.style.borderColor = 'rgba(96,165,250,0.5)';
-                msDot.style.background  = '#60a5fa';
-                msDot.style.boxShadow   = '0 0 9px rgba(96,165,250,0.9)';
-                msLabel.textContent     = 'REALISM ◉';
-                msBtn.title             = 'Realism Mode — click to switch';
-            } else {
-                msBtn.style.color       = '#d4a84b';
-                msBtn.style.background  = 'rgba(212,168,75,0.1)';
-                msBtn.style.borderColor = 'rgba(212,168,75,0.4)';
-                msDot.style.background  = '#d4a84b';
-                msDot.style.boxShadow   = '0 0 6px rgba(212,168,75,0.7)';
-                msLabel.textContent     = 'SIM';
-                msBtn.title             = 'Standard Mode — click to switch';
-            }
-        }
+    
+        // Drive toolbar mode button
+        var _msBtn=document.getElementById('modeSwitcherBtn'), _msLbl=document.getElementById('modeSwitcherLabel'), _msDot=document.getElementById('modeSwitcherDot');
+        if(_msBtn&&_msLbl&&_msDot){if(isR){_msBtn.style.color='#60a5fa';_msBtn.style.background='rgba(96,165,250,0.12)';_msBtn.style.borderColor='rgba(96,165,250,0.5)';_msDot.style.background='#60a5fa';_msLbl.textContent='REALISM';}else{_msBtn.style.color='#d4a84b';_msBtn.style.background='rgba(212,168,75,0.1)';_msBtn.style.borderColor='rgba(212,168,75,0.4)';_msDot.style.background='#d4a84b';_msLbl.textContent='SIM';}}
     }
 
     // ── Mode Selection Modal ─────────────────────────────────────────────
@@ -14774,20 +14632,20 @@ function startNewsEngine() {
 
     // ── FAQ Content ───────────────────────────────────────────────────
     const FAQ_ITEMS = [
-        { q: 'Is Vestra free to use?', a: 'Yes. Vestra is completely free. No credit card, no subscription, no hidden fees. Create an account and start trading with $10,000 virtual cash instantly.' },
-        { q: 'Does Vestra use real money?', a: 'No. All portfolio values, trades, and returns on Vestra are entirely virtual. No real currency is ever deposited, withdrawn, or at risk. This is a simulation platform only.' },
-        { q: 'How do I get live stock prices?', a: 'Vestra integrates with the Finnhub API for real-time market data. Get a free API key from finnhub.io and enter it via the Live button in the header. Without an API key, prices update with simulated realistic movements.' },
-        { q: 'What is Realism Mode?', a: 'Realism Mode enforces real-world trading constraints: orders only execute during market hours, bid-ask spread simulation applies, and you compete on a separate leaderboard. Click the SIM/REALISM button in the toolbar to switch. Recommended for serious skill-building.' },
-        { q: 'What is the Strategy Lab?', a: 'The Strategy Lab lets you create named trading strategies with defined entry/exit conditions and risk parameters. Tag every trade to a strategy. This is how you measure what actually works — untagged trades are noise, not data.' },
-        { q: 'How does the Risk Guard work?', a: 'Risk Guard lets you set personal trading rules: max risk per trade (% of portfolio), max daily loss, and max open positions. If you attempt to violate a rule, the trade is blocked with an explanation. Set it before your first trade.' },
-        { q: 'What are Challenge Tiers?', a: 'Challenge Tiers are structured trading tests with enforced risk rules. Start as a Cadet ($10,000 capital), then progress through Analyst, Associate, and Portfolio Manager tiers as you demonstrate disciplined performance. Open Challenges from the toolbar.' },
-        { q: 'What is the Trading Academy?', a: 'The Academy contains 35 structured lessons across 5 courses: Market Foundations, Risk Management, Trading Psychology, Technical Analysis, and Fundamental Analysis. Each lesson includes reading content and audio playback via browser speech synthesis.' },
-        { q: 'What is Silent Focus Mode?', a: 'Focus Mode hides all P&L while positions are open, forcing you to focus on process rather than watching dollar signs. P&L is revealed when you close a position. Toggle it via the Focus button in the toolbar.' },
-        { q: 'How does AI Coach bias detection work?', a: 'After placing trades, the AI Coach (powered by Claude) analyzes your patterns: position sizing, hold-time distribution, entries after losses (revenge trading), and overtrading signals. Ask it specific questions about your trading behavior.' },
-        { q: 'Why am I ineligible for the leaderboard?', a: 'You need at least 1 completed trade to appear on the leaderboard. New accounts show as ineligible until you place your first trade. The leaderboard ranks by portfolio value with risk-adjusted scoring.' },
-        { q: 'How are leaderboard rankings calculated?', a: 'Rankings are by total portfolio value. Ties broken by percentage return, then by lowest maximum drawdown. Standard and Realism modes have completely separate leaderboards.' },
-        { q: 'Can I export my trade history?', a: 'Yes. Use the ⋯ menu in the top right of the dashboard to access Export Portfolio. Your full trade history, portfolio state, and journal entries are exported as a JSON file.' },
-        { q: 'How do I delete my account?', a: 'Contact us at arush2011jain@gmail.com with your username and a deletion request. Alternatively, clearing your browser local storage will erase all local data immediately.' },
+        { q: 'Is Vestra free to use?', a: 'Yes. Vestra is completely free — no credit card, no subscription. Create an account and start trading with $10,000 virtual cash instantly.' },
+        { q: 'Does Vestra use real money?', a: 'No. All portfolio values, trades, and returns are entirely virtual. No real currency is ever at risk. This is a simulation platform only.' },
+        { q: 'How do I get live stock prices?', a: 'Vestra integrates with the Finnhub API for real-time data. Get a free API key from finnhub.io and enter it via the Live button in the header. Without a key, prices update with simulated movements.' },
+        { q: 'What is Realism Mode?', a: 'Realism Mode enforces real trading constraints: orders only execute during market hours, bid-ask spread simulation applies, and you compete on a separate leaderboard. Click SIM/REALISM in the toolbar to switch.' },
+        { q: 'What is the Strategy Lab?', a: 'The Strategy Lab lets you create named trading strategies with defined rules. Tag every trade to a strategy to measure what actually works over time.' },
+        { q: 'How does Risk Guard work?', a: 'Risk Guard lets you set personal rules: max risk per trade, max daily loss, and max open positions. If you attempt to violate a rule, the trade is blocked with an explanation.' },
+        { q: 'What are Challenge Tiers?', a: 'Challenge Tiers are structured trading tests with enforced risk rules. Start as Cadet ($10,000), then progress through Analyst, Associate, and Portfolio Manager tiers as you demonstrate disciplined performance.' },
+        { q: 'What is the Trading Academy?', a: 'The Academy contains 35 structured lessons across 5 courses: Market Foundations, Risk Management, Trading Psychology, Technical Analysis, and Fundamental Analysis. Each lesson includes audio playback.' },
+        { q: 'What is Focus Mode?', a: 'Focus Mode hides all P&L while positions are open, forcing you to focus on process rather than watching dollar signs. P&L is revealed when you close a position.' },
+        { q: 'How does AI Coach work?', a: 'After placing trades, the AI Coach (powered by Claude) analyzes your patterns: position sizing, hold-time, entries after losses (revenge trading), and overtrading signals.' },
+        { q: 'Why am I ineligible for the leaderboard?', a: 'You need at least 1 completed trade to appear on the leaderboard. New accounts show as ineligible until your first trade is placed and closed.' },
+        { q: 'How are leaderboard rankings calculated?', a: 'Rankings are by total portfolio value. Separate leaderboards exist for Standard and Realism modes. Accounts with risk violations or integrity issues may be marked ineligible.' },
+        { q: 'Can I export my trade history?', a: 'Yes. Use the menu in the top right of the dashboard to access Export Portfolio. Your full trade history and portfolio state are exported as a JSON file.' },
+        { q: 'How do I contact support?', a: 'Email us at arush2011jain@gmail.com with your username and issue description. We typically respond within 24 hours.' },
     ];
 
     function renderFAQ() {
@@ -17648,9 +17506,9 @@ function startNewsEngine() {
         if ((user.totalTrades || 0) < 1) return { eligible: false, reason: 'Place your first trade to qualify' };
         if ((user.riskViolations || 0) > 10) return { eligible: false, reason: 'Too many risk violations' };
         if ((user.integrityScore ?? 100) < 40) return { eligible: false, reason: 'Integrity score too low' };
-        const startVal = user.startCash || 10000;
-        const retPct = user.totalValue ? ((user.totalValue - startVal) / startVal * 100) : 0;
-        if (retPct > 500) return { eligible: false, reason: 'Return flagged for review (>500%)' };
+        const _base = user.startCash || 10000;
+        const _ret = user.totalValue ? ((user.totalValue - _base) / _base * 100) : 0;
+        if (_ret > 500) return { eligible: false, reason: 'Return flagged for review (>500%)' };
         return { eligible: true, reason: 'Verified' };
     }
 
@@ -23180,16 +23038,14 @@ window.vestraDesign = { animateValue, animateStockGrid };
       </ul>
       <h2>What Vestra Is Not</h2>
       <p>Vestra is not a brokerage, not a financial advisor, not an investment platform, and not a gambling application. No real money ever changes hands.</p>
-      <h2>Built By</h2>
-      <p>Vestra is an independent project built by a solo developer passionate about making professional trading education accessible. Questions and feedback: <a href="mailto:arush2011jain@gmail.com" style="color:var(--v-gold);">arush2011jain@gmail.com</a></p>
       <h2>Version History</h2>
       <ul>
-        <li><strong>v9.0</strong> — Trading Academy (35 lessons), Challenge Tiers, Feature Tutorial, Mode Switcher, expanded FAQ &amp; Contact</li>
-        <li><strong>v8.0</strong> — AI Coach (Claude API), real-time Finnhub data, persistent accounts, leaderboard storage</li>
-        <li><strong>v6.0</strong> — Decision Intelligence, Advanced Analytics, Silent Focus Mode, Stress Test Engine, Discipline Score</li>
-        <li><strong>v5.0</strong> — Strategy Lab, Risk Guard enforcement, AI Coach 2.0</li>
-        <li><strong>v4.0</strong> — Realism Mode, mode-split leaderboards, Portfolio Intelligence</li>
-        <li><strong>v1.0–3.0</strong> — Core simulation, live API, advanced charting, screener, bracket orders</li>
+        <li><strong>v6.0</strong> — Decision Intelligence, Capital Allocator, Advanced Analytics, Silent Focus Mode, Stress Test Engine, 6 Themes, Extended AI Coach, Long-term Discipline Score</li>
+        <li><strong>v5.0</strong> — Strategy Lab, Replay Engine, Risk Guard, AI Coach 2.0, Legal Infrastructure</li>
+        <li><strong>v4.0</strong> — Mode-split leaderboards, Realism Mode, Portfolio Intelligence</li>
+        <li><strong>v3.0</strong> — Bracket orders, SIP plans, community layer, education academy</li>
+        <li><strong>v2.0</strong> — Live API integration, advanced charting, screener</li>
+        <li><strong>v1.0</strong> — Core simulation with basic portfolio tracking</li>
       </ul>
     </div>
   </div>
@@ -23408,7 +23264,7 @@ window.vestraDesign = { animateValue, animateStockGrid };
             </div>
             <button onclick="closeChallengeMode()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
-        <div id="challengeContent" style="padding:20px 28px;overflow-y:auto;max-height:calc(100vh - 200px);"></div>
+        <div id="challengeContent" style="overflow-y:auto;max-height:calc(100vh - 220px);padding:20px 28px;"></div>
     </div>
 </div>
 
@@ -23913,7 +23769,7 @@ window.vestraDesign = { animateValue, animateStockGrid };
                 </div>
             </div>
             <div style="display:flex;align-items:center;gap:10px;">
-                <div id="acadTotalProgressBadge" style="font-size:11px;color:#60a5fa;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);padding:4px 10px;border-radius:20px;font-weight:700;"></div>
+                <div id="acadTotalProgressBadge" style="fot:700;"></div>
                 <button onclick="closeAcademy()" style="background:none;border:none;color:#8888a8;cursor:pointer;padding:4px;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
@@ -23921,6 +23777,17 @@ window.vestraDesign = { animateValue, animateStockGrid };
         </div>
         <!-- Body -->
         <div id="academyBody" style="flex:1;overflow:hidden;min-height:0;"></div>
+    </div>
+</div>
+
+<div id="tradeToast" style="display:none;position:fixed;bottom:24px;right:24px;z-index:99998;background:#1a1a2e;border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px 18px;min-width:260px;max-width:340px;box-shadow:0 20px 60px rgba(0,0,0,0.6);animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);">
+    <div style="display:flex;align-items:center;gap:10px;">
+        <div id="tradeToastIcon" style="font-size:1.2rem;">✓</div>
+        <div style="flex:1;">
+            <div id="tradeToastTitle" style="font-size:13px;font-weight:700;color:#f0f0fa;line-height:1.3;"></div>
+            <div id="tradeToastBody" style="font-size:11px;color:#8888a8;margin-top:2px;line-height:1.4;"></div>
+        </div>
+        <button onclick="this.parentElement.parentElement.style.display='none'" style="background:none;border:none;color:#6868a0;cursor:pointer;font-size:16px;padding:0;flex-shrink:0;">×</button>
     </div>
 </div>
 
