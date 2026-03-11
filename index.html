@@ -28,6 +28,20 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.1.1/dist/chartjs-chart-financial.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        #tutorialOverlay.hidden { display:none !important; }
+
+        /* ═══ ACADEMY LESSON STYLES ═══ */
+        .va-lesson-body { font-family: Georgia, 'Times New Roman', serif; font-size: 15.5px; line-height: 1.78; color: #d0d0e8; }
+        .va-lesson-body h2 { font-family: 'Sora', sans-serif; font-size: 1.45rem; font-weight: 700; color: #f0f0fa; margin: 0 0 16px; letter-spacing: -0.02em; }
+        .va-lesson-body h3 { font-family: 'Sora', sans-serif; font-size: 1.05rem; font-weight: 700; color: #e0e0f5; margin: 28px 0 10px; }
+        .va-lesson-body p { margin: 0 0 16px; }
+        .va-lesson-body ul { margin: 0 0 16px; padding-left: 22px; }
+        .va-lesson-body li { margin-bottom: 8px; }
+        .va-lesson-body strong { color: #f0f0fa; font-weight: 700; }
+        .va-lead { font-size: 17px !important; line-height: 1.7 !important; color: #c8c8e8 !important; font-style: italic; margin-bottom: 22px !important; }
+        .va-callout { background: rgba(96,165,250,0.07); border: 1px solid rgba(96,165,250,0.2); border-left: 3px solid #60a5fa; border-radius: 8px; padding: 14px 18px; margin: 18px 0; font-family: 'Sora', sans-serif; font-size: 13px; line-height: 1.65; color: #b8d4f8; }
+        .va-callout strong { color: #93c5fd; }
+
         :root {
             /* ── Core surfaces ── */
             --v-bg: #09090e;
@@ -254,7 +268,7 @@
         }
         .v-tooltip:hover .v-tooltip-popup { opacity: 1; pointer-events: auto; }
         .v-tooltip-title { font-size: 11px; font-weight: 700; color: var(--v-gold); margin-bottom: 4px; }
-        .v-tooltip-body { font-size: 10px; color: #a0a0c0; line-height: 1.55; }
+        .v-tooltip-.v-tooltip-body { font-size: 10px; color: #a0a0c0; line-height: 1.55; }
         .v-tooltip-improve { font-size: 9px; color: #4ade80; margin-top: 5px; font-style: italic; }
 
         /* ── Feature Hint Banner ── */
@@ -307,11 +321,8 @@
             display: flex; justify-content: space-between; align-items: flex-start;
             position: sticky; top: 0; background: #0e0e16; z-index: 2;
         }
-        .legal-body {
-            padding: 28px 36px 40px; font-size: 13.5px; color: #a0a0c0;
-            line-height: 1.85;
-        }
-        .legal-body h2 { font-family: var(--v-serif); font-size: 1.1rem; color: #e0e0f5; margin: 24px 0 8px; }
+        .legal-
+                .legal-body h2 { font-family: var(--v-serif); font-size: 1.1rem; color: #e0e0f5; margin: 24px 0 8px; }
         .legal-body h2:first-of-type { margin-top: 0; }
         .legal-body p { margin: 0 0 12px; }
         .legal-body ul { margin: 0 0 12px 20px; padding: 0; }
@@ -2950,7 +2961,7 @@
             flex-shrink: 0;
         }
         .v-learn-track-item.open .v-learn-track-chevron { transform: rotate(180deg); }
-        .v-learn-track-body {
+        .v-learn-track-.v-learn-track-body {
             display: none;
             border-top: 1px solid rgba(255,255,255,0.06);
         }
@@ -3015,8 +3026,8 @@
         .card { background:var(--v-card);border:1px solid var(--v-border);border-radius:var(--v-radius-md);overflow:hidden; }
         .card-sm { background:var(--v-card);border:1px solid var(--v-border);border-radius:var(--v-radius-sm); }
         .card-header { padding:14px 18px;border-bottom:1px solid var(--v-border);display:flex;align-items:center;justify-content:space-between; }
-        .card-body { padding:16px 18px; }
-        .card-title { font-size:12px;font-weight:700;color:var(--v-muted);text-transform:uppercase;letter-spacing:0.07em; }
+        .card-
+                .card-title { font-size:12px;font-weight:700;color:var(--v-muted);text-transform:uppercase;letter-spacing:0.07em; }
 
         /* Label/badge system */
         .badge { display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px; }
@@ -3514,10 +3525,8 @@
             align-items: center;
             justify-content: space-between;
         }
-        .v-card-body {
-            padding: 16px 18px;
-        }
-        .v-card-label {
+        .v-card-
+                .v-card-label {
             font-size: 10px;
             font-weight: 700;
             color: var(--v-muted);
@@ -3763,11 +3772,8 @@
             color: var(--v-text);
             border-color: var(--v-border-strong);
         }
-        .v-modal-body {
-            padding: 24px 28px;
-        }
-
-        /* ═══════════════════════════════════════════════════════════
+        .v-modal-
+                /* ═══════════════════════════════════════════════════════════
            TAB SYSTEM
         ═══════════════════════════════════════════════════════════ */
         .v-tabs {
@@ -4536,10 +4542,7 @@
           <button class="footer-link" onclick="document.getElementById('authOverlay').style.display='flex'">Dashboard</button>
           <button class="footer-link" onclick="openLeaderboard()">Leaderboard</button>
           <button class="footer-link" onclick="openStrategyLab()">Strategy Lab</button>
-          <button onclick="openAcademy()" style="display:flex;align-items:center;gap:5px;padding:6px 10px;background:rgba(96,165,250,0.09);border:1px solid rgba(96,165,250,0.2);border-radius:8px;font-size:11px;font-weight:600;color:#60a5fa;cursor:pointer;font-family:var(--v-sans);transition:all .15s;white-space:nowrap;" onmouseover="this.style.background='rgba(96,165,250,0.16)'" onmouseout="this.style.background='rgba(96,165,250,0.09)'" title="Trading Academy">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-                    Academy
-                </button><button class="footer-link" onclick="openAICoach()">AI Coach</button>
+          <button class="footer-link" onclick="openAICoach()">AI Coach</button>
           <button class="footer-link" onclick="openMacro()">Market Overview</button>
           <button class="footer-link" onclick="openAdvancedAnalytics()">Analytics</button>
           <button class="footer-link" onclick="openChallengeMode()">Challenges</button>
@@ -4582,11 +4585,10 @@
      APP WRAPPER
 ═══════════════════════════════════════════════════════ -->
 <!-- ═══ LOGIN / REGISTER OVERLAY ═══ -->
-<div id="authOverlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.93);backdrop-filter:blur(18px);align-items:center;justify-content:center;flex-direction:column;">
+<div id="authOverlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.93);backdrop-filter:blur(18px);overflow-y:auto;padding:20px 16px;">
 
     <!-- Auth card -->
-    <div style="background:var(--v-card);border:1px solid rgba(201,168,76,0.18);border-radius:22px;width:100%;max-width:420px;padding:36px 36px 28px;box-shadow:0 32px 96px rgba(0,0,0,0.7);position:relative;animation:slideUp .3s cubic-bezier(.16,1,.3,1);">
-
+    <div style="background:var(--v-card);border:1px solid rgba(201,168,76,0.18);border-radius:22px;width:100%;max-width:420px;margin:auto;padding:36px 36px 28px;box-shadow:0 32px 96px rgba(0,0,0,0.7);position:relative;animation:slideUp .3s cubic-bezier(.16,1,.3,1);">
         <!-- Close -->
         <button onclick="document.getElementById('authOverlay').style.display='none'" style="position:absolute;top:14px;right:14px;background:none;border:none;color:#5a5a7a;cursor:pointer;padding:4px;" title="Close">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -4605,25 +4607,6 @@
         <div style="display:flex;background:rgba(255,255,255,0.04);border-radius:10px;padding:3px;margin-bottom:22px;gap:2px;">
             <button id="authTabLogin" onclick="showAuthFromHome('login')" style="flex:1;padding:8px;border-radius:8px;border:none;background:var(--v-gold);color:#0a0a0f;font-weight:700;font-size:12px;cursor:pointer;transition:all .2s;font-family:var(--v-sans);">Sign In</button>
             <button id="authTabRegister" onclick="showAuthFromHome('register')" style="flex:1;padding:8px;border-radius:8px;border:none;background:transparent;color:#8888a8;font-weight:600;font-size:12px;cursor:pointer;transition:all .2s;font-family:var(--v-sans);">Create Account</button>
-        </div>
-
-        <!-- SSO buttons -->
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px;">
-            <button onclick="handleSSOLogin('google')" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:11px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#e8e8f5;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:var(--v-sans);" onmouseover="this.style.background='rgba(255,255,255,0.09)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
-                <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                Continue with Google
-            </button>
-            <button onclick="handleSSOLogin('apple')" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:11px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#e8e8f5;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:var(--v-sans);" onmouseover="this.style.background='rgba(255,255,255,0.09)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-                Continue with Apple
-            </button>
-        </div>
-
-        <!-- Divider -->
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
-            <div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div>
-            <span style="font-size:11px;color:#4a4a6a;font-weight:600;text-transform:uppercase;letter-spacing:.08em;">or</span>
-            <div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div>
         </div>
 
         <!-- Error -->
@@ -4775,7 +4758,7 @@
         <div style="background:linear-gradient(135deg,rgba(212,168,75,0.08),rgba(96,165,250,0.08));padding:32px 36px 24px;text-align:center;">
             <div style="margin-bottom:12px;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8888a8" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 1.41 14.14M4.93 4.93A10 10 0 0 0 3.52 19.07M12 2v2M12 20v2M2 12h2M20 12h2"/></svg></div>
             <h2 style="font-family:var(--v-serif);font-size:1.6rem;color:#f0f0fa;margin:0 0 8px;">Choose Your Trading Mode</h2>
-            <p style="font-size:13px;color:#8888a8;margin:0;line-height:1.6;">Your mode determines which leaderboard you compete on. This decision is locked during active monthly competitions.</p>
+            <p style="font-size:13px;color:#8888a8;margin:0;line-height:1.6;">This affects how your orders fill, which leaderboard you compete on, and Challenge scoring. <strong style="color:#f0f0fa;">Realism Mode</strong> is recommended for serious skill-building.</p>
         </div>
         <div style="padding:24px 36px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
             <!-- Standard Mode Card -->
@@ -4793,7 +4776,8 @@
             <!-- Realism Mode Card -->
             <div onclick="confirmModeSelect('realism')" style="cursor:pointer;background:rgba(96,165,250,0.06);border:2px solid rgba(96,165,250,0.25);border-radius:16px;padding:20px;transition:all 0.2s;" onmouseover="this.style.borderColor='#60a5fa';this.style.background='rgba(96,165,250,0.1)'" onmouseout="this.style.borderColor='rgba(96,165,250,0.25)';this.style.background='rgba(96,165,250,0.06)'">
                 <div style="margin-bottom:12px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20"/></svg></div>
-                <div style="font-weight:700;color:#60a5fa;font-size:1rem;margin-bottom:6px;">Realism Mode</div>
+                <div style="font-weight:700;color:#60a5fa;font-size:1rem;margin-bottom:4px;">Realism Mode</div>
+                <div style="display:inline-block;font-size:9px;font-weight:800;color:#4ade80;background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.3);border-radius:4px;padding:2px 7px;letter-spacing:.07em;margin-bottom:8px;">⭐ RECOMMENDED</div>
                 <ul style="font-size:11px;color:#a0a0b8;line-height:1.7;margin:0;padding:0;list-style:none;">
                     <li style="display:flex;align-items:center;gap:6px;"><span style="color:#4ade80;font-size:11px;">&#10003;</span> Market hours enforced</li>
                     <li style="display:flex;align-items:center;gap:6px;"><span style="color:#4ade80;font-size:11px;">&#10003;</span> Real spread simulation</li>
@@ -4987,19 +4971,23 @@
                 <button onclick="openScreener()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='var(--v-gold)';this.style.color='var(--v-gold)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Screener</button>
                 <button onclick="openCalendar()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='var(--v-gold)';this.style.color='var(--v-gold)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Calendar</button>
                 <button onclick="openCommunity()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='var(--v-gold)';this.style.color='var(--v-gold)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Community</button>
-                <button onclick="openEducation()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='var(--v-gold)';this.style.color='var(--v-gold)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Learn</button>
+                
                 <button onclick="openStrategyLab()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#a78bfa';this.style.color='#a78bfa'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 3h12M8 3v4L4 17a2 2 0 0 0 1.8 2.9h12.4A2 2 0 0 0 20 17L16 7V3M9 14h6"/></svg> Strategy Lab</button>
                 <button onclick="openMacro()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#60a5fa';this.style.color='#60a5fa'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Macro</button>
                 <button onclick="openTraderProgress()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#4ade80';this.style.color='#4ade80'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Progress</button>
                 <button onclick="openRiskGuard()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#f59e0b';this.style.color='#f59e0b'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Risk Guard</button>
                 <button onclick="openAdvancedAnalytics()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#f472b6';this.style.color='#f472b6'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Analytics</button>
-                <button onclick="openAcademy()" style="font-size:10px;font-weight:700;color:#60a5fa;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.18);padding:4px 10px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:4px;" onmouseover="this.style.background='rgba(96,165,250,0.15)'" onmouseout="this.style.background='rgba(96,165,250,0.08)'" title="Trading Academy">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Academy</button><button onclick="openAICoach()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#34d399';this.style.color='#34d399'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9.663 17h4.673M12 3a6 6 0 0 1 6 6v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9a6 6 0 0 1 6-6z"/><path d="M12 17v4"/></svg> AI Coach</button>
+                <button onclick="openAcademy()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:var(--v-sans);white-space:nowrap;transition:background .15s,color .15s;" onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.color='#f0f0fa'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.color='#a0a0b8'"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg> Academy</button><button onclick="openAICoach()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#34d399';this.style.color='#34d399'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9.663 17h4.673M12 3a6 6 0 0 1 6 6v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9a6 6 0 0 1 6-6z"/><path d="M12 17v4"/></svg> AI Coach</button>
                 <button onclick="openChallengeMode()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#fb923c';this.style.color='#fb923c'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="8 21 12 21 16 21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M7 4H4a2 2 0 0 0-2 2v3a5 5 0 0 0 4.6 4.98"/><path d="M17 4h3a2 2 0 0 1 2 2v3a5 5 0 0 1-4.6 4.98"/><rect x="7" y="2" width="10" height="15" rx="2"/></svg> Challenge</button>
                 <button onclick="toggleSilentFocus()" id="silentFocusBtn" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#818cf8';this.style.color='#818cf8'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'" title="Hide P&amp;L during open trades"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg> Focus</button>
             <!-- Help button -->
             <button onclick="openHelpCenter()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" title="Help Center &amp; Feature Guide" onmouseover="this.style.borderColor='var(--v-gold)';this.style.color='var(--v-gold)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Help</button>
                 <button onclick="openMultiAsset()" style="font-size:10px;font-weight:700;color:#a0a0b8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='#22d3ee';this.style.color='#22d3ee'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#a0a0b8'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Multi-Asset</button>
+                <!-- Mode Switcher -->
+                <button id="modeSwitcherBtn" onclick="showModeSelectModal()" style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;color:#d4a84b;background:rgba(212,168,75,0.1);border:1.5px solid rgba(212,168,75,0.4);padding:4px 11px;border-radius:6px;cursor:pointer;letter-spacing:.03em;transition:all .15s;" onmouseover="this.style.background='rgba(212,168,75,0.2)';this.style.borderColor='rgba(212,168,75,0.7)'" onmouseout="this.style.background='rgba(212,168,75,0.1)';this.style.borderColor='rgba(212,168,75,0.4)'" title="Switch trading mode">
+                    <span id="modeSwitcherDot" style="width:7px;height:7px;border-radius:50%;background:#d4a84b;flex-shrink:0;box-shadow:0 0 6px rgba(212,168,75,0.7);"></span>
+                    <span id="modeSwitcherLabel">SIM</span>
+                </button>
                 <!-- API Health -->
                 <div style="display:flex;align-items:center;gap:4px;padding:2px 7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:5px;" title="Data source status">
                     <div id="apiHealthDot" style="width:5px;height:5px;border-radius:50%;background:#6b7280;flex-shrink:0;"></div>
@@ -5039,7 +5027,7 @@
                     </span>
                 </div>
                 <div style="display:flex;align-items:center;gap:6px;">
-                    <span id="modeBadgeSidebar" style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(212,168,75,0.12);color:#d4a84b;border:1px solid rgba(212,168,75,0.25);" title="Current trading mode">Standard</span>
+                    <span id="modeBadgeSidebar" onclick="showModeSelectModal()" style="font-size:9px;font-weight:700;padding:3px 9px;border-radius:4px;background:rgba(212,168,75,0.12);color:#d4a84b;border:1px solid rgba(212,168,75,0.25);cursor:pointer;transition:all .15s;" onmouseover="this.style.background='rgba(212,168,75,0.22)'" onmouseout="this.style.background='rgba(212,168,75,0.12)'" title="Click to switch trading mode">Standard</span>
                     <span id="dataSourceBadge2" style="display:none;"></span>
                 </div>
             </div>
@@ -5612,29 +5600,45 @@
 </div>
 
 <!-- ═══ IMMERSIVE TUTORIAL OVERLAY ═══ -->
-<div id="tutorialOverlay" class="hidden">
-    <div class="tutorial-card">
-        <!-- Progress bar -->
-        <div class="tutorial-progress-bar">
-            <div class="tutorial-progress-fill" id="tutorialProgressFill" style="width:0%"></div>
+<div id="tutorialOverlay" class="hidden" style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.75);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:16px;">
+    <div style="background:#111118;border:1px solid rgba(255,255,255,0.1);border-radius:20px;width:100%;max-width:680px;max-height:calc(100vh - 32px);overflow:hidden;display:flex;flex-direction:column;animation:slideUp .35s cubic-bezier(.16,1,.3,1);box-shadow:0 32px 80px rgba(0,0,0,0.7);">
+        <!-- Header row -->
+        <div style="padding:18px 24px 14px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:8px;height:8px;border-radius:50%;background:#a78bfa;box-shadow:0 0 8px rgba(167,139,250,0.8);"></div>
+                <span style="font-size:11px;font-weight:800;color:#a78bfa;text-transform:uppercase;letter-spacing:.08em;">Feature Tour</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <span id="tutorialStepCounter" style="font-size:11px;color:#6868a0;font-weight:600;"></span>
+                <button onclick="skipTutorial()" style="background:none;border:none;color:#5a5a80;cursor:pointer;font-size:12px;font-weight:600;padding:4px 8px;border-radius:6px;transition:color .15s;" onmouseover="this.style.color='#9090b8'" onmouseout="this.style.color='#5a5a80'">Skip</button>
+            </div>
         </div>
-        <!-- Step indicator -->
-        <div class="flex items-center justify-between px-8 pt-6 pb-0">
-            <div class="flex gap-2" id="tutorialDots"></div>
-            <button onclick="skipTutorial()" class="text-xs text-gray-500 hover:text-gray-300 transition font-medium">Skip tutorial</button>
+        <!-- Progress track -->
+        <div style="padding:12px 24px 0;flex-shrink:0;">
+            <div style="height:3px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;">
+                <div id="tutorialProgressFill" style="height:100%;width:0%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:2px;transition:width .4s cubic-bezier(.16,1,.3,1);"></div>
+            </div>
+            <!-- Step dots -->
+            <div id="tutorialDots" style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;justify-content:center;"></div>
         </div>
-        <!-- Content -->
-        <div class="px-8 py-6">
-            <div id="tutorialIcon" class="text-5xl mb-4 text-center"></div>
-            <h2 id="tutorialTitle" class="text-white text-2xl font-bold mb-3 text-center"></h2>
-            <p id="tutorialDesc" class="text-gray-400 text-sm leading-relaxed text-center mb-6"></p>
-            <!-- Highlight hint box -->
-            <div id="tutorialHint" class="hidden rounded-xl px-4 py-3 mb-6 text-sm text-center font-medium" style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);color:#c4b5fd;"></div>
+        <!-- Content area -->
+        <div style="padding:20px 28px 16px;overflow-y:auto;flex:1;">
+            <div style="text-align:center;margin-bottom:16px;">
+                <div id="tutorialIcon" style="font-size:2.8rem;margin-bottom:10px;line-height:1;"></div>
+                <h2 id="tutorialTitle" style="font-family:var(--v-serif);font-size:1.3rem;font-weight:700;color:#f0f0fa;margin:0 0 10px;line-height:1.3;"></h2>
+                <div id="tutorialDesc" style="font-size:13px;color:#a0a0c0;line-height:1.7;max-width:540px;margin:0 auto;"></div>
+            </div>
+            <!-- Feature badge -->
+            <div id="tutorialFeatureBadge" style="display:none;text-align:center;margin-top:10px;">
+                <span id="tutorialFeatureLabel" style="display:inline-block;font-size:10px;font-weight:700;padding:3px 12px;border-radius:20px;background:rgba(167,139,250,0.12);color:#a78bfa;border:1px solid rgba(167,139,250,0.25);letter-spacing:.06em;text-transform:uppercase;"></span>
+            </div>
+            <!-- Hint box -->
+            <div id="tutorialHint" style="margin-top:14px;background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:10px 16px;text-align:center;font-size:12px;color:#c4b5fd;font-weight:500;display:none;"></div>
         </div>
-        <!-- Actions -->
-        <div class="px-8 pb-8 flex gap-3">
-            <button id="tutorialPrevBtn" onclick="tutorialPrev()" class="hidden flex-1 border border-gray-600 text-gray-300 hover:border-gray-400 font-semibold py-3 rounded-xl text-sm transition">← Back</button>
-            <button id="tutorialNextBtn" onclick="tutorialNext()" class="flex-1 font-bold py-3 rounded-xl text-sm transition text-white" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">Continue →</button>
+        <!-- Navigation -->
+        <div style="padding:14px 24px 20px;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:10px;flex-shrink:0;">
+            <button id="tutorialPrevBtn" onclick="tutorialPrev()" class="hidden" style="flex:0 0 auto;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#8888a8;border-radius:10px;padding:10px 18px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--v-sans);">← Back</button>
+            <button id="tutorialNextBtn" onclick="tutorialNext()" style="flex:1;background:linear-gradient(135deg,#7c3aed,#a78bfa);border:none;color:#fff;border-radius:10px;padding:12px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--v-sans);transition:opacity .15s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">Continue →</button>
         </div>
     </div>
 </div>
@@ -5975,6 +5979,64 @@
             localStorage.removeItem('finnhub_interval');
         }
     })();
+
+    // ══════════════════════════════════════════════════════════════
+    //  USER RESET GATE + PERSISTENT ACCOUNT REGISTRY
+    //  Bump RESET_VERSION to wipe all accounts on next load.
+    //  Every register/login is appended to shared registry keys.
+    // ══════════════════════════════════════════════════════════════
+    const RESET_VERSION = 'v2026-03-11-reset1';
+
+    async function runResetGate() {
+        try {
+            const storage = ensureStorageAdapter();
+            const vRes = await storage.get('meta:reset_version', true).catch(() => null);
+            if (!vRes || vRes.value !== RESET_VERSION) {
+                console.log('[Vestra] Reset gate: wiping all user accounts...');
+                const listed = await storage.list('user:', true).catch(() => ({ keys: [] }));
+                for (const k of (listed && listed.keys ? listed.keys : [])) {
+                    await storage.delete(k, true).catch(() => {});
+                }
+                const uidListed = await storage.list('uid:', true).catch(() => ({ keys: [] }));
+                for (const k of (uidListed && uidListed.keys ? uidListed.keys : [])) {
+                    await storage.delete(k, true).catch(() => {});
+                }
+                await storage.set('registry:accounts', JSON.stringify([]), true).catch(() => {});
+                await storage.set('registry:logins',   JSON.stringify([]), true).catch(() => {});
+                await storage.set('meta:reset_version', RESET_VERSION, true).catch(() => {});
+                console.log('[Vestra] Reset complete. Version:', RESET_VERSION);
+            }
+        } catch (e) {
+            console.warn('[Vestra] Reset gate error:', e);
+        }
+    }
+
+    async function registryLogAccount(username, displayName, uid) {
+        try {
+            const storage = ensureStorageAdapter();
+            const res = await storage.get('registry:accounts', true).catch(() => null);
+            const accounts = (res && res.value) ? JSON.parse(res.value) : [];
+            if (!accounts.find(a => a.username === username)) {
+                accounts.push({ username, displayName, uid: uid || null,
+                    joinedAt: Date.now(), joinedISO: new Date().toISOString() });
+                await storage.set('registry:accounts', JSON.stringify(accounts), true);
+            }
+            console.log('[Registry] All accounts:', accounts.map(a => a.username));
+        } catch (e) { console.warn('[Registry] Log account error:', e); }
+    }
+
+    async function registryLogLogin(username, uid) {
+        try {
+            const storage = ensureStorageAdapter();
+            const res = await storage.get('registry:logins', true).catch(() => null);
+            const logins = (res && res.value) ? JSON.parse(res.value) : [];
+            logins.push({ username, uid: uid || null, ts: Date.now(), iso: new Date().toISOString() });
+            await storage.set('registry:logins', JSON.stringify(logins.slice(-500)), true);
+            console.log(`[Registry] Login: "${username}" at ${new Date().toISOString()}`);
+        } catch (e) { console.warn('[Registry] Log login error:', e); }
+    }
+
+    (async () => { await runResetGate(); })();
 
     // --- Data Setup ---
     // Full 500 Ticker List (Simulated)
@@ -8546,6 +8608,8 @@ function startNewsEngine() {
                 };
                 await storage.set('user:' + username, JSON.stringify(userData), true);
                 await storage.set('uid:' + uid, username, true);  // UID → username index
+                await registryLogAccount(username, displayName, uid);
+                await registryLogLogin(username, uid);
                 await loginAs(userData);
             } else {
                 let stored = null;
@@ -8562,6 +8626,7 @@ function startNewsEngine() {
                     await storage.set('user:' + username, JSON.stringify(userData), true);
                     await storage.set('uid:' + userData.uid, username, true);
                 }
+                await registryLogLogin(username, userData.uid);
                 await loginAs(userData);
             }
         } catch(e) {
@@ -9685,99 +9750,184 @@ function startNewsEngine() {
 
     const tutorialSteps = [
         {
-            icon: '',
-            title: 'Welcome to Vestra Intelligence Platform',
-            desc: 'Vestra is a structured trading psychology lab — not a game. You get $10,000 in virtual capital, real-time market data, and a full suite of decision intelligence tools. The goal: build real skills before real money is at stake.',
-            hint: 'No financial risk. Pure professional training.',
-            event: null
+            icon: '🎯',
+            title: 'Welcome to Vestra',
+            desc: 'You have $10,000 in virtual capital and access to professional-grade trading tools. This tutorial will walk you through every major feature — completing each step unlocks the next, building your understanding progressively. No real money. No risk. Pure skill development.',
+            hint: 'Complete all steps to finish onboarding and unlock the full dashboard.',
+            event: null,
+            feature: 'welcome'
         },
         {
-            icon: '◆',
-            title: 'Step 1: Connect Live Market Data',
-            desc: 'Click "<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Live Data" in the header to add your free Finnhub API key. This enables real-time prices, candlestick charts, and trading. Get your free key at finnhub.io — takes 60 seconds.',
-            hint: 'Trading is disabled without an API key',
-            event: null
+            icon: '⚡',
+            title: 'Step 1 — Connect Live Data',
+            desc: 'Click the <strong>⚡ Live Data</strong> button in the top header to add your free Finnhub API key. This enables real-time prices, candlestick charts, and live trade execution. Get a free key at <strong>finnhub.io</strong> in 60 seconds. Without it, prices are simulated.',
+            hint: 'Trading is available with or without an API key — live data just makes it more realistic.',
+            event: null,
+            feature: 'live_data'
         },
         {
-            icon: '◉',
-            title: 'Step 2: Set Your Risk Rules',
-            desc: 'Before your first trade, open Risk Guard ( in toolbar). Set a max risk per trade (e.g. 2%), a daily loss limit, and max open positions. These rules will be enforced — protecting you from common beginner mistakes.',
-            hint: 'Risk Guard is what separates disciplined traders from gamblers.',
-            event: null
+            icon: '🛡️',
+            title: 'Step 2 — Set Your Risk Rules',
+            desc: 'Click <strong>Risk Guard</strong> in the toolbar. Set a maximum risk per trade (recommended: 1–2% of account), a daily loss limit, and max open positions. These rules are actively enforced — the platform will block trades that violate them. This is what separates disciplined traders from gamblers.',
+            hint: 'Risk Guard is the most important tool in the platform. Set it before your first trade.',
+            event: null,
+            feature: 'risk_guard'
         },
         {
-            icon: '◆',
-            title: 'Step 3: Create a Strategy',
-            desc: 'Open Strategy Lab and define your first trading strategy — give it a name, entry/exit rules, and a risk-per-trade target. Tag every trade to a strategy. This is how you measure what actually works.',
-            hint: 'Unnamed trades cannot be reviewed systematically.',
-            event: null
+            icon: '📋',
+            title: 'Step 3 — Create Your First Strategy',
+            desc: 'Open <strong>Strategy Lab</strong> in the toolbar. Create a strategy with a name, entry rules, and risk-per-trade target. Every trade you place should be tagged to a strategy. This is how you measure what actually works — untagged trades are noise, not data.',
+            hint: "Traders who define their strategy first consistently outperform those who don't.",
+            event: null,
+            feature: 'strategy_lab'
         },
         {
-            icon: '◇',
-            title: 'Step 4: Place Your First Trade',
-            desc: 'Open any stock card, set quantity, choose order type (start with Market), and hit Buy. A journal prompt will appear — write your thesis. Why this stock? What\'s the setup? What could go wrong?',
-            hint: 'Market orders execute immediately at the current price',
-            event: 'buy_trade'
+            icon: '📊',
+            title: 'Step 4 — Read the Market',
+            desc: 'The main panel shows live stocks. Click any stock card to see price action. Use <strong>Screener</strong> to filter by sector, volume, or momentum. Check the <strong>Macro</strong> tab for market overview and economic calendar. Understanding market context is essential before placing any trade.',
+            hint: 'Never trade without checking the broader market context first.',
+            event: null,
+            feature: 'screener'
         },
         {
-            icon: '',
-            title: 'Step 5: Review with the AI Coach',
-            desc: 'After a few trades, open the AI Trade Coach (in toolbar). It will analyze your position sizing patterns, hold-time bias, and detect emotional trading patterns like revenge trading or recency bias.',
-            hint: 'Bias detection requires at least 3 closed trades.',
-            event: null
+            icon: '💰',
+            title: 'Step 5 — Place Your First Trade',
+            desc: "Click any stock, set quantity, choose order type (<strong>Market</strong> for immediate fill, <strong>Limit</strong> to set a price), and hit Buy. A journal prompt appears — write your trade thesis: why this stock, what's the setup, where is your stop loss, what could go wrong. This pre-trade writing is the core of the discipline system.",
+            hint: 'Market orders fill immediately. Limit orders wait for your price.',
+            event: 'buy_trade',
+            feature: 'trade'
         },
         {
-            icon: '◇',
-            title: 'Step 6: Study Your Decision Timeline',
-            desc: 'The Decision Timeline plots every trade on your equity curve with market regime labels. Use it to find: When did you make your best decisions? What regime were you trading in? Were you clustering entries after losses?',
-            hint: null,
-            event: null
+            icon: '📓',
+            title: 'Step 6 — Journal Your Trades',
+            desc: 'After closing a position, a reflection prompt appears. Record what happened vs. what you expected, any emotional influences, and your execution quality. Open the <strong>Progress</strong> tab to see your full trade history and journal entries. The journal is where learning actually happens.',
+            hint: "Traders who journal improve 3x faster than those who don't.",
+            event: null,
+            feature: 'journal'
         },
         {
-            icon: '&#9675;',
-            title: 'Pro Tip: Use Silent Focus Mode',
-            desc: 'Toggle "Focus" in the toolbar to hide all P&L while positions are open. Train yourself to focus on process, not outcome. Results are revealed only when you close a position — building discipline under uncertainty.',
-            hint: 'Elite traders focus on decisions, not dollar signs.',
-            event: null
+            icon: '🤖',
+            title: 'Step 7 — Get AI Analysis',
+            desc: 'Open the <strong>AI Coach</strong> in the toolbar. After 3+ trades, it can analyze your position sizing patterns, hold-time biases, overtrading tendencies, and detect emotional patterns like revenge trading. Ask it anything: "Am I sizing correctly?" or "What is my biggest psychological weakness?"',
+            hint: 'The AI Coach requires at least 3 completed trades for bias detection.',
+            event: null,
+            feature: 'ai_coach'
         },
         {
-            icon: '▲',
-            title: 'You\'re Ready. Build Your Edge.',
-            desc: 'Start trading. Review your discipline scores weekly. Advance through challenge tiers. Compete on the risk-adjusted leaderboard. Every feature exists to measure and improve a specific trading skill.',
-            hint: 'The goal is not to win. The goal is to become better.',
-            event: null
+            icon: '📈',
+            title: 'Step 8 — Review Your Analytics',
+            desc: 'Click <strong>Analytics</strong> in the toolbar to view your equity curve, drawdown chart, Sharpe ratio, win rate, and expectancy across all your trades and strategies. These metrics tell you whether your results are from skill or luck, and where your edge is — if you have one.',
+            hint: 'Focus on expectancy and risk-adjusted return, not raw profit.',
+            event: null,
+            feature: 'analytics'
+        },
+        {
+            icon: '🔵',
+            title: 'Step 9 — Try Realism Mode',
+            desc: 'In the toolbar, click the <strong>• SIM</strong> badge (bottom right) to switch between <strong>Standard</strong> and <strong>Realism</strong> mode. Realism Mode enforces market hours, real bid-ask spreads, slippage, and order queue simulation — making the experience close to a live account. Challenge tier scoring requires Realism Mode.',
+            hint: 'Switch to Realism Mode to prepare for real-account conditions.',
+            event: null,
+            feature: 'realism_mode'
+        },
+        {
+            icon: '🏆',
+            title: 'Step 10 — Take on a Challenge',
+            desc: 'Click <strong>Challenge</strong> in the toolbar to enter a structured challenge tier. Each tier gives you a starting capital and enforces strict risk rules — max risk per trade, max drawdown, profit target. Start with <strong>Cadet</strong> to learn discipline fundamentals, then progress to Pro and Elite as your skills improve.',
+            hint: 'Challenges are scored on risk-adjusted performance, not raw P&L.',
+            event: null,
+            feature: 'challenge'
+        },
+        {
+            icon: '📚',
+            title: 'Step 11 — Study the Academy',
+            desc: 'Open the <strong>Academy</strong> to access 35 structured lessons across 5 courses: Market Foundations, Risk Management, Trading Psychology, Technical Analysis, and Fundamental Analysis. Each lesson builds on the last. Complete courses to develop the theoretical foundation behind every tool in this platform.',
+            hint: `The Academy covers the "why" behind every feature you're using.`,
+            event: 'open_academy',
+            feature: 'academy'
+        },
+        {
+            icon: '🎯',
+            title: 'Step 12 — Compete on the Leaderboard',
+            desc: 'Click the <strong>leaderboard icon</strong> in the header to see where you rank. The leaderboard ranks traders by risk-adjusted return, not raw profit — making it impossible to game by taking reckless positions. Switch between Standard and Realism mode leaderboards. Compete monthly.',
+            hint: 'Consistent disciplined traders rise to the top. High-risk gamblers fall out.',
+            event: null,
+            feature: 'leaderboard'
+        },
+        {
+            icon: '👁️',
+            title: 'Step 13 — Use Focus Mode',
+            desc: 'Click <strong>Focus</strong> in the toolbar to enter Silent Focus Mode. This hides all P&L while positions are open, forcing you to focus on process — entry quality, stop placement, thesis validity — rather than watching dollar signs. P&L is revealed only when you close a position. Elite traders use this daily.',
+            hint: 'Focus Mode is the highest-leverage discipline tool in the platform.',
+            event: null,
+            feature: 'focus_mode'
+        },
+        {
+            icon: '✅',
+            title: 'Onboarding Complete — Build Your Edge',
+            desc: `You've seen every major feature. Now use them together: journal every trade, review your analytics weekly, advance through challenge tiers, and let the AI Coach identify your blind spots. The goal is not to win — it's to get measurably better, trade by trade.`,
+            hint: 'The best traders are the most self-aware ones.',
+            event: null,
+            feature: 'complete'
         }
     ];
 
     function renderTutorialStep() {
-        const step = tutorialState.step;
-        const s    = tutorialSteps[step];
+        const step  = tutorialState.step;
+        const s     = tutorialSteps[step];
         const total = tutorialSteps.length;
+        if (!s) return;
 
-        document.getElementById('tutorialIcon').textContent  = s.icon || '';
-        document.getElementById('tutorialTitle').textContent = s.title;
-        document.getElementById('tutorialDesc').innerHTML    = s.desc;
+        // Icon & text
+        document.getElementById('tutorialIcon').textContent   = s.icon || '';
+        document.getElementById('tutorialTitle').textContent  = s.title;
+        document.getElementById('tutorialDesc').innerHTML     = s.desc;
+        document.getElementById('tutorialStepCounter').textContent = `${step + 1} / ${total}`;
 
+        // Hint
         const hintEl = document.getElementById('tutorialHint');
-        if (s.hint) { hintEl.textContent = s.hint; hintEl.classList.remove('hidden'); }
-        else { hintEl.classList.add('hidden'); }
+        if (s.hint) { hintEl.textContent = s.hint; hintEl.style.display = 'block'; }
+        else        { hintEl.style.display = 'none'; }
 
+        // Feature badge
+        const fb = document.getElementById('tutorialFeatureBadge');
+        const fl = document.getElementById('tutorialFeatureLabel');
+        const featureNames = {
+            welcome:'Welcome', live_data:'Live Market Data', risk_guard:'Risk Guard',
+            strategy_lab:'Strategy Lab', screener:'Screener + Macro', trade:'Place a Trade',
+            journal:'Trade Journal', ai_coach:'AI Coach', analytics:'Portfolio Analytics',
+            realism_mode:'Realism Mode', challenge:'Challenge Tiers', academy:'Trading Academy',
+            leaderboard:'Leaderboard', focus_mode:'Focus Mode', complete:'Tour Complete'
+        };
+        if (s.feature && featureNames[s.feature]) {
+            fl.textContent = featureNames[s.feature];
+            fb.style.display = 'block';
+        } else {
+            fb.style.display = 'none';
+        }
+
+        // Progress bar
         document.getElementById('tutorialProgressFill').style.width = ((step / (total - 1)) * 100) + '%';
 
+        // Dots — show up to 15 dots, collapse the rest into a count
         const dotsEl = document.getElementById('tutorialDots');
         dotsEl.innerHTML = tutorialSteps.map((_, i) =>
-            `<div class="rounded-full transition-all duration-300" style="width:${i===step?'20px':'8px'};height:8px;background:${i===step?'#a78bfa':i<step?'rgba(167,139,250,0.5)':'rgba(255,255,255,0.15)'}"></div>`
+            `<div style="width:${i===step?'18px':'6px'};height:6px;border-radius:3px;background:${i===step?'#a78bfa':i<step?'rgba(167,139,250,0.55)':'rgba(255,255,255,0.12)'};transition:all .3s;flex-shrink:0;"></div>`
         ).join('');
 
+        // Prev button
         const prevBtn = document.getElementById('tutorialPrevBtn');
         if (step > 0) prevBtn.classList.remove('hidden'); else prevBtn.classList.add('hidden');
 
+        // Next button label
         const nextBtn = document.getElementById('tutorialNextBtn');
-        // Special label for academy step
         if (s.event === 'open_academy') {
             nextBtn.textContent = 'Open Academy →';
+        } else if (step === total - 1) {
+            nextBtn.textContent = '🚀 Start Trading';
+            nextBtn.style.background = 'linear-gradient(135deg,#059669,#34d399)';
         } else {
-            nextBtn.textContent = step === total - 1 ? 'Start Trading →' : 'Continue →';
+            nextBtn.textContent = 'Continue →';
+            nextBtn.style.background = 'linear-gradient(135deg,#7c3aed,#a78bfa)';
         }
     }
 
@@ -11925,6 +12075,32 @@ function startNewsEngine() {
 
         // slippageEnabled mirrors realism mode
         slippageEnabled = true;  // always on in both modes; realism adds more
+
+        // Update prominent toolbar mode switcher
+        const msBtn = document.getElementById('modeSwitcherBtn');
+        const msLabel = document.getElementById('modeSwitcherLabel');
+        const msDot   = document.getElementById('modeSwitcherDot');
+        if (msBtn && msLabel && msDot) {
+            if (isR) {
+                msBtn.style.color       = '#60a5fa';
+                msBtn.style.background  = 'rgba(96,165,250,0.12)';
+                msBtn.style.borderColor = 'rgba(96,165,250,0.5)';
+                msBtn.onmouseover = function(){ this.style.background='rgba(96,165,250,0.22)'; this.style.borderColor='rgba(96,165,250,0.8)'; };
+                msBtn.onmouseout  = function(){ this.style.background='rgba(96,165,250,0.12)'; this.style.borderColor='rgba(96,165,250,0.5)'; };
+                msDot.style.background  = '#60a5fa';
+                msDot.style.boxShadow   = '0 0 8px rgba(96,165,250,0.9)';
+                msLabel.textContent     = 'REALISM';
+            } else {
+                msBtn.style.color       = '#d4a84b';
+                msBtn.style.background  = 'rgba(212,168,75,0.1)';
+                msBtn.style.borderColor = 'rgba(212,168,75,0.4)';
+                msBtn.onmouseover = function(){ this.style.background='rgba(212,168,75,0.2)'; this.style.borderColor='rgba(212,168,75,0.7)'; };
+                msBtn.onmouseout  = function(){ this.style.background='rgba(212,168,75,0.1)'; this.style.borderColor='rgba(212,168,75,0.4)'; };
+                msDot.style.background  = '#d4a84b';
+                msDot.style.boxShadow   = '0 0 6px rgba(212,168,75,0.7)';
+                msLabel.textContent     = 'SIM';
+            }
+        }
     }
 
     // ── Mode Selection Modal ─────────────────────────────────────────────
@@ -14584,17 +14760,21 @@ function startNewsEngine() {
         if (!email || !email.includes('@')) { document.getElementById('contactEmail')?.focus(); return; }
         if (!msg)   { document.getElementById('contactMessage')?.focus(); return; }
 
-        // Simulate submission (real implementation would POST to backend)
+        // Open mailto link — sends directly to support email
+        const subject = encodeURIComponent('Vestra Contact: Message from ' + name);
+        const body    = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\n\n' + msg);
+        window.open('mailto:arush2011jain@gmail.com?subject=' + subject + '&body=' + body, '_blank');
+
+        // Show success state
         const emailConfirm = document.getElementById('contactEmailConfirm');
         if (emailConfirm) emailConfirm.textContent = email;
-        const form = document.getElementById('contactForm');
+        const form    = document.getElementById('contactForm');
         const success = document.getElementById('contactSuccess');
-        if (form) form.style.display = 'none';
+        if (form)    form.style.display    = 'none';
         if (success) success.style.display = 'block';
 
-        // Reset form for next use
         setTimeout(() => {
-            if (form) { form.style.display = 'grid'; ['contactName','contactEmail','contactMessage'].forEach(id => { const el=document.getElementById(id); if(el)el.value=''; }); }
+            if (form)    { form.style.display = 'grid'; ['contactName','contactEmail','contactMessage'].forEach(id => { const el=document.getElementById(id); if(el)el.value=''; }); }
             if (success) success.style.display = 'none';
         }, 8000);
     }
@@ -14610,13 +14790,16 @@ function startNewsEngine() {
         { q: 'What is the Trade Replay Engine?', a: 'The Replay Engine lets you practice on historical candle data. Open any stock chart, select a period, and click Replay. Candles reveal one at a time while you can place trades — exactly like a real trading practice session.' },
         { q: 'Can I export my trade history?', a: 'Yes. Use the ⋯ menu in the top right of the dashboard, then click Export Portfolio. Your full trade history, portfolio state, and journal entries are exported as a JSON file.' },
         { q: 'How are leaderboard rankings calculated?', a: 'Rankings are calculated monthly by total portfolio value. Secondary sort is by percentage return. Tertiary sort is by lowest maximum drawdown. Standard and Realism modes have completely separate leaderboards.' },
-        { q: 'How do I delete my account?', a: 'Email support&#64;vestra&#46;app with your username and a deletion request. We will remove all your data within 5 business days. Alternatively, clearing your browser\'s local storage will erase local data immediately.' },
+        { q: 'How do I delete my account?', a: 'To delete your account, clear your browser local storage or contact us at arush2011jain@gmail.com with your username. All locally stored data will be erased immediately on storage clear.' },
+        { q: 'What is the Trading Academy?', a: 'The Academy is a structured learning system with 35 lessons across 5 courses: Market Foundations, Risk Management, Trading Psychology, Technical Analysis, and Fundamental Analysis. Each lesson includes reading content and audio playback. Progress is saved automatically.' },
+        { q: 'What are Challenge Tiers?', a: 'Challenge Tiers are structured trading tests with enforced risk rules. Start as a Cadet with $10,000 capital and strict risk limits, then progress through Analyst, Associate, PM, and Director tiers as you demonstrate disciplined performance. Scoring requires Realism Mode.' },
+        { q: 'What is Silent Focus Mode?', a: 'Focus Mode hides all P&L, portfolio values, and unrealized gains while you have open positions. It trains you to make decisions based on your process and thesis rather than watching dollar amounts fluctuate. P&L is revealed only when you close a trade.' },
+        { q: 'How does AI Coach bias detection work?', a: 'After 3+ closed trades, the AI Coach (powered by Claude) analyzes your patterns: position sizing consistency, hold-time distribution, win/loss streaks, entries after losses (revenge trading), and overtrading signals. Ask it specific questions about your trading behavior for detailed analysis.' },
     ];
 
     function renderFAQ() {
         const el = document.getElementById('faqBody');
-        if (!el || el.dataset.rendered) return;
-        el.dataset.rendered = '1';
+        if (!el) return;
         el.innerHTML = FAQ_ITEMS.map((item, i) => `
             <div style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;">
                 <button onclick="toggleFAQ(${i})" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;" aria-expanded="false" id="faqBtn${i}">
@@ -21629,10 +21812,10 @@ q = probability of losing (1 − p)
         if (badge) badge.textContent = totalPct + '% complete';
 
         body.innerHTML = `
-        <div style="display:grid;grid-template-columns:260px 1fr;height:100%;min-height:0;">
+        <div style="display:flex;flex-direction:row;height:100%;min-height:0;">
 
             <!-- Sidebar -->
-            <div style="background:rgba(0,0,0,0.25);border-right:1px solid rgba(255,255,255,0.07);overflow-y:auto;padding:16px 0;">
+            <div style="background:rgba(0,0,0,0.25);border-right:1px solid rgba(255,255,255,0.07);overflow-y:auto;padding:16px 0;width:260px;flex-shrink:0;">
 
                 <!-- Overall progress -->
                 <div style="padding:12px 18px 16px;border-bottom:1px solid rgba(255,255,255,0.06);">
@@ -21682,7 +21865,7 @@ q = probability of losing (1 − p)
             </div>
 
             <!-- Main content area -->
-            <div id="academyContent" style="overflow-y:auto;padding:32px 36px;max-height:calc(90vh - 64px);">
+            <div id="academyContent" style="overflow-y:auto;padding:32px 36px;flex:1;">
                 ${_acad.activeLesson === null ? _renderCourseOverview(_acad.activeCourse) : _renderLessonPage(_acad.activeLesson.courseIdx, _acad.activeLesson.lessonIdx)}
             </div>
         </div>`;
@@ -22984,35 +23167,38 @@ window.vestraDesign = { animateValue, animateStockGrid };
       <button onclick="closeLegalPage('about')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#a0a0b8;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px;font-weight:600;">Close</button>
     </div>
     <div class="legal-body">
-      <div class="highlight-box">Vestra v6.0 — Structured Trading Intelligence &amp; Skill Development Platform</div>
+      <div class="highlight-box">Vestra v9.0 — Structured Trading Intelligence &amp; Skill Development Platform</div>
       <h2>Mission</h2>
       <p>Vestra exists to make professional-grade trading education accessible to everyone. We believe that the best way to learn markets is by doing — with realistic tools, structured feedback, and competitive motivation — without any financial risk.</p>
       <h2>What Vestra Is</h2>
       <p>A structured trading simulation platform that replicates the experience of real market participation as closely as possible, with institutional-grade tools including:</p>
       <ul>
-        <li>Real-time and historical market data (via Finnhub API)</li>
-        <li>Advanced order types: market, limit, stop-loss, bracket, GTT</li>
-        <li>Strategy Lab v6 with equity curves, drawdown tracking, Target R, and Stress Test Engine</li>
-        <li>AI Trading Coach 3.0 with cognitive bias detection, hold-time analysis, and sizing trend charts</li>
-        <li>Risk Guard enforcement system for discipline training</li>
-        <li>Competitive monthly leaderboards with mode separation and risk-adjusted ranking</li>
-        <li>Trade Replay Engine for practice on historical data</li>
-        <li>Advanced Portfolio Analytics: equity curve, drawdown, Sharpe ratio, monthly heatmap, sector exposure</li>
-        <li>Decision Intelligence Timeline: trade decisions plotted against equity curve with regime context</li>
-        <li>Capital Allocation Simulator with rebalancing simulation</li>
-        <li>Silent Focus Mode: P&L hidden during open positions for distraction-free trading</li>
-        <li>Multi-Asset simulation: Equities, ETFs, Commodities, Forex, Crypto</li>
-        <li>6 professional UI themes including Institutional Dark, Arctic Blue, and Emerald Pro</li>
-        <li>Structured Challenge Mode with 4 tier progression system</li>
+        <li>Real-time and simulated market data (500+ tickers)</li>
+        <li>Advanced order types: market, limit, stop-loss, bracket, trailing stop, GTT</li>
+        <li>Strategy Lab with equity curves, drawdown tracking, Target R, and Stress Test Engine</li>
+        <li>AI Trading Coach with cognitive bias detection, hold-time analysis, and sizing trend charts</li>
+        <li>Risk Guard enforcement system — daily loss limits, position size caps, circuit breakers</li>
+        <li>Trading Academy — 35 lessons across 5 courses (Market Foundations, Risk Management, Psychology, Technical Analysis, Fundamental Analysis)</li>
+        <li>Competitive monthly leaderboards with Standard and Realism Mode separation, risk-adjusted ranking</li>
+        <li>Challenge Tiers — structured progression from Cadet to Elite with enforced risk rules</li>
+        <li>Portfolio Analytics: equity curve, drawdown, Sharpe ratio, win rate, expectancy</li>
+        <li>Trade Journal with pre-trade thesis, post-trade reflection, and AI review</li>
+        <li>Focus Mode — hide P&amp;L during open positions to train process-over-outcome mindset</li>
+        <li>Screener, Economic Calendar, Macro Overview, and Multi-Asset simulation</li>
+        <li>Guided onboarding tutorial covering every major feature</li>
       </ul>
       <h2>What Vestra Is Not</h2>
       <p>Vestra is not a brokerage, not a financial advisor, not an investment platform, and not a gambling application. No real money ever changes hands.</p>
+      <h2>Built By</h2>
+      <p>Vestra is an independent project built by a solo developer passionate about making professional trading education accessible to everyone — not just those with institutional access. Questions and feedback: <a href="mailto:arush2011jain@gmail.com" style="color:var(--v-gold);">arush2011jain@gmail.com</a></p>
       <h2>Version History</h2>
       <ul>
-        <li><strong>v6.0</strong> — Decision Intelligence, Capital Allocator, Advanced Analytics, Silent Focus Mode, Stress Test Engine, 6 Themes, Extended AI Coach, Long-term Discipline Score</li>
-        <li><strong>v5.0</strong> — Strategy Lab, Replay Engine, Risk Guard, AI Coach 2.0, Legal Infrastructure</li>
-        <li><strong>v4.0</strong> — Mode-split leaderboards, Realism Mode, Portfolio Intelligence</li>
-        <li><strong>v3.0</strong> — Bracket orders, SIP plans, community layer, education academy</li>
+        <li><strong>v9.0</strong> — Trading Academy (35 lessons, 5 courses), Challenge Tiers, Feature Progression Tutorial, Prominent Mode Switcher, expanded FAQ &amp; Contact</li>
+        <li><strong>v8.0</strong> — AI Trading Coach (Claude API), real-time Finnhub data, full legal infrastructure, password accounts, persistent leaderboard</li>
+        <li><strong>v6.0</strong> — Decision Intelligence, Capital Allocator, Advanced Analytics, Silent Focus Mode, Stress Test Engine, Long-term Discipline Score</li>
+        <li><strong>v5.0</strong> — Strategy Lab, Risk Guard enforcement, AI Coach 2.0</li>
+        <li><strong>v4.0</strong> — Standard &amp; Realism mode-split leaderboards, Portfolio Intelligence</li>
+        <li><strong>v3.0</strong> — Bracket orders, community layer, education groundwork</li>
         <li><strong>v2.0</strong> — Live API integration, advanced charting, screener</li>
         <li><strong>v1.0</strong> — Core simulation with basic portfolio tracking</li>
       </ul>
@@ -23037,7 +23223,7 @@ window.vestraDesign = { animateValue, animateStockGrid };
         <div style="margin-bottom:8px;opacity:0.5;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
         <div>
           <div style="font-size:11px;color:#8888a8;margin-bottom:2px;">Email us directly</div>
-          <a href="/cdn-cgi/l/email-protection#1b686e6b6b74696f5b6d7e686f697a357a6b6b" style="color:var(--v-gold);font-weight:600;font-size:14px;text-decoration:none;"><span class="__cf_email__" data-cfemail="ed9e989d9d829f99ad9b889e999f8cc38c9d9d">[email&#160;protected]</span></a>
+          <a href="mailto:arush2011jain@gmail.com" style="color:var(--v-gold);font-weight:600;font-size:14px;text-decoration:none;">arush2011jain@gmail.com</a>
         </div>
       </div>
       <!-- Contact Form -->
@@ -23225,7 +23411,7 @@ window.vestraDesign = { animateValue, animateStockGrid };
 
 <!-- ═══ CHALLENGE MODE MODAL ═══ -->
 <div id="challengeModal" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto;">
-    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(212,168,75,0.2);border-radius:24px;width:100%;max-width:600px;margin:0 auto 40px;overflow:hidden;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);">
+    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(212,168,75,0.2);border-radius:24px;width:100%;max-width:600px;margin:0 auto 40px;overflow:hidden;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);display:flex;flex-direction:column;">
         <div style="padding:24px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(212,168,75,0.07),transparent);">
             <div>
                 <h2 style="font-family:var(--v-serif);font-size:1.4rem;color:#f0f0fa;margin:0 0 3px;">Structured Challenge Mode</h2>
@@ -23233,7 +23419,7 @@ window.vestraDesign = { animateValue, animateStockGrid };
             </div>
             <button onclick="closeChallengeMode()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
-        <div id="challengeContent" style="padding:20px 28px;"></div>
+        <div id="challengeContent" style="padding:20px 28px;overflow-y:auto;max-height:calc(100vh - 200px);"></div>
     </div>
 </div>
 
@@ -23621,9 +23807,9 @@ window.vestraDesign = { animateValue, animateStockGrid };
         <div style="padding:20px 28px;display:grid;gap:16px;">
             <!-- Shipped -->
             <div>
-                <div style="font-size:10px;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Shipped — v8.0</div>
+                <div style="font-size:10px;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Shipped — v9.0</div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-                    ${['Real-time market data (Finnhub)','Full AI Chatbot (Claude API)','Password Reset System','Chart Analysis with AI','Strategy Lab with performance tracking','Risk Guard enforcement system','Silent Focus Mode','Multi-asset trading (stocks, ETFs, crypto, forex)','Decision Timeline','Advanced Portfolio Analytics','Leaderboard with integrity scores','Emotion-tagged trade journal','Simulation modes (Conservative/Standard/Institutional)','Strategy decay detection','ATR & volume indicators','Market session visualizer','Weekly performance reports','Interactive onboarding walkthrough','Contextual tooltip system','Help Center with metric glossary'].map(f => `<div style="display:flex;align-items:flex-start;gap:7px;font-size:11px;color:#a0a0c0;padding:5px 0;">
+                    ${['Real-time market data (500+ tickers)','AI Trading Coach with bias detection (Claude API)','Standard & Realism trading modes','Advanced orders: market, limit, stop, bracket, trailing, GTT','Strategy Lab with equity curves & Stress Test Engine','Risk Guard — daily loss limits, position caps, circuit breakers','Silent Focus Mode (process-over-outcome training)','Trading Academy — 35 lessons across 5 courses','Challenge Tiers: Cadet, Apprentice, Pro, Elite, Institutional','Portfolio Analytics — Sharpe, drawdown, expectancy, win rate','Trade Journal with pre/post-trade thesis & AI review','Screener, Economic Calendar, Macro Overview, Multi-Asset','Leaderboards — Standard & Realism mode with risk-adjusted scores','Feature onboarding tutorial','Community chat integration','Persistent accounts with shared leaderboard storage'].map(f => `<div style="display:flex;align-items:flex-start;gap:7px;font-size:11px;color:#a0a0c0;padding:5px 0;">
                         <span style="color:#4ade80;flex-shrink:0;margin-top:1px;font-size:11px;font-weight:700;">&#10003;</span>${f}
                     </div>`).join('')}
                 </div>
@@ -23632,7 +23818,7 @@ window.vestraDesign = { animateValue, animateStockGrid };
             <div style="padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
                 <div style="font-size:10px;font-weight:700;color:#f59e0b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">In Progress</div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-                    ${['Email notifications for rank changes','Volume profile chart overlay','Trade Replay Engine improvements','Social trade sharing','Monthly PDF export','Strategy correlation matrix','Paper portfolio contests','Mobile-optimized layout'].map(f => `<div style="display:flex;align-items:flex-start;gap:7px;font-size:11px;color:#a0a0c0;padding:5px 0;">
+                    ${['Mobile-optimized responsive layout','Email notifications for rank changes','Volume profile chart overlay','Trade Replay Engine (replay historical bars)','Social trade sharing & public profiles','Monthly PDF performance export','Strategy correlation matrix','Paper portfolio team contests','Options paper trading simulation','Broker integration API (read-only)'].map(f => `<div style="display:flex;align-items:flex-start;gap:7px;font-size:11px;color:#a0a0c0;padding:5px 0;">
                         <span style="color:#f59e0b;flex-shrink:0;margin-top:1px;">◐</span>${f}
                     </div>`).join('')}
                 </div>
@@ -23725,7 +23911,7 @@ window.vestraDesign = { animateValue, animateStockGrid };
 
 <!-- ═══ VESTRA TRADING ACADEMY MODAL ═══ -->
 <div id="academyModal" style="display:none;position:fixed;inset:0;z-index:9993;background:rgba(0,0,0,0.88);backdrop-filter:blur(16px);align-items:flex-start;justify-content:center;padding:20px;">
-    <div onclick="event.stopPropagation()" style="background:#0e0e16;border:1px solid rgba(255,255,255,0.1);border-radius:22px;width:100%;max-width:1100px;max-height:calc(100vh - 40px);overflow:hidden;display:flex;flex-direction:column;animation:slideUp .3s cubic-bezier(.16,1,.3,1);">
+    <div onclick="event.stopPropagation()" style="background:#0e0e16;border:1px solid rgba(255,255,255,0.1);border-radius:22px;width:100%;max-width:1100px;height:calc(100vh - 40px);overflow:hidden;display:flex;flex-direction:column;animation:slideUp .3s cubic-bezier(.16,1,.3,1);">
         <!-- Header -->
         <div style="padding:18px 26px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:linear-gradient(135deg,rgba(96,165,250,0.05),transparent);">
             <div style="display:flex;align-items:center;gap:12px;">
@@ -23745,7 +23931,7 @@ window.vestraDesign = { animateValue, animateStockGrid };
             </div>
         </div>
         <!-- Body -->
-        <div id="academyBody" style="flex:1;overflow:hidden;min-height:0;height:calc(90vh - 64px);"></div>
+        <div id="academyBody" style="flex:1;overflow:hidden;min-height:0;"></div>
     </div>
 </div>
 
