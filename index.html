@@ -311,7 +311,7 @@
         .legal-sheet {
             background: #0e0e16; border: 1px solid rgba(255,255,255,0.08);
             border-radius: 20px; width: 100%; max-width: 720px;
-            margin: 0 auto 40px; overflow: hidden;
+            margin: 0 auto 40px;
             max-height: calc(100vh - 80px); display: flex; flex-direction: column;
             animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
         }
@@ -324,8 +324,7 @@
             display: flex; justify-content: space-between; align-items: flex-start;
             position: sticky; top: 0; background: #0e0e16; z-index: 2;
         }
-        .legal-
-                .legal-body h2 { font-family: var(--v-serif); font-size: 1.1rem; color: #e0e0f5; margin: 24px 0 8px; }
+        .legal-body h2 { font-family: var(--v-serif); font-size: 1.1rem; color: #e0e0f5; margin: 24px 0 8px; }
         .legal-body h2:first-of-type { margin-top: 0; }
         .legal-body p { margin: 0 0 12px; }
         .legal-body ul { margin: 0 0 12px 20px; padding: 0; }
@@ -3144,14 +3143,18 @@
 
         /* App layout improvements */
         #appMain {
-            display: flex;
-            height: calc(100vh - 64px);
-            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            min-height: calc(100vh - 64px);
+            overflow: visible;
+            align-items: start;
         }
         #desktopSidebar {
-            flex-shrink: 0;
+            position: sticky;
+            top: 64px;
+            height: calc(100vh - 64px);
             overflow-y: auto;
-            border-right: 1px solid var(--v-border);
+            border-left: 1px solid var(--v-border);
         }
 
         /* Header search improvement */
@@ -4935,7 +4938,10 @@
             <div style="display:flex;align-items:center;gap:8px;padding-left:10px;border-left:1px solid var(--v-border);">
                 <div id="userAvatar" onclick="openProfileModal()" title="My Profile" style="width:32px;height:32px;border-radius:50%;background:var(--v-gold);display:flex;align-items:center;justify-content:center;color:#0a0a0f;font-size:12px;font-weight:700;flex-shrink:0;cursor:pointer;overflow:hidden;transition:box-shadow .2s;border:2px solid transparent;" onmouseover="this.style.boxShadow='0 0 0 2px var(--v-gold)'" onmouseout="this.style.boxShadow='none'">?</div>
                 <div style="display:flex;flex-direction:column;">
-                    <div id="userDisplayName" style="font-size:12px;font-weight:600;color:var(--v-text);line-height:1.2;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</div>
+                    <div style="display:flex;align-items:center;gap:5px;">
+                        <div id="userDisplayName" style="font-size:12px;font-weight:600;color:var(--v-text);line-height:1.2;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</div>
+                        <span id="userXPBadge" style="display:none;font-size:9px;font-weight:700;color:#d4a84b;background:rgba(212,168,75,0.12);border:1px solid rgba(212,168,75,0.25);border-radius:4px;padding:1px 5px;white-space:nowrap;"></span>
+                    </div>
                     <button onclick="openSettingsModal()" style="font-size:10px;color:var(--v-muted);background:none;border:none;cursor:pointer;font-family:var(--v-sans);" onmouseover="this.style.color='var(--v-gold)'" onmouseout="this.style.color='var(--v-muted)'">Settings</button>
                     <button onclick="logOut()" style="font-size:10px;color:var(--v-muted);background:none;border:none;cursor:pointer;padding:0;text-align:left;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--v-muted)'">Sign out</button>
                 </div>
@@ -6261,6 +6267,14 @@ function startNewsEngine() {
     let allocationChart = null;
     let marketLoopStarted = false;
 
+    // Standalone portfolio value helper used across modules
+    function getPortfolioValue() {
+        return Object.keys(portfolio).reduce(function(sum, sym) {
+            var s = stocks.find(function(x){ return x.symbol === sym; });
+            return sum + (s ? s.price * portfolio[sym] : 0);
+        }, 0);
+    }
+
     // Initialize Market
     function initMarket() {
         stocks = tickers.map(symbol => {
@@ -6300,9 +6314,12 @@ function startNewsEngine() {
 
     // --- Rendering ---
     function renderGrid() {
-        const query = document.getElementById('search').value.toUpperCase();
+        const searchEl = document.getElementById('search');
         const grid  = document.getElementById('grid');
+        if (!grid) return;
+        const query = searchEl ? searchEl.value.toUpperCase() : '';
 
+        if (!stocks || !stocks.length) return;
         let displayList = query
             ? stocks.filter(s => s.symbol.includes(query) || s.name.toUpperCase().includes(query)).slice(0, 50)
             : stocks.slice(0, 50);
@@ -8339,6 +8356,7 @@ function startNewsEngine() {
 
     function updateUI() {
         const list = document.getElementById('portfolioList');
+        if (!list) return; // not in DOM yet
         const symsInPortfolio = Object.keys(portfolio);
         let portfolioValue = 0;
 
@@ -8580,21 +8598,38 @@ function startNewsEngine() {
 
                 const uid = generateUID();
                 const userData = {
-                    uid,                             // Unique permanent ID
+                    uid,
                     username,
                     displayName,
                     passwordHash: simpleHash(password),
                     cash: 10000,
                     startCash: 10000,
                     portfolio: {},
+                    watchlist: [],
+                    priceAlerts: [],
+                    pendingOrders: [],
+                    transactions: [],
+                    costBasis: {},
+                    achievements: [],
                     joinedAt: Date.now(),
                     totalTrades: 0,
-                    integrityScore: 100,             // Starts at 100, decremented by violations
+                    integrityScore: 100,
                     riskViolations: 0,
                     tradingMode: 'standard',
                     competitionEligible: true,
                     realizedPL: 0,
                     verifiedAccount: true,
+                    // Spec-required fields
+                    portfolioValue: 0,
+                    balance: 10000,
+                    tier: 'cadet',
+                    xp: 0,
+                    completedLessons: [],
+                    completedChallenges: [],
+                    settings: {},
+                    tutorialDone: false,
+                    tierRank: 1,
+                    tierId: 'cadet',
                 };
                 await storage.set('user:' + username, JSON.stringify(userData), true);
                 await storage.set('uid:' + uid, username, true);  // UID → username index
@@ -8632,6 +8667,11 @@ function startNewsEngine() {
             ? String(currentUser.displayName).trim()
             : ((currentUser.username && String(currentUser.username).trim()) || 'Trader');
         currentUser.displayName = safeName;
+        // Ensure progression fields exist
+        currentUser.xp = currentUser.xp || 0;
+        currentUser.tier = currentUser.tier || 'cadet';
+        currentUser.completedLessons = currentUser.completedLessons || [];
+        currentUser.completedChallenges = currentUser.completedChallenges || [];
         cash = Number.isFinite(currentUser.cash) ? currentUser.cash : 10000;
         initUserTier();
         portfolio = (currentUser.portfolio && typeof currentUser.portfolio === 'object') ? currentUser.portfolio : {};
@@ -8651,11 +8691,19 @@ function startNewsEngine() {
         document.getElementById('authOverlay').style.display = 'none';
         document.getElementById('userAvatar').innerText = safeName[0].toUpperCase();
         document.getElementById('userDisplayName').innerText = safeName;
+        // Restore saved theme
+        const savedTheme = currentUser.theme || (function(){ try{ return localStorage.getItem('vestra_theme'); }catch(e){ return null; } })();
+        if (savedTheme) applyTheme(savedTheme);
+        // Update XP badge
+        if (typeof _updateXPBadge === 'function') _updateXPBadge();
         // Save immediately so user appears on leaderboard right away
         await saveUserData(false);
         // Show the app and hide the homepage
         showApp();
         initMarket();
+        // Show floating chat button
+        const fcb = document.getElementById('floatingChatBtn');
+        if (fcb) fcb.style.display = 'flex';
         if (!currentUser.tutorialDone) startTutorial(false);
     }
 
@@ -8664,6 +8712,7 @@ function startNewsEngine() {
         currentUser = null;
         cash = 10000;
         portfolio = {};
+        document.body.style.overflow = '';
         const el = (id) => document.getElementById(id);
         if (el('authOverlay'))  el('authOverlay').style.display = 'none';
         if (el('authUser'))     el('authUser').value  = '';
@@ -8679,6 +8728,10 @@ function startNewsEngine() {
         // Hide floating chat
         if (el('floatingChatBtn'))    el('floatingChatBtn').style.display    = 'none';
         if (el('floatingChatWindow')) el('floatingChatWindow').style.display = 'none';
+        // Close any open modals
+        ['stockDetailPage','aiCoachModal','challengeModal','academyModal','settingsModal','profileModal'].forEach(id => {
+            const m = el(id); if (m) m.style.display = 'none';
+        });
         showHomepage();
     }
 
@@ -8697,7 +8750,9 @@ function startNewsEngine() {
         const totalShares = Object.values(portfolio).reduce((a, b) => a + b, 0);
         const season = getSeasonKey();
         currentUser.cash = cash;
+        currentUser.balance = cash; // spec alias
         currentUser.portfolio = portfolio;
+        currentUser.portfolioValue = portfolioValue; // spec field
         currentUser.watchlist = watchlist;
         currentUser.priceAlerts = priceAlerts;
         currentUser.pendingOrders = pendingOrders;
@@ -8712,6 +8767,14 @@ function startNewsEngine() {
         currentUser.realizedPL = Number(currentUser.realizedPL || 0);
         if (countTrade) currentUser.totalTrades = (currentUser.totalTrades || 0) + 1;
         currentUser.lastActive = Date.now();
+        // Spec-required progression fields
+        currentUser.xp = currentUser.xp || 0;
+        currentUser.tier = currentUser.tier || 'cadet';
+        currentUser.completedLessons = currentUser.completedLessons || [];
+        currentUser.completedChallenges = currentUser.completedChallenges || [];
+        currentUser.settings = currentUser.settings || {};
+        // Save current prefs into settings
+        try { currentUser.settings = JSON.parse(localStorage.getItem('vestra_prefs') || '{}'); } catch(e) {}
         currentUser.seasonStats = currentUser.seasonStats || {};
         currentUser.seasonStats[season] = {
             totalValue: currentUser.totalValue,
@@ -8721,18 +8784,22 @@ function startNewsEngine() {
         };
         currentUser.perfHistory = perfHistory;
         currentUser.tradeJournal = tradeJournal;
-        // New feature state
         if (typeof strategies !== 'undefined') currentUser.strategies = strategies;
         if (typeof riskGuardCfg !== 'undefined') currentUser.riskGuardCfg = { ...riskGuardCfg };
         if (typeof activeTheme !== 'undefined') currentUser.theme = activeTheme;
+        const payload = JSON.stringify(currentUser);
+        // Primary: shared storage adapter
         try {
             const storage = ensureStorageAdapter();
-            await storage.set('user:' + currentUser.username, JSON.stringify(currentUser), true);
-            return true;
+            await storage.set('user:' + currentUser.username, payload, true);
         } catch (e) {
-            console.error('Failed to save user data:', e);
-            return false;
+            // Fallback: direct localStorage
+            try { localStorage.setItem('vestra_user_' + currentUser.username, payload); } catch(e2) {}
+            console.warn('Primary save failed, used localStorage fallback:', e.message);
         }
+        // Always mirror to localStorage for fast auto-login
+        try { localStorage.setItem('vestra_lastuser', currentUser.username); } catch(e) {}
+        return true;
     }
 
     // getSeasonKey kept for backward compat with seasonStats references
@@ -9110,6 +9177,12 @@ function startNewsEngine() {
         if (typeof recordPerfSnapshot  === 'function') recordPerfSnapshot();
 
         // ── 11. Persist ──────────────────────────────────────────────────
+        // Award XP for trading activity
+        if (typeof awardXP === 'function') {
+            const tradeCount = (currentUser && currentUser.totalTrades) || 0;
+            if (tradeCount === 0) awardXP(25, 'First trade!');
+            else awardXP(5, 'Trade executed');
+        }
         saveUserData(true);
 
         // ── 12. Tutorial hook ─────────────────────────────────────────────
@@ -10731,6 +10804,7 @@ function startNewsEngine() {
     // ═══════════════════════════════════════════════════════
 
     function showHomepage() {
+        document.body.style.overflow = '';
         document.getElementById('homePage').style.display = 'block';
         document.getElementById('appPage').style.display  = 'none';
         document.getElementById('authOverlay').style.display = 'none';
@@ -10739,6 +10813,7 @@ function startNewsEngine() {
     }
 
     function showApp() {
+        document.body.style.overflow = '';
         document.getElementById('homePage').style.display = 'none';
         document.getElementById('appPage').style.display  = 'block';
         document.getElementById('authOverlay').style.display = 'none';
@@ -13409,19 +13484,19 @@ function startNewsEngine() {
 
     function applyTheme(theme) {
         const body = document.body;
-        body.classList.remove('theme-blue', 'theme-green', 'theme-white', 'light-mode');
-        if (theme === 'blue')  body.classList.add('theme-blue');
-        if (theme === 'green') body.classList.add('theme-green');
-        if (theme === 'white') { body.classList.add('light-mode'); }
+        body.classList.remove('theme-midnight','theme-graphite','theme-arctic','theme-emerald','theme-blue','theme-green','theme-white','light-mode');
+        if (theme === 'midnight') body.classList.add('theme-midnight');
+        else if (theme === 'graphite') body.classList.add('theme-graphite');
+        else if (theme === 'arctic')   body.classList.add('theme-arctic');
+        else if (theme === 'emerald')  body.classList.add('theme-emerald');
+        else if (theme === 'blue')     body.classList.add('theme-blue');
+        else if (theme === 'green')    body.classList.add('theme-green');
+        else if (theme === 'white')    body.classList.add('light-mode');
         activeTheme = theme;
         if (currentUser) { currentUser.theme = theme; saveUserData(false); }
-        localStorage.setItem('vestra_theme', theme);
+        try { localStorage.setItem('vestra_theme', theme); } catch(e) {}
         const tm = document.getElementById('themeMenu');
         if (tm) tm.style.display = 'none';
-        // Update theme toggle icon
-        const icons = { dark:'◑', blue:'◒', green:'◐', white:'&#9675;' };
-        const btn = document.getElementById('themeToggle');
-        if (btn) btn.textContent = icons[theme] || '◑';
         document.querySelectorAll('.theme-opt').forEach(b => {
             b.style.fontWeight = b.dataset.theme === theme ? '800' : '400';
             b.style.color = b.dataset.theme === theme ? '#f0f0fa' : '';
@@ -13595,6 +13670,7 @@ function startNewsEngine() {
     let strategies = [];   // [{ id, name, tag, entry, exit, risk, trades:[], createdAt }]
 
     function openStrategyLab() {
+        if (!requireUnlock('strategy_lab', null)) return;
         const el = document.getElementById('strategyLabModal');
         if (el) { el.style.display = 'flex'; renderStrategyList(); }
     }
@@ -14583,8 +14659,17 @@ function startNewsEngine() {
         el.style.display = 'flex';
         _activeLegalPages.add(key);
         document.body.style.overflow = 'hidden';
-        // Special init
-        if (key === 'faq') renderFAQ();
+        // Use setTimeout to ensure display:flex is painted before writing content
+        if (key === 'faq') {
+            setTimeout(function() {
+                try { renderFAQ(); }
+                catch(e) {
+                    const b = document.getElementById('faqBody');
+                    if (b) b.innerHTML = '<div style="color:#f87171;padding:20px;">Error loading FAQ.</div>';
+                    console.error('renderFAQ error:', e);
+                }
+            }, 0);
+        }
         // Close on backdrop click
         el.addEventListener('click', function bk(e) {
             if (e.target === el) { closeLegalPage(key); el.removeEventListener('click', bk); }
@@ -14696,9 +14781,34 @@ function startNewsEngine() {
     }
     setTimeout(updateSystemStatus, 500);
 
-    // ── Init ──
-    initMarket();  // pre-load stock data
-    showHomepage(); // start on homepage
+    // ── initApp — clear startup sequence per spec ──────────────────────────
+    function initApp() {
+        // 1. Load saved theme before anything renders
+        try {
+            const savedTheme = localStorage.getItem('vestra_theme');
+            if (savedTheme) applyTheme(savedTheme);
+        } catch(e) {}
+
+        // 2. Pre-load stock market data
+        try { initMarket(); } catch(e) { console.warn('[Vestra] initMarket error:', e); }
+
+        // 3. Show homepage
+        showHomepage();
+
+        // 4. Attach global error boundary — suppress cascading console noise
+        window.addEventListener('error', function(e) {
+            // Only suppress errors from our own script, not external libs
+            if (e.filename && e.filename.includes('cdn')) return;
+            console.warn('[Vestra] Caught error:', e.message);
+        });
+
+        window.addEventListener('unhandledrejection', function(e) {
+            console.warn('[Vestra] Unhandled promise rejection:', e.reason);
+            e.preventDefault();
+        });
+    }
+
+    initApp();
 
     // ══════════════════════════════════════════════════════════════════════
     //  ADVANCED ANALYTICS SYSTEM
@@ -15411,7 +15521,17 @@ function startNewsEngine() {
     function openChallengeMode() {
         loadChallengeState();
         const el = document.getElementById('challengeModal');
-        if (el) { el.style.display = 'flex'; renderChallengeModal(); }
+        if (!el) return;
+        el.style.display = 'flex';
+        // Use setTimeout to ensure display:flex is painted before writing content
+        setTimeout(function() {
+            try { renderChallengeModal(); }
+            catch(e) {
+                const c = document.getElementById('challengeContent');
+                if (c) c.innerHTML = '<div style="color:#f87171;padding:20px;">Error loading challenges. Please refresh.</div>';
+                console.error('renderChallengeModal error:', e);
+            }
+        }, 0);
     }
     function closeChallengeMode() {
         const el = document.getElementById('challengeModal');
@@ -15449,73 +15569,55 @@ function startNewsEngine() {
     }
 
     function renderChallengeModal() {
-        const el = document.getElementById('challengeContent');
-        if (!el) return;
+        const tierSelect = document.getElementById('challengeTierSelect');
+        const activeState = document.getElementById('challengeActiveState');
+        if (!tierSelect || !activeState) return;
 
         if (!challengeState) {
-            // Show tier selection
-            el.innerHTML = `<div>
-                <div style="font-size:11px;color:#8888a8;margin-bottom:16px;line-height:1.6;">Select a challenge tier. Each tier enforces strict risk rules and measures your progression as a disciplined trader. All P&L is simulated.</div>
-                <div style="display:grid;gap:12px;">
-                ${CHALLENGE_TIERS.map(t => `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;display:flex;align-items:center;gap:16px;">
-                    <div style="font-size:2rem;flex-shrink:0;">${t.icon}</div>
-                    <div style="flex:1;">
-                        <div style="font-size:13px;font-weight:700;color:#f0f0fa;margin-bottom:3px;">${t.name}</div>
-                        <div style="font-size:10px;color:#8888a8;">${t.desc}</div>
-                        <div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:#6868a0;">
-                            <span>Capital: <strong style="color:#f0f0fa;">$${t.startCash.toLocaleString()}</strong></span>
-                            <span>Max Risk: <strong style="color:#f59e0b;">${t.maxRisk}%</strong></span>
-                            <span>Max DD: <strong style="color:#f87171;">${t.maxDD}%</strong></span>
-                            ${t.minReturn > 0 ? `<span>Target: <strong style="color:#4ade80;">+${t.minReturn}%</strong></span>` : ''}
-                        </div>
-                    </div>
-                    <button onclick="startChallenge('${t.id}')" style="background:rgba(212,168,75,0.12);color:var(--v-gold);border:1px solid rgba(212,168,75,0.25);border-radius:8px;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">Start</button>
-                </div>`).join('')}
-                </div>
-            </div>`;
+            tierSelect.style.display = 'block';
+            activeState.style.display = 'none';
             return;
         }
+
+        // Active challenge — hide tier select, show live state
+        tierSelect.style.display = 'none';
+        activeState.style.display = 'block';
 
         const tier = CHALLENGE_TIERS.find(t => t.id === challengeState.tierId);
         if (!tier) return;
 
-        const totalVal = challengeState.currentVal;
+        const totalVal = challengeState.currentVal || challengeState.startCash;
         const returnPct = ((totalVal - challengeState.startCash) / challengeState.startCash * 100);
         const daysActive = Math.max(1, Math.round((Date.now() - challengeState.startedAt) / 86400000));
         const statusColor = challengeState.failed ? '#f87171' : challengeState.completed ? '#4ade80' : '#f59e0b';
-        const status = challengeState.failed ? 'Failed' : challengeState.completed ? 'Completed' : 'Active';
+        const status = challengeState.failed ? 'Failed' : challengeState.completed ? 'Completed ✓' : 'Active';
 
-        el.innerHTML = `<div>
-            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:20px;margin-bottom:16px;">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
-                    <div>
-                        <div style="font-size:1.1rem;font-weight:700;color:#f0f0fa;">${tier.icon} ${tier.name} Challenge</div>
-                        <div style="font-size:10px;color:${statusColor};margin-top:2px;">${status} · Day ${daysActive}</div>
-                    </div>
-                    <button onclick="resetChallenge()" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#f87171;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;">Reset</button>
-                </div>
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
-                    ${[
-                        { l:'Capital', v:'$'+totalVal.toLocaleString(undefined,{maximumFractionDigits:0}), c:'#60a5fa' },
-                        { l:'Return', v:(returnPct>=0?'+':'')+returnPct.toFixed(2)+'%', c:returnPct>=0?'#4ade80':'#f87171' },
-                        { l:'Target', v:tier.minReturn>0?'+'+tier.minReturn+'%':'Discipline', c:'#f59e0b' },
-                    ].map(m=>`<div style="text-align:center;background:rgba(255,255,255,0.03);border-radius:8px;padding:10px;">
-                        <div style="font-size:9px;color:#6868a0;text-transform:uppercase;">${m.l}</div>
-                        <div style="font-family:var(--v-mono);font-size:1rem;font-weight:700;color:${m.c};">${m.v}</div>
-                    </div>`).join('')}
-                </div>
-                <div style="margin-bottom:8px;">
-                    <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px;"><span style="color:#8888a8;">Progress to target</span><span style="color:#f0f0fa;">${Math.min(100,Math.max(0,(returnPct/(tier.minReturn||20)*100))).toFixed(0)}%</span></div>
-                    <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">
-                        <div style="height:100%;width:${Math.min(100,Math.max(0,(returnPct/(tier.minReturn||20)*100))).toFixed(0)}%;background:linear-gradient(90deg,#f59e0b,#4ade80);border-radius:4px;transition:width 0.5s;"></div>
-                    </div>
-                </div>
-                ${challengeState.violations.length > 0 ? `<div style="margin-top:10px;padding:8px 12px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;font-size:10px;color:#f87171;">! ${challengeState.violations.length} rule violation(s) recorded</div>` : ''}
-            </div>
-            <div style="font-size:11px;color:#8888a8;line-height:1.6;padding:12px;background:rgba(212,168,75,0.05);border:1px solid rgba(212,168,75,0.12);border-radius:10px;">
-                <strong style="color:var(--v-gold);">Active Rules:</strong> Max ${tier.maxRisk}% risk per trade · Max ${tier.maxDD}% drawdown · No leverage · Realism Mode required for scoring
-            </div>
-        </div>`;
+        activeState.innerHTML = '<div>'
+            + '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:20px;margin-bottom:16px;">'
+            + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">'
+            + '<div><div style="font-size:1.1rem;font-weight:700;color:#f0f0fa;">' + tier.icon + ' ' + tier.name + ' Challenge</div>'
+            + '<div style="font-size:10px;color:' + statusColor + ';margin-top:2px;">' + status + ' · Day ' + daysActive + '</div></div>'
+            + '<button onclick="resetChallenge()" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#f87171;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;">Reset</button>'
+            + '</div>'
+            + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">'
+            + '<div style="text-align:center;padding:12px;background:rgba(255,255,255,0.02);border-radius:10px;">'
+            + '<div style="font-size:11px;color:#6868a0;margin-bottom:4px;">Portfolio Value</div>'
+            + '<div style="font-size:1.1rem;font-weight:700;color:#f0f0fa;font-family:var(--v-mono);">$' + Math.round(totalVal).toLocaleString() + '</div>'
+            + '</div>'
+            + '<div style="text-align:center;padding:12px;background:rgba(255,255,255,0.02);border-radius:10px;">'
+            + '<div style="font-size:11px;color:#6868a0;margin-bottom:4px;">Return</div>'
+            + '<div style="font-size:1.1rem;font-weight:700;color:' + (returnPct >= 0 ? '#4ade80' : '#f87171') + ';font-family:var(--v-mono);">' + (returnPct >= 0 ? '+' : '') + returnPct.toFixed(2) + '%</div>'
+            + '</div>'
+            + '<div style="text-align:center;padding:12px;background:rgba(255,255,255,0.02);border-radius:10px;">'
+            + '<div style="font-size:11px;color:#6868a0;margin-bottom:4px;">' + (tier.minReturn > 0 ? 'Target' : 'Max DD') + '</div>'
+            + '<div style="font-size:1.1rem;font-weight:700;color:#d4a84b;font-family:var(--v-mono);">' + (tier.minReturn > 0 ? '+' + tier.minReturn + '%' : tier.maxDD + '%') + '</div>'
+            + '</div>'
+            + '</div>'
+            + (challengeState.violations && challengeState.violations.length > 0 ? '<div style="margin-top:10px;padding:8px 12px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;font-size:10px;color:#f87171;">⚠ ' + challengeState.violations.length + ' rule violation(s) recorded</div>' : '')
+            + '</div>'
+            + (challengeState.completed ? '<div style="padding:16px;background:rgba(74,222,128,0.07);border:1px solid rgba(74,222,128,0.2);border-radius:12px;text-align:center;"><div style="font-size:14px;font-weight:700;color:#4ade80;margin-bottom:4px;">🏆 Challenge Complete!</div><div style="font-size:11px;color:#6868a0;">Start the next tier to continue your progression.</div></div>' : '')
+            + (challengeState.failed ? '<div style="padding:16px;background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.2);border-radius:12px;text-align:center;"><div style="font-size:14px;font-weight:700;color:#f87171;margin-bottom:4px;">Challenge Failed</div><div style="font-size:11px;color:#6868a0;">Max drawdown exceeded. Reset and try again.</div></div>' : '')
+            + '</div>';
     }
 
     // ══════════════════════════════════════════════════════════════════════
@@ -17814,16 +17916,125 @@ Guidelines:
 
     function generateAIFallback(question) {
         const q = question.toLowerCase();
-        if (q.includes('risk') || q.includes('position size')) {
-            return '**Risk Management Fundamentals**\n\nThe core rule: never risk more than 1-2% of your total account on a single trade.\n\n• **Position sizing**: Risk Amount ÷ (Entry - Stop Loss) = Shares to buy\n• **Kelly Criterion**: Optimal fraction = (Win% × Avg Win) - (Loss% × Avg Loss) / Avg Win\n• **Max drawdown**: If you ever lose 20% of your account, stop trading and review\n\nYour goal is to stay in the game long enough for your edge to play out statistically.';
+
+        // Loss / trade failure
+        if (q.includes('loss') || q.includes('losing') || q.includes('lost') || q.includes('down')) {
+            const trades = (transactions||[]).filter(t=>t.type==='SELL');
+            const losses = trades.filter(t=> t.pl !== undefined ? t.pl < 0 : false);
+            const lossRate = trades.length > 0 ? Math.round(losses.length/trades.length*100) : null;
+            return '**Dealing With Losses**\n\n'
+                + (lossRate !== null ? `Your current loss rate is **${lossRate}%** across ${trades.length} closed trades.\n\n` : '')
+                + '• Losses are data, not failure — every loss tells you something about your system\n'
+                + '• Check: did you follow your plan? If yes, a loss is just variance. If no, fix the behaviour\n'
+                + '• Never add to a losing position hoping it recovers\n'
+                + '• After 3 consecutive losses, stop for the day and review\n\n'
+                + 'The goal is to keep losses small so winners can compound freely.';
         }
-        if (q.includes('bias') || q.includes('emotion') || q.includes('psychology')) {
-            return '**Common Trading Biases to Watch**\n\n• **Loss aversion**: Holding losers too long hoping to "break even"\n• **Recency bias**: Overweighting your last few trades\n• **FOMO**: Chasing moves you already missed\n• **Overconfidence**: Increasing size after a winning streak\n• **Revenge trading**: Immediately re-entering after a loss to "get it back"\n\nThe antidote is a written trading plan you follow mechanically.';
+
+        // Risk / position sizing
+        if (q.includes('risk') || q.includes('position size') || q.includes('sizing') || q.includes('how much')) {
+            const equity = (typeof cash!=='undefined' ? cash : 10000) + Object.keys(portfolio||{}).reduce((s,sym)=>{const st=(stocks||[]).find(x=>x.symbol===sym);return s+(st?st.price*(portfolio[sym]||0):0);},0);
+            const onePercent = (equity * 0.01).toFixed(2);
+            return '**Position Sizing**\n\n'
+                + `At your current equity (~$${Math.round(equity).toLocaleString()}), 1% risk = **$${onePercent}**\n\n`
+                + '**Formula**: Shares = (Account × Risk%) ÷ (Entry − Stop)\n'
+                + '**Example**: $50,000 × 1% = $500 risk ÷ $2 stop = 250 shares\n\n'
+                + '• Beginners: 0.5–1% per trade\n'
+                + '• Intermediate: 1–2% per trade\n'
+                + '• Never exceed 3% on any single trade\n'
+                + '• Reduce size during losing streaks, increase only after consistency';
         }
-        if (q.includes('strategy') || q.includes('system')) {
-            return '**Building a Trading Strategy**\n\nA good strategy has 5 components:\n\n1. **Entry criteria**: Specific, objective conditions (e.g., price breaks above 20-day high with 2× average volume)\n2. **Stop loss**: Pre-defined exit if wrong (e.g., below last swing low)\n3. **Take profit**: Target based on R-multiple (e.g., 2× your stop distance)\n4. **Position size**: % of account to risk per trade\n5. **Universe**: Which instruments you trade and when\n\nBacktest it, forward-test on paper, then scale up.';
+
+        // Psychology / biases / emotions
+        if (q.includes('bias') || q.includes('emotion') || q.includes('psychology') || q.includes('fear') || q.includes('greed') || q.includes('fomo')) {
+            return '**Trading Psychology**\n\n**The 6 biases that kill accounts:**\n\n'
+                + '• **Loss aversion** — holding losers too long to avoid "realising" the loss\n'
+                + '• **FOMO** — chasing moves already 80% complete\n'
+                + '• **Recency bias** — letting your last 3 trades define your confidence\n'
+                + '• **Overconfidence** — doubling size after a hot streak\n'
+                + '• **Revenge trading** — re-entering immediately after a loss to "get it back"\n'
+                + '• **Anchoring** — fixating on your entry price instead of current market structure\n\n'
+                + '**Antidote**: A written trading plan reviewed before every session. Rules remove emotion from the equation.';
         }
-        return '**Vestra AI Coach**\n\nI can help you with:\n• Analyzing your performance data\n• Explaining trading concepts and metrics\n• Identifying behavioral patterns\n• Building better risk management habits\n• Understanding market dynamics\n\nTry asking me something specific about your trading or a concept you want to understand better.';
+
+        // Strategy / system / edge
+        if (q.includes('strategy') || q.includes('system') || q.includes('edge') || q.includes('setup')) {
+            return '**Building a Trading Edge**\n\nA complete strategy has 5 components:\n\n'
+                + '1. **Entry** — specific, objective conditions (e.g. price breaks 20-day high + 2× avg volume)\n'
+                + '2. **Stop loss** — pre-defined, placed before entry (e.g. below last swing low)\n'
+                + '3. **Target** — R-multiple based (e.g. 2× your stop distance = 2R)\n'
+                + '4. **Position size** — % of account at risk per trade\n'
+                + '5. **Universe** — which stocks, which conditions, which hours\n\n'
+                + 'Backtest on historical data → paper trade 30+ setups → scale real size slowly.';
+        }
+
+        // Technical analysis
+        if (q.includes('technical') || q.includes('chart') || q.includes('indicator') || q.includes('moving average') || q.includes('rsi') || q.includes('macd') || q.includes('support') || q.includes('resistance')) {
+            return '**Technical Analysis Essentials**\n\n'
+                + '• **Moving Averages** — 20MA (short-term trend), 50MA (medium), 200MA (long-term). Price above = bullish bias\n'
+                + '• **RSI** — momentum oscillator 0–100. Above 70 = overbought, below 30 = oversold\n'
+                + '• **MACD** — trend + momentum. Signal line crossover = potential entry\n'
+                + '• **Volume** — confirms moves. Breakout on high volume = conviction\n'
+                + '• **Support/Resistance** — price levels where buyers/sellers historically cluster\n\n'
+                + 'No indicator works alone. Use 2–3 that confirm each other.';
+        }
+
+        // Fundamental analysis
+        if (q.includes('fundamental') || q.includes('earnings') || q.includes('valuation') || q.includes('p/e') || q.includes('revenue') || q.includes('eps')) {
+            return '**Fundamental Analysis**\n\n'
+                + '• **P/E Ratio** — price ÷ earnings per share. Lower = cheaper relative to earnings\n'
+                + '• **EPS Growth** — earnings per share growth YoY. >15% is generally healthy\n'
+                + '• **Revenue Growth** — top-line expansion. Accelerating growth is a positive catalyst\n'
+                + '• **Free Cash Flow** — profit after capex. Real cash a business generates\n'
+                + '• **Debt/Equity** — leverage risk. High D/E = fragile in downturns\n\n'
+                + 'Strong fundamentals + good chart timing = highest-probability trades.';
+        }
+
+        // Academy / learning
+        if (q.includes('academy') || q.includes('learn') || q.includes('course') || q.includes('lesson')) {
+            return '**Trading Academy**\n\nVestra has 35 lessons across 5 courses:\n\n'
+                + '• **Foundations** — market structure, order types, reading quotes\n'
+                + '• **Technical Analysis** — charts, indicators, pattern recognition\n'
+                + '• **Risk Management** — position sizing, stop losses, drawdown control\n'
+                + '• **Trading Psychology** — discipline, bias control, journaling\n'
+                + '• **Advanced Strategies** — momentum, mean reversion, sector rotation\n\n'
+                + 'Open the Academy from the main menu. Each completed lesson awards XP.';
+        }
+
+        // Challenge mode
+        if (q.includes('challenge') || q.includes('tier') || q.includes('cadet') || q.includes('analyst') || q.includes('associate') || q.includes('portfolio manager')) {
+            return '**Challenge Mode**\n\nProve your discipline through 4 tiers:\n\n'
+                + '• **Cadet** ($10k) — max 3% risk/trade, no drawdown limit\n'
+                + '• **Analyst** ($25k) — achieve +5% return, max 2% risk, max −12% drawdown\n'
+                + '• **Associate** ($50k) — achieve +10% return, max 1.5% risk, max −10% drawdown\n'
+                + '• **Portfolio Manager** ($100k) — achieve +20% return, max 1% risk, max −8% drawdown\n\n'
+                + 'Each tier tests real professional-grade discipline. One risk violation fails the challenge.';
+        }
+
+        // Portfolio / stats
+        if (q.includes('portfolio') || q.includes('performance') || q.includes('stats') || q.includes('my account') || q.includes('how am i doing')) {
+            const equity = (typeof cash!=='undefined' ? cash : 10000) + Object.keys(portfolio||{}).reduce((s,sym)=>{const st=(stocks||[]).find(x=>x.symbol===sym);return s+(st?st.price*(portfolio[sym]||0):0);},0);
+            const start = (currentUser && currentUser.startCash) || 10000;
+            const pl = equity - start;
+            const plPct = ((pl/start)*100).toFixed(2);
+            const trades = (transactions||[]).filter(t=>t.type==='SELL').length;
+            return '**Your Portfolio Summary**\n\n'
+                + `• **Total Equity**: $${Math.round(equity).toLocaleString()}\n`
+                + `• **P&L**: ${pl>=0?'+':''}$${Math.round(pl).toLocaleString()} (${pl>=0?'+':''}${plPct}%)\n`
+                + `• **Closed Trades**: ${trades}\n`
+                + `• **Cash Available**: $${Math.round(typeof cash!=='undefined'?cash:10000).toLocaleString()}\n\n`
+                + (pl < 0 ? 'Focus on cutting losses quickly and letting winners run.' : 'Good progress — protect gains with disciplined position sizing.');
+        }
+
+        // Default
+        return '**Vestra AI Coach**\n\nI can help with:\n\n'
+            + '• **Risk & position sizing** — "How much should I risk per trade?"\n'
+            + '• **Psychology & biases** — "Why do I hold losers too long?"\n'
+            + '• **Strategy & edge** — "How do I build a trading system?"\n'
+            + '• **Technical analysis** — "How do I use RSI?"\n'
+            + '• **My portfolio** — "How am I doing?"\n'
+            + '• **Academy** — "What courses are available?"\n\n'
+            + 'Ask me anything specific about your trading.';
     }
 
     function sendAIQuickPrompt(prompt) {
@@ -17837,11 +18048,11 @@ Guidelines:
     // Override openAICoach to reset and setup chat
     const _origOpenAICoachV8 = window.openAICoach || function(){};
     window.openAICoach = function() {
+        if (!requireUnlock('ai_coach', null)) return;
         const el = document.getElementById('aiCoachModal');
         if (el) {
             el.style.display = 'flex';
             switchAITab('chat');
-            // Render coach data for other tabs
             setTimeout(() => {
                 if (typeof renderAICoach === 'function') try { renderAICoach(); } catch(e){}
                 if (typeof renderMarketRegime === 'function') try { renderMarketRegime(); } catch(e){}
@@ -19488,7 +19699,11 @@ Vestra Paper Trading Simulator`;
     function openProfileModal() {
         if (!currentUser) { showAuthFromHome('login'); return; }
         const el = document.getElementById('profileModal');
-        if (el) { el.style.display = 'flex'; _renderProfileModal(); }
+        if (!el) return;
+        el.style.display = 'flex';
+        setTimeout(function() {
+            try { _renderProfileModal(); } catch(e) { console.error('_renderProfileModal error:', e); }
+        }, 0);
     }
 
     function closeProfileModal() {
@@ -19576,7 +19791,7 @@ Vestra Paper Trading Simulator`;
         _updateNavAvatar(currentUser);
         saveUserData(false);
         _renderProfileModal();
-        if (typeof pushNotif === 'function') pushNotif('Profile updated', 'success');
+        if (typeof pushNotif === 'function') pushNotif('info', 'Profile updated');
     }
 
     function handleAvatarUpload(event) {
@@ -19602,7 +19817,7 @@ Vestra Paper Trading Simulator`;
                 _updateNavAvatar(currentUser);
                 saveUserData(false);
                 _renderProfileModal();
-                if (typeof pushNotif === 'function') pushNotif('Profile photo updated', 'success');
+                if (typeof pushNotif === 'function') pushNotif('info', 'Profile photo updated');
             };
             img.src = dataUrl;
         };
@@ -19666,7 +19881,11 @@ Vestra Paper Trading Simulator`;
 
     function openSettingsModal() {
         const el = document.getElementById('settingsModal');
-        if (el) { el.style.display = 'flex'; _renderSettings(); }
+        if (!el) return;
+        el.style.display = 'flex';
+        setTimeout(function() {
+            try { _renderSettings(); } catch(e) { console.error('_renderSettings error:', e); }
+        }, 0);
     }
     function closeSettingsModal() {
         const el = document.getElementById('settingsModal');
@@ -19699,18 +19918,35 @@ Vestra Paper Trading Simulator`;
                 + '</div></div>';
         }
 
-        el.innerHTML =
-            '<div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">Display</div>'
+        var THEMES = [
+            { key:'dark',     label:'Institutional Dark', dot:'#1a1a2e' },
+            { key:'midnight', label:'Midnight',           dot:'#0a0a14' },
+            { key:'graphite', label:'Graphite',           dot:'#2a2a2a' },
+            { key:'arctic',   label:'Arctic Blue',        dot:'#0d1b2e' },
+            { key:'emerald',  label:'Emerald Pro',        dot:'#0a1f14' },
+            { key:'white',    label:'Minimal White',      dot:'#f8f8f8' },
+        ];
+        var curTheme = (typeof activeTheme !== 'undefined' ? activeTheme : null) || localStorage.getItem('vestra_theme') || 'dark';
+        var themeHTML = '<div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">Theme</div>'
+            + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;">'
+            + THEMES.map(function(t) {
+                var active = curTheme === t.key;
+                return '<button data-theme="' + t.key + '" style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:9px;border:1px solid ' + (active ? '#d4a84b' : 'rgba(255,255,255,0.09)') + ';background:' + (active ? 'rgba(212,168,75,0.10)' : 'rgba(255,255,255,0.03)') + ';cursor:pointer;font-size:12px;font-weight:' + (active ? '700' : '500') + ';color:' + (active ? '#d4a84b' : '#9090b8') + ';font-family:var(--v-sans);text-align:left;">'
+                    + '<span style="width:14px;height:14px;border-radius:50%;background:' + t.dot + ';border:1px solid rgba(255,255,255,0.15);flex-shrink:0;display:inline-block;"></span>'
+                    + t.label + '</button>';
+            }).join('') + '</div>';
+
+        el.innerHTML = themeHTML
+            + '<div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">Display</div>'
             + togHTML('Compact Mode','Denser layout for more data','compactMode', !!_userPrefs.compactMode)
             + togHTML('Show P&L in Sidebar','Display real-time P&L in portfolio sidebar','showSidebarPL', _userPrefs.showSidebarPL !== false)
+            + togHTML('Enable Tooltips','Show helpful hints on hover','enableTooltips', _userPrefs.enableTooltips !== false)
+            + togHTML('Focus Mode','Hide distractions while trading','focusMode', !!_userPrefs.focusMode)
             + '<div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:.08em;margin:16px 0 12px;">Notifications</div>'
             + togHTML('Trade Confirmations','Pop-up toast on each trade','tradeToasts', _userPrefs.tradeToasts !== false)
             + togHTML('Price Alerts','Alerts when watchlist hits target price','priceAlertNotifs', _userPrefs.priceAlertNotifs !== false)
             + togHTML('AI Suggestions','Show AI post-trade intelligence hints','aiSuggestions', _userPrefs.aiSuggestions !== false)
-            + '<div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:.08em;margin:16px 0 12px;">Privacy</div>'
-            + togHTML('Show on Leaderboard','Your username visible to other traders','leaderboardVisible', _userPrefs.leaderboardVisible !== false)
-            + togHTML('Anonymise Username','Show as "Anonymous" on leaderboard','anonymiseUsername', !!_userPrefs.anonymiseUsername)
-            + '<div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:.08em;margin:16px 0 12px;">Simulation</div>'
+            + '<div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:.08em;margin:16px 0 12px;">Trading</div>'
             + '<div style="display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid rgba(255,255,255,0.05);">'
             + '<div><div style="font-size:13px;font-weight:600;color:#d0d0e8;">Default Order Type</div>'
             + '<div style="font-size:11px;color:#6868a0;margin-top:2px;">Pre-selected when opening trades</div></div>'
@@ -19719,9 +19955,30 @@ Vestra Paper Trading Simulator`;
             + '<option value="limit"'  + (_userPrefs.defaultOrder==='limit' ?' selected':'') + '>Limit</option>'
             + '<option value="stop"'   + (_userPrefs.defaultOrder==='stop'  ?' selected':'') + '>Stop</option>'
             + '</select></div>'
-            + '<button id="settingsSaveClose" style="width:100%;margin-top:22px;padding:12px;background:#d4a84b;color:#0a0a0f;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--v-sans);">Save &amp; Close</button>';
+            + '<div style="display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid rgba(255,255,255,0.05);">'
+            + '<div><div style="font-size:13px;font-weight:600;color:#d0d0e8;">Default Risk %</div>'
+            + '<div style="font-size:11px;color:#6868a0;margin-top:2px;">Per-trade risk as % of portfolio</div></div>'
+            + '<select id="settingsRiskSel" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.13);color:#d0d0e8;border-radius:8px;padding:6px 10px;font-size:12px;outline:none;cursor:pointer;">'
+            + ['0.5','1','1.5','2','3','5'].map(function(v){ return '<option value="'+v+'"'+( (_userPrefs.defaultRisk||'1')===v?' selected':'')+'>'+v+'%</option>'; }).join('')
+            + '</select></div>'
+            + '<div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:.08em;margin:16px 0 12px;">Privacy</div>'
+            + togHTML('Show on Leaderboard','Your username visible to other traders','leaderboardVisible', _userPrefs.leaderboardVisible !== false)
+            + togHTML('Anonymise Username','Show as "Anonymous" on leaderboard','anonymiseUsername', !!_userPrefs.anonymiseUsername)
+            + '<div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:.08em;margin:16px 0 12px;">Account</div>'
+            + '<div style="display:flex;gap:10px;margin-bottom:8px;">'
+            + '<button id="settingsResetBtn" style="flex:1;padding:11px;background:rgba(248,113,113,0.09);border:1px solid rgba(248,113,113,0.25);color:#f87171;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--v-sans);">Reset Progress</button>'
+            + '<button id="settingsDeleteBtn" style="flex:1;padding:11px;background:rgba(248,113,113,0.04);border:1px solid rgba(248,113,113,0.15);color:#f87171;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--v-sans);">Delete Account</button>'
+            + '</div>'
+            + '<button id="settingsSaveClose" style="width:100%;margin-top:10px;padding:12px;background:#d4a84b;color:#0a0a0f;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--v-sans);">Save &amp; Close</button>';
 
-        // Wire toggles via event delegation — no inline onclick needed
+        // Theme buttons
+        el.querySelectorAll('[data-theme]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                if (typeof applyTheme === 'function') applyTheme(this.getAttribute('data-theme'));
+                _renderSettings();
+            });
+        });
+        // Toggles
         el.querySelectorAll('[data-pref]').forEach(function(tog) {
             tog.addEventListener('click', function() {
                 var key = this.getAttribute('data-pref');
@@ -19731,8 +19988,27 @@ Vestra Paper Trading Simulator`;
             });
         });
         var orderSel = document.getElementById('settingsOrderSel');
-        if (orderSel) orderSel.addEventListener('change', function() {
-            _userPrefs.defaultOrder = this.value; _savePrefs();
+        if (orderSel) orderSel.addEventListener('change', function() { _userPrefs.defaultOrder = this.value; _savePrefs(); });
+        var riskSel = document.getElementById('settingsRiskSel');
+        if (riskSel) riskSel.addEventListener('change', function() { _userPrefs.defaultRisk = this.value; _savePrefs(); });
+        // Reset progress
+        var resetBtn = document.getElementById('settingsResetBtn');
+        if (resetBtn) resetBtn.addEventListener('click', function() {
+            if (!confirm('Reset portfolio to $10,000? Your account and history will be cleared.')) return;
+            cash = 10000; portfolio = {}; transactions = []; costBasis = {}; achievements = [];
+            if (currentUser) { currentUser.cash=10000; currentUser.portfolio={}; currentUser.transactions=[]; currentUser.costBasis={}; currentUser.achievements=[]; currentUser.realizedPL=0; currentUser.totalTrades=0; saveUserData(false); }
+            closeSettingsModal(); if (typeof updateUI==='function') updateUI();
+        });
+        // Delete account
+        var delBtn = document.getElementById('settingsDeleteBtn');
+        if (delBtn) delBtn.addEventListener('click', function() {
+            if (!confirm('Permanently delete your account? This cannot be undone.')) return;
+            if (currentUser && currentUser.username) {
+                try { ensureStorageAdapter().delete('user:'+currentUser.username, true); } catch(e) {}
+                try { localStorage.removeItem('vestra_user_'+currentUser.username); } catch(e) {}
+            }
+            closeSettingsModal();
+            if (typeof logOut==='function') { currentUser=null; showHomepage(); }
         });
         var saveBtn = document.getElementById('settingsSaveClose');
         if (saveBtn) saveBtn.addEventListener('click', closeSettingsModal);
@@ -21640,10 +21916,19 @@ q = probability of losing (1 − p)
         el.style.display = 'flex';
         _acad.activeCourse = courseIdx || 0;
         _acad.activeLesson = null;
-        _renderAcademy();
-        if (lessonIdx !== undefined) {
-            setTimeout(() => openLesson(courseIdx || 0, lessonIdx), 100);
-        }
+        setTimeout(function() {
+            try { _renderAcademy(); }
+            catch(e) {
+                const b = document.getElementById('academyBody');
+                if (b) b.innerHTML = '<div style="color:#f87171;padding:20px;">Error loading academy. Please refresh.</div>';
+                console.error('_renderAcademy error:', e);
+            }
+            if (lessonIdx !== undefined) {
+                setTimeout(function() {
+                    try { openLesson(courseIdx || 0, lessonIdx); } catch(e) {}
+                }, 100);
+            }
+        }, 0);
     }
     function closeAcademy() {
         const el = document.getElementById('academyModal');
@@ -21661,7 +21946,7 @@ q = probability of losing (1 − p)
         if (badge) badge.textContent = totalPct + '% complete';
 
         body.innerHTML = `
-        <div style="display:flex;flex-direction:row;height:100%;min-height:0;">
+        <div style="display:flex;flex-direction:row;min-height:500px;">
 
             <!-- Sidebar -->
             <div style="background:rgba(0,0,0,0.25);border-right:1px solid rgba(255,255,255,0.07);overflow-y:auto;padding:16px 0;width:260px;flex-shrink:0;">
@@ -21897,15 +22182,30 @@ q = probability of losing (1 − p)
         const c = ACADEMY_COURSES[ci];
         const l = c?.lessons[li];
         if (!l) return;
+        const wasComplete = _acadIsComplete(l.id);
         _acadSaveProgress(l.id);
+        // Award XP only first time
+        if (!wasComplete && currentUser) {
+            currentUser.completedLessons = currentUser.completedLessons || [];
+            if (!currentUser.completedLessons.includes(l.id)) {
+                currentUser.completedLessons.push(l.id);
+                awardXP(50, 'Lesson: ' + l.title);
+            }
+        }
         // Check if course complete
         const courseDone = c.lessons.every(les => _acadIsComplete(les.id));
-        if (courseDone && typeof pushNotif === 'function') {
-            pushNotif(`${c.title} complete!`, 'success');
+        if (courseDone) {
+            if (currentUser) {
+                currentUser.completedChallenges = currentUser.completedChallenges || [];
+                if (!currentUser.completedChallenges.includes('course_' + c.id)) {
+                    currentUser.completedChallenges.push('course_' + c.id);
+                    awardXP(200, 'Course complete: ' + c.title);
+                }
+            }
+            if (typeof pushNotif === 'function') pushNotif('earn', c.title + ' complete! +200 XP');
         }
         stopTTS();
         _renderAcademy();
-        // Re-scroll
         const ac = document.getElementById('academyContent');
         if (ac) ac.scrollTop = 0;
     }
@@ -21926,7 +22226,7 @@ q = probability of losing (1 − p)
         const c = ACADEMY_COURSES[ci];
         const l = c?.lessons[li];
         if (!l || !window.speechSynthesis) {
-            if (typeof pushNotif === 'function') pushNotif('Speech synthesis not supported in this browser', 'warn');
+            if (typeof pushNotif === 'function') pushNotif('alert', 'Speech synthesis not supported in this browser');
             return;
         }
 
@@ -22462,6 +22762,78 @@ window.vestraDesign = { animateValue, animateStockGrid };
             currentUser.startCash = 10000;
             saveUserData(false);
         }
+    }
+
+    // ── Feature Unlock Gate ───────────────────────────────────────────────
+    // XP thresholds per feature. 0 = always unlocked.
+    const FEATURE_UNLOCKS = {
+        trade:        0,    // Always available
+        academy:      0,    // Always available
+        challenges:   0,    // Always available (Cadet tier)
+        leaderboard:  0,
+        watchlist:    0,
+        journal:      0,
+        strategy_lab: 100,  // Requires 100 XP (a few lessons)
+        ai_coach:     200,  // Requires 200 XP
+        analytics:    150,  // Requires 150 XP
+        realism_mode: 300,  // Requires 300 XP
+        community:    500,  // Requires 500 XP
+    };
+
+    function getUserXP() {
+        return (currentUser && currentUser.xp) || 0;
+    }
+
+    function isFeatureUnlocked(feature) {
+        const required = FEATURE_UNLOCKS[feature];
+        if (required === undefined || required === 0) return true;
+        return getUserXP() >= required;
+    }
+
+    function requireUnlock(feature, callback) {
+        if (!currentUser) {
+            if (typeof pushNotif === 'function') pushNotif('info', 'Please sign in to use this feature.');
+            return false;
+        }
+        if (isFeatureUnlocked(feature)) {
+            if (callback) callback();
+            return true;
+        }
+        const required = FEATURE_UNLOCKS[feature];
+        const current = getUserXP();
+        // Show lock toast
+        let existing = document.getElementById('_unlockToast');
+        if (!existing) {
+            existing = document.createElement('div');
+            existing.id = '_unlockToast';
+            existing.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:99999;background:#1a1a2e;border:1px solid rgba(212,168,75,0.4);border-radius:12px;padding:14px 22px;font-size:13px;color:#f0f0fa;font-family:var(--v-sans);display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:slideUp .3s cubic-bezier(.16,1,.3,1);';
+            document.body.appendChild(existing);
+        }
+        existing.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d4a84b" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+            + '<div><div style="font-weight:700;color:#d4a84b;margin-bottom:2px;">Feature Locked</div>'
+            + '<div style="color:#9090b8;font-size:12px;">Requires <strong style="color:#f0f0fa;">' + required + ' XP</strong> — you have <strong style="color:#4ade80;">' + current + ' XP</strong>. Complete Academy lessons to unlock.</div></div>';
+        existing.style.display = 'flex';
+        clearTimeout(existing._timer);
+        existing._timer = setTimeout(function() { existing.style.display = 'none'; }, 4000);
+        return false;
+    }
+
+    function awardXP(amount, reason) {
+        if (!currentUser) return;
+        currentUser.xp = (currentUser.xp || 0) + amount;
+        if (typeof pushNotif === 'function') pushNotif('earn', '+' + amount + ' XP' + (reason ? ' — ' + reason : ''));
+        _updateXPBadge();
+        saveUserData(false);
+    }
+
+    function _updateXPBadge() {
+        const badge = document.getElementById('userXPBadge');
+        if (!badge || !currentUser) return;
+        const xp = currentUser.xp || 0;
+        const tier = currentUser.tierId || currentUser.tier || 'cadet';
+        const tierNames = { cadet:'Cadet', analyst:'Analyst', associate:'Associate', pm:'PM' };
+        badge.textContent = (tierNames[tier] || tier) + ' · ' + xp + ' XP';
+        badge.style.display = 'inline-block';
     }
 
 </script>
@@ -23068,7 +23440,7 @@ window.vestraDesign = { animateValue, animateStockGrid };
         <div style="margin-bottom:8px;opacity:0.5;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
         <div>
           <div style="font-size:11px;color:#8888a8;margin-bottom:2px;">Email us directly</div>
-          <a href="mailto:arush2011jain@gmail.com" style="color:var(--v-gold);font-weight:600;font-size:14px;text-decoration:none;">arush2011jain@gmail.com</a>
+          <a href="/cdn-cgi/l/email-protection#c0a1b2b5b3a8f2f0f1f1aaa1a9ae80a7ada1a9aceea3afad" style="color:var(--v-gold);font-weight:600;font-size:14px;text-decoration:none;"><span class="__cf_email__" data-cfemail="9effecebedf6acaeafaff4fff7f0def9f3fff7f2b0fdf1f3">[email&#160;protected]</span></a>
         </div>
       </div>
       <!-- Contact Form -->
@@ -23109,7 +23481,23 @@ window.vestraDesign = { animateValue, animateStockGrid };
       </div>
       <button onclick="closeLegalPage('faq')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#a0a0b8;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px;font-weight:600;">Close</button>
     </div>
-    <div class="legal-body" id="faqBody"></div>
+    <div class="legal-body" id="faqBody">
+        <!-- Pre-rendered FAQ — works without JS, JS will also re-render on open -->
+        <div id="faqItem0" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(0)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">Is Vestra free to use?</span><span id="faqArrow0" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns0" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">Yes. Vestra is completely free — no credit card, no subscription. Create an account and start trading with $10,000 virtual cash instantly.</div></div>
+        <div id="faqItem1" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(1)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">Does Vestra use real money?</span><span id="faqArrow1" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns1" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">No. All portfolio values, trades, and returns are entirely virtual. No real currency is ever at risk. This is a simulation platform only.</div></div>
+        <div id="faqItem2" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(2)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">How do I get live stock prices?</span><span id="faqArrow2" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns2" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">Vestra integrates with the Finnhub API for real-time data. Get a free API key from finnhub.io and enter it via the Live button in the header. Without a key, prices update with simulated movements.</div></div>
+        <div id="faqItem3" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(3)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">What is Realism Mode?</span><span id="faqArrow3" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns3" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">Realism Mode enforces real trading constraints: orders only execute during market hours, bid-ask spread simulation applies, and you compete on a separate leaderboard. Click SIM/REALISM in the toolbar to switch.</div></div>
+        <div id="faqItem4" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(4)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">What is the Strategy Lab?</span><span id="faqArrow4" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns4" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">The Strategy Lab lets you create named trading strategies with defined rules. Tag every trade to a strategy to measure what actually works over time.</div></div>
+        <div id="faqItem5" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(5)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">How does Risk Guard work?</span><span id="faqArrow5" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns5" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">Risk Guard lets you set personal rules: max risk per trade, max daily loss, and max open positions. If you attempt to violate a rule, the trade is blocked with an explanation.</div></div>
+        <div id="faqItem6" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(6)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">What are Challenge Tiers?</span><span id="faqArrow6" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns6" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">Challenge Tiers are structured trading tests with enforced risk rules. Start as Cadet ($10,000), then progress through Analyst, Associate, and Portfolio Manager tiers.</div></div>
+        <div id="faqItem7" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(7)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">What is the Trading Academy?</span><span id="faqArrow7" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns7" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">The Academy contains 35 structured lessons across 5 courses: Market Foundations, Risk Management, Trading Psychology, Technical Analysis, and Fundamental Analysis.</div></div>
+        <div id="faqItem8" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(8)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">What is Focus Mode?</span><span id="faqArrow8" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns8" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">Focus Mode hides all P&L while positions are open, forcing you to focus on process rather than watching dollar signs.</div></div>
+        <div id="faqItem9" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(9)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">How does AI Coach work?</span><span id="faqArrow9" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns9" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">After placing trades, the AI Coach analyzes your patterns: position sizing, hold-time, entries after losses, and overtrading signals.</div></div>
+        <div id="faqItem10" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(10)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">Why am I ineligible for the leaderboard?</span><span id="faqArrow10" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns10" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">You need at least 1 completed trade to appear on the leaderboard. New accounts show as ineligible until your first trade is placed and closed.</div></div>
+        <div id="faqItem11" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(11)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">How are leaderboard rankings calculated?</span><span id="faqArrow11" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns11" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">Rankings are by total portfolio value. Separate leaderboards exist for Standard and Realism modes.</div></div>
+        <div id="faqItem12" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(12)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">Can I export my trade history?</span><span id="faqArrow12" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns12" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">Yes. Use the menu in the top right of the dashboard to access Export Portfolio. Your full trade history and portfolio state are exported as a JSON file.</div></div>
+        <div id="faqItem13"><button onclick="toggleFAQ(13)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">How do I contact support?</span><span id="faqArrow13" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns13" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">Email us at arush2011jain@gmail.com with your username and issue description. We typically respond within 24 hours.</div></div>
+    </div>
   </div>
 </div>
 
@@ -23256,15 +23644,79 @@ window.vestraDesign = { animateValue, animateStockGrid };
 
 <!-- ═══ CHALLENGE MODE MODAL ═══ -->
 <div id="challengeModal" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto;">
-    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(212,168,75,0.2);border-radius:24px;width:100%;max-width:600px;margin:0 auto 40px;overflow:hidden;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);">
-        <div style="padding:24px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(212,168,75,0.07),transparent);">
+    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(212,168,75,0.2);border-radius:24px;width:100%;max-width:600px;margin:0 auto 40px;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);">
+        <div style="padding:24px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(212,168,75,0.07),transparent);border-radius:24px 24px 0 0;">
             <div>
                 <h2 style="font-family:var(--v-serif);font-size:1.4rem;color:#f0f0fa;margin:0 0 3px;">Structured Challenge Mode</h2>
                 <p style="font-size:11px;color:#8888a8;margin:0;">Fixed capital · Strict rules · Tier progression · No gambling</p>
             </div>
             <button onclick="closeChallengeMode()" style="background:none;border:none;color:#8888a8;font-size:22px;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
-        <div id="challengeContent" style="overflow-y:auto;max-height:calc(100vh - 220px);padding:20px 28px;"></div>
+        <div id="challengeContent" style="padding:20px 28px;min-height:100px;">
+            <!-- Static tier cards — shown by default, replaced by JS when a challenge is active -->
+            <div id="challengeTierSelect">
+                <div style="font-size:11px;color:#8888a8;margin-bottom:16px;line-height:1.6;">Select a challenge tier. Each tier enforces strict risk rules and measures your progression as a disciplined trader. All P&L is simulated.</div>
+                <div style="display:grid;gap:12px;">
+                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;display:flex;align-items:center;gap:16px;">
+                        <div style="font-size:2rem;flex-shrink:0;">○</div>
+                        <div style="flex:1;">
+                            <div style="font-size:13px;font-weight:700;color:#f0f0fa;margin-bottom:3px;">Cadet</div>
+                            <div style="font-size:10px;color:#8888a8;">Learn discipline fundamentals. Max 3% risk per trade.</div>
+                            <div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:#6868a0;">
+                                <span>Capital: <strong style="color:#f0f0fa;">$10,000</strong></span>
+                                <span>Max Risk: <strong style="color:#f59e0b;">3%</strong></span>
+                                <span>Max DD: <strong style="color:#f87171;">-15%</strong></span>
+                            </div>
+                        </div>
+                        <button onclick="startChallenge('cadet')" style="background:rgba(212,168,75,0.12);color:var(--v-gold);border:1px solid rgba(212,168,75,0.25);border-radius:8px;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">Start</button>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;display:flex;align-items:center;gap:16px;">
+                        <div style="font-size:2rem;flex-shrink:0;">◑</div>
+                        <div style="flex:1;">
+                            <div style="font-size:13px;font-weight:700;color:#f0f0fa;margin-bottom:3px;">Analyst</div>
+                            <div style="font-size:10px;color:#8888a8;">Prove consistent edge. Earn +5% with strict risk control.</div>
+                            <div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:#6868a0;">
+                                <span>Capital: <strong style="color:#f0f0fa;">$25,000</strong></span>
+                                <span>Max Risk: <strong style="color:#f59e0b;">2%</strong></span>
+                                <span>Max DD: <strong style="color:#f87171;">-12%</strong></span>
+                                <span>Target: <strong style="color:#4ade80;">+5%</strong></span>
+                            </div>
+                        </div>
+                        <button onclick="startChallenge('analyst')" style="background:rgba(212,168,75,0.12);color:var(--v-gold);border:1px solid rgba(212,168,75,0.25);border-radius:8px;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">Start</button>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;display:flex;align-items:center;gap:16px;">
+                        <div style="font-size:2rem;flex-shrink:0;">◆</div>
+                        <div style="flex:1;">
+                            <div style="font-size:13px;font-weight:700;color:#f0f0fa;margin-bottom:3px;">Associate</div>
+                            <div style="font-size:10px;color:#8888a8;">Professional-grade discipline. +10% with &lt;10% drawdown.</div>
+                            <div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:#6868a0;">
+                                <span>Capital: <strong style="color:#f0f0fa;">$50,000</strong></span>
+                                <span>Max Risk: <strong style="color:#f59e0b;">1.5%</strong></span>
+                                <span>Max DD: <strong style="color:#f87171;">-10%</strong></span>
+                                <span>Target: <strong style="color:#4ade80;">+10%</strong></span>
+                            </div>
+                        </div>
+                        <button onclick="startChallenge('associate')" style="background:rgba(212,168,75,0.12);color:var(--v-gold);border:1px solid rgba(212,168,75,0.25);border-radius:8px;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">Start</button>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;display:flex;align-items:center;gap:16px;">
+                        <div style="font-size:2rem;flex-shrink:0;">◆</div>
+                        <div style="flex:1;">
+                            <div style="font-size:13px;font-weight:700;color:#f0f0fa;margin-bottom:3px;">Portfolio Manager</div>
+                            <div style="font-size:10px;color:#8888a8;">Elite performance. +20% return with near-zero tolerance for error.</div>
+                            <div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:#6868a0;">
+                                <span>Capital: <strong style="color:#f0f0fa;">$100,000</strong></span>
+                                <span>Max Risk: <strong style="color:#f59e0b;">1%</strong></span>
+                                <span>Max DD: <strong style="color:#f87171;">-8%</strong></span>
+                                <span>Target: <strong style="color:#4ade80;">+20%</strong></span>
+                            </div>
+                        </div>
+                        <button onclick="startChallenge('pm')" style="background:rgba(212,168,75,0.12);color:var(--v-gold);border:1px solid rgba(212,168,75,0.25);border-radius:8px;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">Start</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Active challenge state — shown by JS when a challenge is running -->
+            <div id="challengeActiveState" style="display:none;"></div>
+        </div>
     </div>
 </div>
 
@@ -23697,23 +24149,23 @@ window.vestraDesign = { animateValue, animateStockGrid };
 
 <!-- ═══ PROFILE MODAL ═══ -->
 <div id="profileModal" style="display:none;position:fixed;inset:0;z-index:9994;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto;">
-    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(212,168,75,0.18);border-radius:22px;width:100%;max-width:520px;margin:0 auto 40px;overflow:hidden;animation:slideUp .3s cubic-bezier(.16,1,.3,1);">
-        <div style="padding:22px 26px 16px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;">
+    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(212,168,75,0.18);border-radius:22px;width:100%;max-width:520px;margin:0 auto 40px;animation:slideUp .3s cubic-bezier(.16,1,.3,1);">
+        <div style="padding:22px 26px 16px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;border-radius:22px 22px 0 0;">
             <h2 style="font-family:var(--v-serif);font-size:1.25rem;color:#f0f0fa;margin:0;">My Profile</h2>
             <button onclick="closeProfileModal()" style="background:none;border:none;color:#8888a8;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
-        <div id="profileModalBody" style="padding:24px 26px;"></div>
+        <div id="profileModalBody" style="padding:24px 26px;min-height:100px;max-height:calc(100vh - 160px);overflow-y:auto;"></div>
     </div>
 </div>
 
 <!-- ═══ SETTINGS MODAL ═══ -->
 <div id="settingsModal" style="display:none;position:fixed;inset:0;z-index:9994;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto;">
-    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(255,255,255,0.1);border-radius:22px;width:100%;max-width:480px;margin:0 auto 40px;overflow:hidden;animation:slideUp .3s cubic-bezier(.16,1,.3,1);">
-        <div style="padding:22px 26px 16px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;">
+    <div onclick="event.stopPropagation()" style="background:#111118;border:1px solid rgba(255,255,255,0.1);border-radius:22px;width:100%;max-width:480px;margin:0 auto 40px;animation:slideUp .3s cubic-bezier(.16,1,.3,1);">
+        <div style="padding:22px 26px 16px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;border-radius:22px 22px 0 0;">
             <h2 style="font-family:var(--v-serif);font-size:1.25rem;color:#f0f0fa;margin:0;">Settings</h2>
             <button onclick="closeSettingsModal()" style="background:none;border:none;color:#8888a8;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
-        <div id="settingsModalBody" style="padding:24px 26px;"></div>
+        <div id="settingsModalBody" style="padding:24px 26px;min-height:100px;max-height:calc(100vh - 160px);overflow-y:auto;"></div>
     </div>
 </div>
 
@@ -23776,7 +24228,7 @@ window.vestraDesign = { animateValue, animateStockGrid };
             </div>
         </div>
         <!-- Body -->
-        <div id="academyBody" style="flex:1;overflow:hidden;min-height:0;"></div>
+        <div id="academyBody" style="flex:1;overflow:auto;min-height:200px;"></div>
     </div>
 </div>
 
@@ -23787,7 +24239,9 @@ window.vestraDesign = { animateValue, animateStockGrid };
             <div id="tradeToastTitle" style="font-size:13px;font-weight:700;color:#f0f0fa;line-height:1.3;"></div>
             <div id="tradeToastBody" style="font-size:11px;color:#8888a8;margin-top:2px;line-height:1.4;"></div>
         </div>
-        <button onclick="this.parentElement.parentElement.style.display='none'" style="background:none;border:none;color:#6868a0;cursor:pointer;font-size:16px;padding:0;flex-shrink:0;">×</button>
+        <button onclick="this.parentElement.parentElement.style.display='none'" style="background:none;border:none;color:#6868a0;cursor:pointer;padding:4px;align-self:flex-start;flex-shrink:0;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
     </div>
 </div>
 
