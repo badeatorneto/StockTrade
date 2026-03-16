@@ -6109,6 +6109,433 @@
         'PGR':   { name: 'Progressive Corp.',         price: 262.40,  change: 0.42,   pe: 18.20,  mktCap: '153B',  div: '0.00%', divAmt: '0.00', wkHigh: 277.91,  wkLow: 175.50 },
         'MDLZ':  { name: 'Mondelez Intl. Inc.',       price: 61.34,   change: -0.18,  pe: 21.60,  mktCap: '80B',   div: '2.87%', divAmt: '0.435',wkHigh: 75.28,   wkLow: 58.54  },
         'ADP':   { name: 'ADP Inc.',                  price: 298.80,  change: 0.35,   pe: 29.30,  mktCap: '121B',  div: '2.07%', divAmt: '1.40', wkHigh: 318.53,  wkLow: 232.95 },
+        // ── US Technology (additional) ──────────────────────────────────────
+        'AMAT':  { name: 'Applied Materials Inc.',      price: 182.40,  change: 1.20,   pe: 20.40,  mktCap: '155B',  div: '0.90%', divAmt: '0.40', wkHigh: 255.89,  wkLow: 135.42 },
+        'MU':    { name: 'Micron Technology Inc.',      price: 88.60,   change: -0.80,  pe: 14.20,  mktCap: '98B',   div: '0.45%', divAmt: '0.115',wkHigh: 157.54,  wkLow: 79.14  },
+        'LRCX':  { name: 'Lam Research Corp.',          price: 702.40,  change: 1.40,   pe: 21.80,  mktCap: '94B',   div: '1.21%', divAmt: '2.30', wkHigh: 1134.02, wkLow: 636.42 },
+        'KLAC':  { name: 'KLA Corp.',                   price: 562.80,  change: 0.90,   pe: 20.40,  mktCap: '80B',   div: '1.14%', divAmt: '1.70', wkHigh: 867.27,  wkLow: 492.16 },
+        'MCHP':  { name: 'Microchip Technology Inc.',   price: 51.20,   change: -0.60,  pe: 16.80,  mktCap: '28B',   div: '2.34%', divAmt: '0.454',wkHigh: 97.05,   wkLow: 47.42  },
+        'XLNX':  { name: 'Xilinx Inc.',                 price: 218.40,  change: 0.40,   pe: 44.20,  mktCap: '56B',   div: '1.47%', divAmt: '0.74', wkHigh: 236.80,  wkLow: 185.68 },
+        'CDNS':  { name: 'Cadence Design Systems',      price: 242.80,  change: 0.80,   pe: 56.40,  mktCap: '66B',   div: '0.00%', divAmt: '0.00', wkHigh: 318.55,  wkLow: 220.55 },
+        'SNPS':  { name: 'Synopsys Inc.',               price: 456.20,  change: 0.60,   pe: 48.20,  mktCap: '70B',   div: '0.00%', divAmt: '0.00', wkHigh: 609.40,  wkLow: 406.60 },
+        'FTNT':  { name: 'Fortinet Inc.',               price: 76.40,   change: 1.20,   pe: 36.80,  mktCap: '57B',   div: '0.00%', divAmt: '0.00', wkHigh: 90.40,   wkLow: 51.28  },
+        'PANW':  { name: 'Palo Alto Networks Inc.',     price: 172.60,  change: 1.80,   pe: 56.40,  mktCap: '56B',   div: '0.00%', divAmt: '0.00', wkHigh: 210.80,  wkLow: 131.08 },
+        'ZS':    { name: 'Zscaler Inc.',                price: 184.40,  change: 2.40,   pe: 78.20,  mktCap: '28B',   div: '0.00%', divAmt: '0.00', wkHigh: 238.10,  wkLow: 134.41 },
+        'CRWD':  { name: 'CrowdStrike Holdings',        price: 298.40,  change: 2.20,   pe: 84.20,  mktCap: '72B',   div: '0.00%', divAmt: '0.00', wkHigh: 398.33,  wkLow: 200.38 },
+        'DDOG':  { name: 'Datadog Inc.',                price: 102.40,  change: 1.60,   pe: 78.20,  mktCap: '34B',   div: '0.00%', divAmt: '0.00', wkHigh: 152.81,  wkLow: 90.53  },
+        'SNOW':  { name: 'Snowflake Inc.',              price: 154.80,  change: 2.80,   pe: 0,      mktCap: '52B',   div: '0.00%', divAmt: '0.00', wkHigh: 237.72,  wkLow: 107.13 },
+        'MDB':   { name: 'MongoDB Inc.',                price: 248.60,  change: 1.40,   pe: 0,      mktCap: '18B',   div: '0.00%', divAmt: '0.00', wkHigh: 509.62,  wkLow: 212.74 },
+        'NET':   { name: 'Cloudflare Inc.',             price: 92.40,   change: 1.80,   pe: 0,      mktCap: '30B',   div: '0.00%', divAmt: '0.00', wkHigh: 130.17,  wkLow: 61.62  },
+        'OKTA':  { name: 'Okta Inc.',                   price: 74.20,   change: -0.80,  pe: 0,      mktCap: '12B',   div: '0.00%', divAmt: '0.00', wkHigh: 114.50,  wkLow: 58.42  },
+        'TWLO':  { name: 'Twilio Inc.',                 price: 62.40,   change: -1.20,  pe: 0,      mktCap: '10B',   div: '0.00%', divAmt: '0.00', wkHigh: 96.22,   wkLow: 42.78  },
+        'DOCN':  { name: 'DigitalOcean Holdings',       price: 34.60,   change: 0.60,   pe: 28.40,  mktCap: '3B',    div: '0.00%', divAmt: '0.00', wkHigh: 48.80,   wkLow: 22.14  },
+        'GTLB':  { name: 'GitLab Inc.',                 price: 44.20,   change: 1.20,   pe: 0,      mktCap: '7B',    div: '0.00%', divAmt: '0.00', wkHigh: 69.57,   wkLow: 34.28  },
+        'PATH':  { name: 'UiPath Inc.',                 price: 14.40,   change: -0.40,  pe: 0,      mktCap: '8B',    div: '0.00%', divAmt: '0.00', wkHigh: 28.50,   wkLow: 10.42  },
+        'PLTR':  { name: 'Palantir Technologies',       price: 32.40,   change: 2.20,   pe: 72.40,  mktCap: '68B',   div: '0.00%', divAmt: '0.00', wkHigh: 49.71,   wkLow: 14.67  },
+        'SMAR':  { name: 'Smartsheet Inc.',             price: 38.60,   change: 0.80,   pe: 0,      mktCap: '5B',    div: '0.00%', divAmt: '0.00', wkHigh: 51.18,   wkLow: 28.42  },
+        // ── US Finance ───────────────────────────────────────────────────────
+        'GS':    { name: 'Goldman Sachs Group',         price: 548.20,  change: 0.80,   pe: 15.40,  mktCap: '185B',  div: '2.19%', divAmt: '3.00', wkHigh: 600.29,  wkLow: 354.82 },
+        'MS':    { name: 'Morgan Stanley',              price: 112.40,  change: 0.60,   pe: 18.20,  mktCap: '187B',  div: '3.57%', divAmt: '0.925',wkHigh: 128.17,  wkLow: 81.42  },
+        'BAC':   { name: 'Bank of America Corp.',       price: 44.20,   change: 0.40,   pe: 13.80,  mktCap: '348B',  div: '2.27%', divAmt: '0.24', wkHigh: 47.86,   wkLow: 31.96  },
+        'C':     { name: 'Citigroup Inc.',              price: 74.60,   change: 0.60,   pe: 12.40,  mktCap: '142B',  div: '3.22%', divAmt: '0.56', wkHigh: 84.33,   wkLow: 51.64  },
+        'WFC':   { name: 'Wells Fargo & Co.',           price: 74.80,   change: 0.80,   pe: 13.20,  mktCap: '248B',  div: '2.14%', divAmt: '0.40', wkHigh: 81.56,   wkLow: 39.30  },
+        'USB':   { name: 'U.S. Bancorp',                price: 46.20,   change: 0.40,   pe: 13.40,  mktCap: '67B',   div: '4.33%', divAmt: '0.50', wkHigh: 52.19,   wkLow: 36.97  },
+        'PNC':   { name: 'PNC Financial Services',      price: 196.80,  change: 0.60,   pe: 14.20,  mktCap: '74B',   div: '3.55%', divAmt: '1.60', wkHigh: 218.82,  wkLow: 139.40 },
+        'TFC':   { name: 'Truist Financial Corp.',      price: 44.60,   change: 0.20,   pe: 12.60,  mktCap: '59B',   div: '4.48%', divAmt: '0.52', wkHigh: 49.56,   wkLow: 28.88  },
+        'COF':   { name: 'Capital One Financial',       price: 178.40,  change: 0.80,   pe: 14.80,  mktCap: '67B',   div: '1.80%', divAmt: '0.60', wkHigh: 188.87,  wkLow: 102.64 },
+        'AXP':   { name: 'American Express Co.',        price: 278.80,  change: 0.80,   pe: 20.40,  mktCap: '199B',  div: '1.08%', divAmt: '0.70', wkHigh: 304.21,  wkLow: 186.03 },
+        'BK':    { name: 'Bank of New York Mellon',     price: 72.40,   change: 0.40,   pe: 13.80,  mktCap: '51B',   div: '2.76%', divAmt: '0.47', wkHigh: 82.64,   wkLow: 55.52  },
+        'STT':   { name: 'State Street Corp.',          price: 96.40,   change: 0.60,   pe: 13.60,  mktCap: '25B',   div: '3.32%', divAmt: '0.76', wkHigh: 106.73,  wkLow: 63.12  },
+        'SCHW':  { name: 'Charles Schwab Corp.',        price: 74.60,   change: 0.40,   pe: 24.80,  mktCap: '136B',  div: '1.34%', divAmt: '0.25', wkHigh: 90.86,   wkLow: 51.50  },
+        'CBOE':  { name: 'Cboe Global Markets',         price: 198.40,  change: 0.20,   pe: 20.80,  mktCap: '20B',   div: '1.31%', divAmt: '0.60', wkHigh: 212.78,  wkLow: 160.82 },
+        'ICE':   { name: 'Intercontinental Exchange',   price: 158.40,  change: 0.40,   pe: 28.80,  mktCap: '90B',   div: '1.16%', divAmt: '0.42', wkHigh: 170.65,  wkLow: 114.81 },
+        'NDAQ':  { name: 'Nasdaq Inc.',                 price: 78.40,   change: 0.60,   pe: 32.40,  mktCap: '45B',   div: '1.43%', divAmt: '0.26', wkHigh: 86.54,   wkLow: 52.36  },
+        'CME':   { name: 'CME Group Inc.',              price: 226.80,  change: 0.40,   pe: 24.40,  mktCap: '81B',   div: '2.12%', divAmt: '1.10', wkHigh: 245.92,  wkLow: 184.83 },
+        'MET':   { name: 'MetLife Inc.',                price: 78.40,   change: 0.60,   pe: 10.40,  mktCap: '61B',   div: '3.32%', divAmt: '0.60', wkHigh: 84.62,   wkLow: 58.73  },
+        'PRU':   { name: 'Prudential Financial',        price: 118.40,  change: 0.40,   pe: 9.80,   mktCap: '44B',   div: '4.39%', divAmt: '1.30', wkHigh: 125.70,  wkLow: 84.42  },
+        'AFL':   { name: 'Aflac Inc.',                  price: 118.80,  change: 0.40,   pe: 12.80,  mktCap: '61B',   div: '2.19%', divAmt: '0.50', wkHigh: 124.97,  wkLow: 80.39  },
+        'AIZ':   { name: 'Assurant Inc.',               price: 198.40,  change: 0.20,   pe: 15.80,  mktCap: '9B',    div: '1.61%', divAmt: '0.72', wkHigh: 224.41,  wkLow: 158.82 },
+        // ── US Healthcare ────────────────────────────────────────────────────
+        'ABBV':  { name: 'AbbVie Inc.',                 price: 198.40,  change: -0.40,  pe: 16.80,  mktCap: '350B',  div: '3.53%', divAmt: '1.64', wkHigh: 214.82,  wkLow: 135.15 },
+        'MRK':   { name: 'Merck & Co. Inc.',            price: 118.40,  change: -0.20,  pe: 32.40,  mktCap: '300B',  div: '2.71%', divAmt: '0.77', wkHigh: 134.63,  wkLow: 97.34  },
+        'LLY':   { name: 'Eli Lilly and Co.',           price: 948.80,  change: 0.40,   pe: 72.40,  mktCap: '902B',  div: '0.67%', divAmt: '1.30', wkHigh: 1200.75, wkLow: 695.65 },
+        'BMY':   { name: 'Bristol-Myers Squibb',        price: 56.40,   change: -0.20,  pe: 24.80,  mktCap: '116B',  div: '4.61%', divAmt: '0.60', wkHigh: 62.52,   wkLow: 37.70  },
+        'GILD':  { name: 'Gilead Sciences Inc.',        price: 84.40,   change: 0.20,   pe: 24.80,  mktCap: '107B',  div: '3.79%', divAmt: '0.77', wkHigh: 98.60,   wkLow: 61.28  },
+        'BIIB':  { name: 'Biogen Inc.',                 price: 234.60,  change: -0.60,  pe: 18.40,  mktCap: '14B',   div: '0.00%', divAmt: '0.00', wkHigh: 303.88,  wkLow: 196.54 },
+        'REGN':  { name: 'Regeneron Pharmaceuticals',   price: 1048.40, change: -0.40,  pe: 22.40,  mktCap: '112B',  div: '0.00%', divAmt: '0.00', wkHigh: 1211.14, wkLow: 697.80 },
+        'VRTX':  { name: 'Vertex Pharmaceuticals',      price: 448.40,  change: 0.20,   pe: 32.40,  mktCap: '116B',  div: '0.00%', divAmt: '0.00', wkHigh: 524.62,  wkLow: 348.28 },
+        'MRNA':  { name: 'Moderna Inc.',                price: 58.40,   change: -1.20,  pe: 0,      mktCap: '23B',   div: '0.00%', divAmt: '0.00', wkHigh: 171.80,  wkLow: 51.27  },
+        'DXCM':  { name: 'Dexcom Inc.',                 price: 74.40,   change: -0.40,  pe: 48.40,  mktCap: '29B',   div: '0.00%', divAmt: '0.00', wkHigh: 142.36,  wkLow: 59.34  },
+        'ISRG':  { name: 'Intuitive Surgical Inc.',     price: 458.80,  change: 0.60,   pe: 62.40,  mktCap: '163B',  div: '0.00%', divAmt: '0.00', wkHigh: 520.18,  wkLow: 283.90 },
+        'EW':    { name: 'Edwards Lifesciences',        price: 74.40,   change: 0.20,   pe: 28.40,  mktCap: '45B',   div: '0.00%', divAmt: '0.00', wkHigh: 102.88,  wkLow: 62.59  },
+        'BSX':   { name: 'Boston Scientific Corp.',     price: 82.40,   change: 0.60,   pe: 48.40,  mktCap: '124B',  div: '0.00%', divAmt: '0.00', wkHigh: 96.49,   wkLow: 55.74  },
+        'MDT':   { name: 'Medtronic plc',               price: 88.40,   change: 0.20,   pe: 16.80,  mktCap: '117B',  div: '3.35%', divAmt: '0.70', wkHigh: 93.46,   wkLow: 72.17  },
+        'SYK':   { name: 'Stryker Corp.',               price: 348.80,  change: 0.40,   pe: 28.40,  mktCap: '130B',  div: '0.92%', divAmt: '0.80', wkHigh: 372.12,  wkLow: 271.55 },
+        'ZBH':   { name: 'Zimmer Biomet Holdings',      price: 114.60,  change: -0.40,  pe: 16.80,  mktCap: '23B',   div: '0.87%', divAmt: '0.24', wkHigh: 138.31,  wkLow: 88.56  },
+        'IQV':   { name: 'IQVIA Holdings Inc.',         price: 218.80,  change: 0.40,   pe: 28.40,  mktCap: '39B',   div: '0.00%', divAmt: '0.00', wkHigh: 270.63,  wkLow: 179.16 },
+        'CNC':   { name: 'Centene Corp.',               price: 68.40,   change: -0.40,  pe: 12.40,  mktCap: '36B',   div: '0.00%', divAmt: '0.00', wkHigh: 84.12,   wkLow: 54.77  },
+        'HUM':   { name: 'Humana Inc.',                 price: 314.40,  change: -0.60,  pe: 16.40,  mktCap: '38B',   div: '1.02%', divAmt: '0.885',wkHigh: 524.36,  wkLow: 265.60 },
+        'CI':    { name: 'Cigna Group',                 price: 324.60,  change: 0.20,   pe: 12.40,  mktCap: '98B',   div: '1.97%', divAmt: '1.40', wkHigh: 374.80,  wkLow: 259.37 },
+        // ── US Energy ────────────────────────────────────────────────────────
+        'SLB':   { name: 'Schlumberger Ltd.',           price: 42.40,   change: -0.80,  pe: 15.40,  mktCap: '59B',   div: '2.83%', divAmt: '0.275',wkHigh: 55.94,   wkLow: 37.40  },
+        'HAL':   { name: 'Halliburton Co.',             price: 28.40,   change: -0.60,  pe: 12.40,  mktCap: '25B',   div: '2.11%', divAmt: '0.17', wkHigh: 41.16,   wkLow: 24.80  },
+        'BKR':   { name: 'Baker Hughes Co.',            price: 38.40,   change: -0.40,  pe: 18.40,  mktCap: '38B',   div: '2.08%', divAmt: '0.21', wkHigh: 48.47,   wkLow: 26.60  },
+        'DVN':   { name: 'Devon Energy Corp.',          price: 38.40,   change: -0.80,  pe: 9.40,   mktCap: '24B',   div: '4.46%', divAmt: '0.22', wkHigh: 51.72,   wkLow: 32.00  },
+        'MPC':   { name: 'Marathon Petroleum Corp.',    price: 174.60,  change: -0.60,  pe: 10.40,  mktCap: '55B',   div: '2.29%', divAmt: '0.825',wkHigh: 227.34,  wkLow: 142.78 },
+        'PSX':   { name: 'Phillips 66',                 price: 124.40,  change: -0.40,  pe: 12.40,  mktCap: '54B',   div: '3.38%', divAmt: '1.15', wkHigh: 174.68,  wkLow: 109.64 },
+        'VLO':   { name: 'Valero Energy Corp.',         price: 148.40,  change: -0.60,  pe: 10.80,  mktCap: '48B',   div: '3.23%', divAmt: '1.07', wkHigh: 193.49,  wkLow: 116.00 },
+        'OXY':   { name: 'Occidental Petroleum',        price: 48.40,   change: -0.80,  pe: 13.40,  mktCap: '43B',   div: '1.98%', divAmt: '0.22', wkHigh: 71.18,   wkLow: 42.16  },
+        'PXD':   { name: 'Pioneer Natural Resources',   price: 246.40,  change: -0.60,  pe: 14.40,  mktCap: '59B',   div: '5.20%', divAmt: '3.26', wkHigh: 287.75,  wkLow: 218.89 },
+        'APA':   { name: 'APA Corp.',                   price: 24.40,   change: -0.80,  pe: 8.40,   mktCap: '7B',    div: '4.92%', divAmt: '0.25', wkHigh: 34.72,   wkLow: 19.64  },
+        'FANG':  { name: 'Diamondback Energy',          price: 174.40,  change: -0.60,  pe: 10.80,  mktCap: '29B',   div: '3.44%', divAmt: '0.90', wkHigh: 208.13,  wkLow: 151.56 },
+        'RIG':   { name: 'Transocean Ltd.',             price: 4.40,    change: -1.20,  pe: 0,      mktCap: '3B',    div: '0.00%', divAmt: '0.00', wkHigh: 7.56,    wkLow: 3.46   },
+        'WMB':   { name: 'Williams Companies',          price: 42.80,   change: 0.20,   pe: 18.40,  mktCap: '52B',   div: '3.74%', divAmt: '0.475',wkHigh: 47.96,   wkLow: 30.78  },
+        'KMI':   { name: 'Kinder Morgan Inc.',          price: 24.60,   change: 0.20,   pe: 18.40,  mktCap: '55B',   div: '4.39%', divAmt: '0.2875',wkHigh:26.90,   wkLow: 16.43  },
+        'OKE':   { name: 'ONEOK Inc.',                  price: 86.40,   change: 0.40,   pe: 16.40,  mktCap: '57B',   div: '4.63%', divAmt: '0.955',wkHigh: 102.51,  wkLow: 57.25  },
+        // ── US Consumer ──────────────────────────────────────────────────────
+        'WMT':   { name: 'Walmart Inc.',                price: 88.60,   change: 0.40,   pe: 32.40,  mktCap: '712B',  div: '0.91%', divAmt: '0.235',wkHigh: 98.38,   wkLow: 59.85  },
+        'COST':  { name: 'Costco Wholesale Corp.',      price: 918.80,  change: 0.60,   pe: 52.40,  mktCap: '407B',  div: '0.52%', divAmt: '1.16', wkHigh: 1009.29, wkLow: 682.58 },
+        'TGT':   { name: 'Target Corp.',                price: 148.40,  change: -0.40,  pe: 14.80,  mktCap: '68B',   div: '3.23%', divAmt: '1.12', wkHigh: 196.86,  wkLow: 120.36 },
+        'DLTR':  { name: 'Dollar Tree Inc.',            price: 78.40,   change: -0.80,  pe: 16.80,  mktCap: '17B',   div: '0.00%', divAmt: '0.00', wkHigh: 152.42,  wkLow: 60.68  },
+        'DG':    { name: 'Dollar General Corp.',        price: 88.40,   change: -0.60,  pe: 14.40,  mktCap: '20B',   div: '2.04%', divAmt: '0.59', wkHigh: 168.27,  wkLow: 73.01  },
+        'NKE':   { name: 'Nike Inc.',                   price: 74.60,   change: -0.60,  pe: 16.80,  mktCap: '112B',  div: '2.30%', divAmt: '0.40', wkHigh: 113.96,  wkLow: 70.02  },
+        'RL':    { name: 'Ralph Lauren Corp.',          price: 198.40,  change: 0.40,   pe: 18.40,  mktCap: '13B',   div: '2.02%', divAmt: '1.00', wkHigh: 249.63,  wkLow: 118.15 },
+        'PVH':   { name: 'PVH Corp.',                   price: 78.40,   change: -0.40,  pe: 8.80,   mktCap: '5B',    div: '0.15%', divAmt: '0.0375',wkHigh:118.97,  wkLow: 57.98  },
+        'TPR':   { name: 'Tapestry Inc.',               price: 48.60,   change: 0.40,   pe: 12.40,  mktCap: '7B',    div: '3.70%', divAmt: '0.45', wkHigh: 56.34,   wkLow: 25.30  },
+        'SBUX':  { name: 'Starbucks Corp.',             price: 98.40,   change: 0.40,   pe: 24.40,  mktCap: '112B',  div: '2.97%', divAmt: '0.57', wkHigh: 116.43,  wkLow: 71.07  },
+        'MCD':   { name: "McDonald's Corp.",            price: 294.60,  change: 0.20,   pe: 24.80,  mktCap: '213B',  div: '2.44%', divAmt: '1.67', wkHigh: 317.87,  wkLow: 243.81 },
+        'YUM':   { name: 'Yum! Brands Inc.',            price: 134.60,  change: 0.20,   pe: 22.80,  mktCap: '38B',   div: '1.93%', divAmt: '0.67', wkHigh: 150.49,  wkLow: 108.52 },
+        'CMG':   { name: 'Chipotle Mexican Grill',      price: 54.40,   change: 0.60,   pe: 48.40,  mktCap: '76B',   div: '0.00%', divAmt: '0.00', wkHigh: 69.26,   wkLow: 44.21  },
+        'DPZ':   { name: "Domino's Pizza Inc.",         price: 448.80,  change: 0.20,   pe: 24.80,  mktCap: '14B',   div: '1.43%', divAmt: '1.51', wkHigh: 550.94,  wkLow: 356.57 },
+        // ── US Industrials ───────────────────────────────────────────────────
+        'BA':    { name: 'Boeing Co.',                  price: 178.40,  change: -0.80,  pe: 0,      mktCap: '106B',  div: '0.00%', divAmt: '0.00', wkHigh: 267.54,  wkLow: 137.39 },
+        'RTX':   { name: 'RTX Corp.',                   price: 128.40,  change: 0.40,   pe: 18.40,  mktCap: '171B',  div: '2.18%', divAmt: '0.63', wkHigh: 136.56,  wkLow: 83.55  },
+        'LMT':   { name: 'Lockheed Martin Corp.',       price: 498.40,  change: 0.40,   pe: 18.80,  mktCap: '121B',  div: '2.89%', divAmt: '3.15', wkHigh: 606.87,  wkLow: 404.49 },
+        'NOC':   { name: 'Northrop Grumman Corp.',      price: 498.40,  change: 0.20,   pe: 16.40,  mktCap: '73B',   div: '1.85%', divAmt: '2.06', wkHigh: 554.11,  wkLow: 401.68 },
+        'GD':    { name: 'General Dynamics Corp.',      price: 278.40,  change: 0.40,   pe: 17.40,  mktCap: '74B',   div: '2.30%', divAmt: '1.40', wkHigh: 308.47,  wkLow: 233.52 },
+        'GE':    { name: 'GE Aerospace',               price: 188.40,  change: 0.80,   pe: 40.40,  mktCap: '205B',  div: '0.42%', divAmt: '0.28', wkHigh: 197.11,  wkLow: 110.12 },
+        'EMR':   { name: 'Emerson Electric Co.',        price: 114.60,  change: 0.40,   pe: 24.80,  mktCap: '68B',   div: '1.92%', divAmt: '0.525',wkHigh: 126.45,  wkLow: 85.16  },
+        'ETN':   { name: 'Eaton Corp. plc',             price: 298.60,  change: 0.60,   pe: 28.40,  mktCap: '120B',  div: '1.25%', divAmt: '0.94', wkHigh: 363.74,  wkLow: 201.68 },
+        'PH':    { name: 'Parker-Hannifin Corp.',       price: 688.80,  change: 0.40,   pe: 22.40,  mktCap: '89B',   div: '0.97%', divAmt: '1.575',wkHigh: 737.59,  wkLow: 443.91 },
+        'ITW':   { name: 'Illinois Tool Works Inc.',    price: 244.80,  change: 0.40,   pe: 22.80,  mktCap: '74B',   div: '2.94%', divAmt: '1.40', wkHigh: 273.88,  wkLow: 218.55 },
+        'CAT':   { name: 'Caterpillar Inc.',            price: 348.60,  change: 0.60,   pe: 16.40,  mktCap: '172B',  div: '1.61%', divAmt: '1.30', wkHigh: 418.26,  wkLow: 265.53 },
+        'DE':    { name: 'Deere & Company',             price: 448.40,  change: -0.40,  pe: 14.40,  mktCap: '122B',  div: '1.51%', divAmt: '1.62', wkHigh: 544.40,  wkLow: 348.68 },
+        'MMM':   { name: '3M Company',                  price: 148.40,  change: 0.40,   pe: 12.80,  mktCap: '82B',   div: '2.97%', divAmt: '1.51', wkHigh: 156.91,  wkLow: 95.71  },
+        'HON':   { name: 'Honeywell Intl. Inc.',        price: 214.40,  change: 0.20,   pe: 22.40,  mktCap: '132B',  div: '2.15%', divAmt: '1.08', wkHigh: 229.49,  wkLow: 177.18 },
+        'ROP':   { name: 'Roper Technologies Inc.',     price: 548.40,  change: 0.40,   pe: 38.40,  mktCap: '57B',   div: '0.58%', divAmt: '0.8125',wkHigh:588.28,  wkLow: 455.45 },
+        'AMETEK': { name: 'AMETEK Inc.',                 price: 178.40,  change: 0.40,   pe: 28.40,  mktCap: '41B',   div: '0.68%', divAmt: '0.28', wkHigh: 192.65,  wkLow: 148.10 },
+        'FTV':   { name: 'Fortive Corp.',               price: 74.40,   change: 0.20,   pe: 28.40,  mktCap: '26B',   div: '0.43%', divAmt: '0.07', wkHigh: 90.62,   wkLow: 61.60  },
+        'XYL':   { name: 'Xylem Inc.',                  price: 124.80,  change: 0.40,   pe: 32.40,  mktCap: '22B',   div: '1.12%', divAmt: '0.32', wkHigh: 140.67,  wkLow: 85.04  },
+        'IEX':   { name: 'IDEX Corp.',                  price: 198.40,  change: 0.20,   pe: 24.40,  mktCap: '15B',   div: '1.29%', divAmt: '0.6125',wkHigh:246.48,  wkLow: 169.31 },
+        'NDSN':  { name: 'Nordson Corp.',               price: 244.40,  change: 0.40,   pe: 24.40,  mktCap: '14B',   div: '1.31%', divAmt: '0.78', wkHigh: 288.55,  wkLow: 213.66 },
+        // ── US Telecom & Utilities ────────────────────────────────────────────
+        'T':     { name: 'AT&T Inc.',                   price: 22.40,   change: 0.20,   pe: 10.80,  mktCap: '160B',  div: '4.64%', divAmt: '0.2775',wkHigh:25.98,   wkLow: 14.77  },
+        'VZ':    { name: 'Verizon Communications',      price: 42.40,   change: 0.20,   pe: 9.80,   mktCap: '178B',  div: '6.28%', divAmt: '0.6650',wkHigh:46.84,   wkLow: 31.39  },
+        'TMUS':  { name: 'T-Mobile US Inc.',            price: 212.40,  change: 0.60,   pe: 22.40,  mktCap: '244B',  div: '1.37%', divAmt: '0.65', wkHigh: 230.00,  wkLow: 141.94 },
+        'AMT':   { name: 'American Tower Corp.',        price: 198.40,  change: 0.40,   pe: 38.40,  mktCap: '92B',   div: '3.22%', divAmt: '1.62', wkHigh: 216.43,  wkLow: 154.58 },
+        'CCI':   { name: 'Crown Castle Inc.',           price: 98.40,   change: 0.20,   pe: 28.40,  mktCap: '42B',   div: '6.50%', divAmt: '1.565',wkHigh: 131.56,  wkLow: 83.56  },
+        'SBAC':  { name: 'SBA Communications Corp.',    price: 218.40,  change: 0.40,   pe: 68.40,  mktCap: '23B',   div: '1.61%', divAmt: '0.98', wkHigh: 261.72,  wkLow: 185.63 },
+        'SO':    { name: 'Southern Company',            price: 88.40,   change: 0.20,   pe: 22.40,  mktCap: '97B',   div: '3.62%', divAmt: '0.72', wkHigh: 92.48,   wkLow: 65.22  },
+        'DUK':   { name: 'Duke Energy Corp.',           price: 114.40,  change: 0.20,   pe: 20.40,  mktCap: '88B',   div: '3.67%', divAmt: '1.045',wkHigh: 119.42,  wkLow: 90.43  },
+        'NEE':   { name: 'NextEra Energy Inc.',         price: 74.60,   change: 0.40,   pe: 22.40,  mktCap: '152B',  div: '3.21%', divAmt: '0.515',wkHigh: 86.10,   wkLow: 52.89  },
+        'AEP':   { name: 'American Electric Power',     price: 96.40,   change: 0.20,   pe: 18.80,  mktCap: '50B',   div: '3.95%', divAmt: '0.88', wkHigh: 105.28,  wkLow: 73.09  },
+        'EXC':   { name: 'Exelon Corp.',                price: 42.40,   change: 0.20,   pe: 16.40,  mktCap: '41B',   div: '3.77%', divAmt: '0.3875',wkHigh:46.52,   wkLow: 34.85  },
+        'PCG':   { name: 'PG&E Corp.',                  price: 18.40,   change: 0.20,   pe: 12.80,  mktCap: '46B',   div: '0.00%', divAmt: '0.00', wkHigh: 22.10,   wkLow: 14.93  },
+        'ED':    { name: 'Consolidated Edison',         price: 96.40,   change: 0.20,   pe: 18.80,  mktCap: '32B',   div: '3.74%', divAmt: '0.83', wkHigh: 102.46,  wkLow: 81.41  },
+        'AWK':   { name: 'American Water Works',        price: 124.40,  change: 0.40,   pe: 28.40,  mktCap: '23B',   div: '2.18%', divAmt: '0.655',wkHigh: 148.66,  wkLow: 101.35 },
+        // ── US Real Estate ────────────────────────────────────────────────────
+        'PLD':   { name: 'Prologis Inc.',               price: 118.40,  change: 0.20,   pe: 32.40,  mktCap: '113B',  div: '3.37%', divAmt: '0.96', wkHigh: 140.93,  wkLow: 99.26  },
+        'AMH':   { name: 'American Homes 4 Rent',       price: 38.40,   change: 0.20,   pe: 48.40,  mktCap: '13B',   div: '1.04%', divAmt: '0.10', wkHigh: 42.45,   wkLow: 30.42  },
+        'EQR':   { name: 'Equity Residential',          price: 68.40,   change: 0.20,   pe: 28.40,  mktCap: '26B',   div: '4.09%', divAmt: '0.675',wkHigh: 73.38,   wkLow: 54.95  },
+        'DRE':   { name: 'Duke Realty Corp.',           price: 58.40,   change: 0.20,   pe: 32.40,  mktCap: '21B',   div: '1.37%', divAmt: '0.29', wkHigh: 67.42,   wkLow: 48.52  },
+        'WELL':  { name: 'Welltower Inc.',              price: 124.60,  change: 0.40,   pe: 68.40,  mktCap: '63B',   div: '1.92%', divAmt: '0.61', wkHigh: 135.96,  wkLow: 81.88  },
+        'VTR':   { name: 'Ventas Inc.',                 price: 58.40,   change: 0.20,   pe: 38.40,  mktCap: '23B',   div: '3.49%', divAmt: '0.475',wkHigh: 64.75,   wkLow: 39.55  },
+        // ── European Stocks ─────────────────────────────────────────────────
+        'ASML':  { name: 'ASML Holding NV',             price: 768.40,  change: 1.20,   pe: 36.40,  mktCap: '303B',  div: '0.91%', divAmt: '6.40', wkHigh: 1110.13, wkLow: 617.10 },
+        'SAP':   { name: 'SAP SE',                      price: 218.60,  change: 0.80,   pe: 42.40,  mktCap: '263B',  div: '0.83%', divAmt: '2.20', wkHigh: 243.12,  wkLow: 140.82 },
+        'LVMH':  { name: 'LVMH Moet Hennessy',          price: 598.40,  change: -0.40,  pe: 18.40,  mktCap: '300B',  div: '1.88%', divAmt: '13.00',wkHigh: 812.50,  wkLow: 536.60 },
+        'TTE':   { name: 'TotalEnergies SE',            price: 62.40,   change: -0.60,  pe: 10.40,  mktCap: '152B',  div: '4.81%', divAmt: '0.74', wkHigh: 70.15,   wkLow: 57.18  },
+        'BP':    { name: 'BP plc',                      price: 34.40,   change: -0.40,  pe: 9.40,   mktCap: '96B',   div: '5.23%', divAmt: '0.43', wkHigh: 41.38,   wkLow: 29.84  },
+        'SHEL':  { name: 'Shell plc',                   price: 68.40,   change: -0.20,  pe: 9.80,   mktCap: '214B',  div: '4.09%', divAmt: '0.64', wkHigh: 79.96,   wkLow: 60.68  },
+        'RIO':   { name: 'Rio Tinto plc',               price: 64.80,   change: -0.40,  pe: 9.40,   mktCap: '104B',  div: '6.18%', divAmt: '4.32', wkHigh: 82.70,   wkLow: 57.94  },
+        'BHP':   { name: 'BHP Group Ltd.',              price: 52.40,   change: -0.60,  pe: 11.40,  mktCap: '131B',  div: '5.34%', divAmt: '3.48', wkHigh: 72.42,   wkLow: 49.50  },
+        'NOVO':  { name: 'Novo Nordisk AS',             price: 92.40,   change: -0.40,  pe: 32.40,  mktCap: '408B',  div: '1.30%', divAmt: '1.18', wkHigh: 148.46,  wkLow: 71.38  },
+        'AZN':   { name: 'AstraZeneca plc',             price: 74.40,   change: 0.20,   pe: 28.40,  mktCap: '236B',  div: '1.88%', divAmt: '1.97', wkHigh: 90.00,   wkLow: 56.93  },
+        'GSK':   { name: 'GSK plc',                     price: 38.40,   change: -0.20,  pe: 12.40,  mktCap: '76B',   div: '3.96%', divAmt: '1.52', wkHigh: 47.39,   wkLow: 36.15  },
+        'NVS':   { name: 'Novartis AG',                 price: 118.40,  change: 0.20,   pe: 18.40,  mktCap: '264B',  div: '3.54%', divAmt: '3.70', wkHigh: 126.36,  wkLow: 95.25  },
+        'ROG':   { name: 'Roche Holding AG',            price: 38.40,   change: -0.20,  pe: 16.80,  mktCap: '123B',  div: '3.64%', divAmt: '9.60', wkHigh: 46.66,   wkLow: 33.42  },
+        'NESN':  { name: 'Nestle SA',                   price: 82.40,   change: -0.20,  pe: 18.40,  mktCap: '248B',  div: '3.74%', divAmt: '3.00', wkHigh: 104.50,  wkLow: 74.48  },
+        'ABB':   { name: 'ABB Ltd.',                    price: 48.40,   change: 0.40,   pe: 22.40,  mktCap: '99B',   div: '2.07%', divAmt: '0.88', wkHigh: 52.83,   wkLow: 33.10  },
+        'MC':    { name: 'Hermes International',        price: 1980.40, change: -0.20,  pe: 48.40,  mktCap: '212B',  div: '0.82%', divAmt: '15.00',wkHigh: 2380.00, wkLow: 1522.00 },
+        'AIR':   { name: 'Airbus SE',                   price: 148.40,  change: 0.20,   pe: 22.40,  mktCap: '119B',  div: '1.35%', divAmt: '1.80', wkHigh: 172.82,  wkLow: 131.50 },
+        'BMW':   { name: 'BMW AG',                      price: 78.40,   change: -0.40,  pe: 5.80,   mktCap: '51B',   div: '5.87%', divAmt: '5.10', wkHigh: 112.28,  wkLow: 68.52  },
+        'SIE':   { name: 'Siemens AG',                  price: 188.60,  change: 0.40,   pe: 18.40,  mktCap: '155B',  div: '2.43%', divAmt: '4.70', wkHigh: 201.02,  wkLow: 148.38 },
+        'DTE':   { name: 'Deutsche Telekom AG',         price: 28.40,   change: 0.20,   pe: 18.40,  mktCap: '139B',  div: '3.10%', divAmt: '0.90', wkHigh: 30.23,   wkLow: 19.12  },
+        'BAYN':  { name: 'Bayer AG',                    price: 24.60,   change: -0.60,  pe: 0,      mktCap: '24B',   div: '4.07%', divAmt: '2.00', wkHigh: 54.26,   wkLow: 18.35  },
+        'IFX':   { name: 'Infineon Technologies AG',    price: 28.40,   change: 0.40,   pe: 16.80,  mktCap: '37B',   div: '1.40%', divAmt: '0.35', wkHigh: 37.98,   wkLow: 22.92  },
+        'ENEL':  { name: 'Enel SpA',                    price: 7.20,    change: 0.20,   pe: 10.80,  mktCap: '73B',   div: '5.56%', divAmt: '0.45', wkHigh: 7.69,    wkLow: 5.08   },
+        'ENI':   { name: 'Eni SpA',                     price: 14.80,   change: -0.40,  pe: 9.80,   mktCap: '49B',   div: '5.95%', divAmt: '0.94', wkHigh: 16.81,   wkLow: 12.82  },
+        'ISP':   { name: 'Intesa Sanpaolo SpA',         price: 4.10,    change: 0.40,   pe: 8.80,   mktCap: '72B',   div: '8.05%', divAmt: '0.35', wkHigh: 4.57,    wkLow: 2.22   },
+        'OR':    { name: "L'Oreal SA",                  price: 368.40,  change: 0.20,   pe: 28.40,  mktCap: '206B',  div: '2.17%', divAmt: '6.60', wkHigh: 428.40,  wkLow: 325.10 },
+        'SAN':   { name: 'Sanofi SA',                   price: 94.40,   change: -0.20,  pe: 14.80,  mktCap: '118B',  div: '3.81%', divAmt: '3.76', wkHigh: 110.90,  wkLow: 84.46  },
+        'BNP':   { name: 'BNP Paribas SA',              price: 68.40,   change: 0.40,   pe: 7.80,   mktCap: '83B',   div: '8.04%', divAmt: '4.90', wkHigh: 73.41,   wkLow: 44.32  },
+        'ADS':   { name: 'Adidas AG',                   price: 228.40,  change: 0.80,   pe: 32.40,  mktCap: '39B',   div: '1.75%', divAmt: '4.00', wkHigh: 259.10,  wkLow: 136.80 },
+        'RAND':  { name: 'Randstad NV',                 price: 44.40,   change: 0.20,   pe: 12.80,  mktCap: '7B',    div: '5.41%', divAmt: '2.50', wkHigh: 53.88,   wkLow: 38.65  },
+        // ── Asian Stocks ─────────────────────────────────────────────────────
+        'TSM':   { name: 'Taiwan Semiconductor',        price: 194.40,  change: 1.20,   pe: 24.40,  mktCap: '1.01T', div: '1.18%', divAmt: '0.55', wkHigh: 226.40,  wkLow: 132.72 },
+        'SONY':  { name: 'Sony Group Corp.',            price: 98.40,   change: 0.40,   pe: 16.40,  mktCap: '123B',  div: '0.51%', divAmt: '0.50', wkHigh: 112.26,  wkLow: 77.52  },
+        'TM':    { name: 'Toyota Motor Corp.',          price: 184.40,  change: -0.20,  pe: 9.80,   mktCap: '250B',  div: '2.39%', divAmt: '4.66', wkHigh: 231.95,  wkLow: 155.85 },
+        'HMC':   { name: 'Honda Motor Co. Ltd.',        price: 34.40,   change: -0.20,  pe: 8.80,   mktCap: '55B',   div: '3.49%', divAmt: '1.30', wkHigh: 45.56,   wkLow: 30.22  },
+        '9984':  { name: 'SoftBank Group Corp.',        price: 78.40,   change: 1.20,   pe: 0,      mktCap: '143B',  div: '0.46%', divAmt: '0.085',wkHigh: 86.51,   wkLow: 51.46  },
+        'BABA':  { name: 'Alibaba Group Holding',       price: 98.40,   change: 1.60,   pe: 16.40,  mktCap: '235B',  div: '0.00%', divAmt: '0.00', wkHigh: 134.91,  wkLow: 70.48  },
+        'JD':    { name: 'JD.com Inc.',                 price: 38.40,   change: 1.20,   pe: 16.40,  mktCap: '59B',   div: '2.60%', divAmt: '0.76', wkHigh: 53.47,   wkLow: 24.81  },
+        'PDD':   { name: 'PDD Holdings Inc.',           price: 118.40,  change: 2.40,   pe: 16.40,  mktCap: '164B',  div: '0.00%', divAmt: '0.00', wkHigh: 166.84,  wkLow: 84.93  },
+        'NTES':  { name: 'NetEase Inc.',                price: 94.40,   change: 0.80,   pe: 16.80,  mktCap: '61B',   div: '2.34%', divAmt: '2.24', wkHigh: 116.09,  wkLow: 76.65  },
+        'BIDU':  { name: 'Baidu Inc.',                  price: 94.40,   change: 0.80,   pe: 12.40,  mktCap: '34B',   div: '0.00%', divAmt: '0.00', wkHigh: 158.36,  wkLow: 78.51  },
+        '005930':{ name: 'Samsung Electronics',         price: 52.40,   change: -0.40,  pe: 18.40,  mktCap: '312B',  div: '2.69%', divAmt: '1.44', wkHigh: 71.64,   wkLow: 48.33  },
+        'INFY':  { name: 'Infosys Ltd.',                price: 18.40,   change: 0.40,   pe: 22.40,  mktCap: '77B',   div: '2.50%', divAmt: '0.455',wkHigh: 22.24,   wkLow: 14.38  },
+        'WIT':   { name: 'Wipro Ltd.',                  price: 6.40,    change: 0.20,   pe: 18.40,  mktCap: '33B',   div: '0.47%', divAmt: '0.03', wkHigh: 8.12,    wkLow: 4.96   },
+        'HDB':   { name: 'HDFC Bank Ltd.',              price: 68.40,   change: 0.40,   pe: 18.40,  mktCap: '122B',  div: '1.17%', divAmt: '0.79', wkHigh: 72.45,   wkLow: 51.96  },
+        'RELIANCE':{ name:'Reliance Industries Ltd.',   price: 28.60,   change: 0.20,   pe: 22.40,  mktCap: '193B',  div: '0.42%', divAmt: '0.12', wkHigh: 33.22,   wkLow: 21.88  },
+        'VALE':  { name: 'Vale SA',                     price: 12.40,   change: -0.80,  pe: 9.40,   mktCap: '57B',   div: '9.68%', divAmt: '1.20', wkHigh: 16.56,   wkLow: 10.74  },
+        'ITUB':  { name: 'Itau Unibanco Holding',       price: 7.60,    change: 0.40,   pe: 7.40,   mktCap: '79B',   div: '5.26%', divAmt: '0.40', wkHigh: 8.81,    wkLow: 4.88   },
+        'BBDO':  { name: 'Banco Bradesco SA',           price: 2.80,    change: -0.20,  pe: 6.40,   mktCap: '24B',   div: '5.36%', divAmt: '0.15', wkHigh: 3.86,    wkLow: 2.50   },
+        // ── Australian & Canadian Stocks ──────────────────────────────────────
+        'BHP.AX':{ name: 'BHP Group (ASX)',             price: 42.40,   change: -0.40,  pe: 11.40,  mktCap: '131B',  div: '5.80%', divAmt: '2.48', wkHigh: 54.56,   wkLow: 37.68  },
+        'CBA.AX':{ name: 'Commonwealth Bank Aust.',     price: 148.40,  change: 0.40,   pe: 22.40,  mktCap: '252B',  div: '3.22%', divAmt: '4.50', wkHigh: 152.58,  wkLow: 102.08 },
+        'ANZ.AX':{ name: 'ANZ Banking Group',           price: 28.40,   change: 0.20,   pe: 12.40,  mktCap: '83B',   div: '5.28%', divAmt: '1.46', wkHigh: 30.47,   wkLow: 22.24  },
+        'WES.AX':{ name: 'Wesfarmers Ltd.',             price: 68.40,   change: 0.40,   pe: 28.40,  mktCap: '77B',   div: '3.22%', divAmt: '1.91', wkHigh: 74.45,   wkLow: 52.64  },
+        'CSL.AX':{ name: 'CSL Ltd.',                    price: 294.40,  change: 0.20,   pe: 34.40,  mktCap: '138B',  div: '1.22%', divAmt: '3.62', wkHigh: 335.18,  wkLow: 254.83 },
+        'RIO.AX':{ name: 'Rio Tinto (ASX)',             price: 122.40,  change: -0.40,  pe: 9.40,   mktCap: '46B',   div: '7.24%', divAmt: '9.02', wkHigh: 152.45,  wkLow: 105.72 },
+        'STO.AX':{ name: 'Santos Ltd.',                 price: 7.80,    change: -0.40,  pe: 11.40,  mktCap: '23B',   div: '3.85%', divAmt: '0.30', wkHigh: 9.22,    wkLow: 6.68   },
+        'RY':    { name: 'Royal Bank of Canada',        price: 148.40,  change: 0.40,   pe: 14.40,  mktCap: '209B',  div: '3.23%', divAmt: '1.38', wkHigh: 162.37,  wkLow: 115.87 },
+        'TD':    { name: 'TD Bank Group',               price: 56.40,   change: 0.20,   pe: 12.40,  mktCap: '100B',  div: '5.32%', divAmt: '0.84', wkHigh: 84.97,   wkLow: 53.32  },
+        'CNR':   { name: 'Canadian National Railway',   price: 168.40,  change: 0.20,   pe: 22.40,  mktCap: '119B',  div: '2.02%', divAmt: '0.845',wkHigh: 186.99,  wkLow: 139.94 },
+        'ENB':   { name: 'Enbridge Inc.',               price: 42.40,   change: 0.20,   pe: 18.40,  mktCap: '86B',   div: '7.55%', divAmt: '0.915',wkHigh: 47.00,   wkLow: 34.05  },
+        'SU':    { name: 'Suncor Energy Inc.',          price: 52.40,   change: -0.40,  pe: 10.80,  mktCap: '54B',   div: '4.58%', divAmt: '0.545',wkHigh: 58.52,   wkLow: 39.42  },
+        'CP':    { name: 'Canadian Pacific Kansas City',price: 82.40,   change: 0.40,   pe: 24.80,  mktCap: '78B',   div: '0.73%', divAmt: '0.19', wkHigh: 97.26,   wkLow: 72.40  },
+        'MFC':   { name: 'Manulife Financial Corp.',    price: 28.40,   change: 0.40,   pe: 9.80,   mktCap: '49B',   div: '4.23%', divAmt: '0.365',wkHigh: 32.00,   wkLow: 20.95  },
+        'BNS':   { name: 'Bank of Nova Scotia',         price: 62.40,   change: 0.20,   pe: 12.40,  mktCap: '74B',   div: '6.41%', divAmt: '1.06', wkHigh: 77.68,   wkLow: 55.24  },
+        'BMO':   { name: 'Bank of Montreal',            price: 106.40,  change: 0.40,   pe: 11.80,  mktCap: '71B',   div: '5.26%', divAmt: '1.63', wkHigh: 137.82,  wkLow: 94.52  },
+        'AGR':   { name: 'Algonquin Power & Utilities', price: 6.40,    change: 0.20,   pe: 12.40,  mktCap: '4B',    div: '6.25%', divAmt: '0.11', wkHigh: 9.78,    wkLow: 5.52   },
+        // ── More US Large-Cap ────────────────────────────────────────────────
+        'CRM':   { name: 'Salesforce Inc.',             price: 298.40,  change: 0.60,   pe: 48.40,  mktCap: '289B',  div: '0.67%', divAmt: '0.40', wkHigh: 369.00,  wkLow: 212.01 },
+        'NOW':   { name: 'ServiceNow Inc.',             price: 938.40,  change: 0.80,   pe: 98.40,  mktCap: '191B',  div: '0.00%', divAmt: '0.00', wkHigh: 1198.09, wkLow: 698.35 },
+        'WDAY':  { name: 'Workday Inc.',                price: 248.40,  change: 0.60,   pe: 44.40,  mktCap: '52B',   div: '0.00%', divAmt: '0.00', wkHigh: 307.24,  wkLow: 196.05 },
+        'HUBS':  { name: 'HubSpot Inc.',                price: 498.40,  change: 0.80,   pe: 0,      mktCap: '25B',   div: '0.00%', divAmt: '0.00', wkHigh: 716.65,  wkLow: 368.00 },
+        'VEEV':  { name: 'Veeva Systems Inc.',          price: 208.40,  change: 0.40,   pe: 44.40,  mktCap: '33B',   div: '0.00%', divAmt: '0.00', wkHigh: 254.54,  wkLow: 165.79 },
+        'ZI':    { name: 'ZoomInfo Technologies',       price: 8.40,    change: -0.40,  pe: 0,      mktCap: '3B',    div: '0.00%', divAmt: '0.00', wkHigh: 22.02,   wkLow: 7.08   },
+        'TTD':   { name: 'Trade Desk Inc.',             price: 74.40,   change: 1.20,   pe: 72.40,  mktCap: '37B',   div: '0.00%', divAmt: '0.00', wkHigh: 139.35,  wkLow: 46.61  },
+        'RBLX':  { name: 'Roblox Corp.',                price: 38.40,   change: 1.40,   pe: 0,      mktCap: '25B',   div: '0.00%', divAmt: '0.00', wkHigh: 61.20,   wkLow: 24.81  },
+        'U':     { name: 'Unity Software Inc.',         price: 18.40,   change: -0.80,  pe: 0,      mktCap: '7B',    div: '0.00%', divAmt: '0.00', wkHigh: 47.43,   wkLow: 13.72  },
+        'COIN':  { name: 'Coinbase Global Inc.',        price: 198.40,  change: 2.40,   pe: 32.40,  mktCap: '48B',   div: '0.00%', divAmt: '0.00', wkHigh: 397.64,  wkLow: 106.08 },
+        'HOOD':  { name: 'Robinhood Markets Inc.',      price: 22.40,   change: 1.80,   pe: 48.40,  mktCap: '19B',   div: '0.00%', divAmt: '0.00', wkHigh: 58.90,   wkLow: 9.74   },
+        'SOFI':  { name: 'SoFi Technologies Inc.',      price: 12.40,   change: 0.80,   pe: 0,      mktCap: '12B',   div: '0.00%', divAmt: '0.00', wkHigh: 18.42,   wkLow: 6.01   },
+        'AFRM':  { name: 'Affirm Holdings Inc.',        price: 38.40,   change: 1.60,   pe: 0,      mktCap: '11B',   div: '0.00%', divAmt: '0.00', wkHigh: 69.96,   wkLow: 14.63  },
+        'UPST':  { name: 'Upstart Holdings Inc.',       price: 48.40,   change: 2.80,   pe: 0,      mktCap: '4B',    div: '0.00%', divAmt: '0.00', wkHigh: 93.71,   wkLow: 14.50  },
+        'LCID':  { name: 'Lucid Group Inc.',            price: 2.80,    change: -1.20,  pe: 0,      mktCap: '7B',    div: '0.00%', divAmt: '0.00', wkHigh: 6.24,    wkLow: 2.18   },
+        'RIVN':  { name: 'Rivian Automotive Inc.',      price: 14.40,   change: -1.40,  pe: 0,      mktCap: '14B',   div: '0.00%', divAmt: '0.00', wkHigh: 28.07,   wkLow: 8.26   },
+        'F':     { name: 'Ford Motor Co.',              price: 10.80,   change: -0.60,  pe: 10.80,  mktCap: '43B',   div: '5.56%', divAmt: '0.15', wkHigh: 14.37,   wkLow: 9.61   },
+        'GM':    { name: 'General Motors Co.',          price: 48.40,   change: -0.40,  pe: 5.80,   mktCap: '54B',   div: '0.83%', divAmt: '0.09', wkHigh: 61.06,   wkLow: 36.02  },
+        'STLA':  { name: 'Stellantis NV',               price: 14.40,   change: -0.60,  pe: 5.80,   mktCap: '46B',   div: '8.33%', divAmt: '1.55', wkHigh: 26.32,   wkLow: 10.72  },
+        'LYV':   { name: 'Live Nation Entertainment',   price: 124.80,  change: 0.60,   pe: 48.40,  mktCap: '27B',   div: '0.00%', divAmt: '0.00', wkHigh: 140.42,  wkLow: 75.28  },
+        'NFLX':  { name: 'Netflix Inc.',                price: 868.40,  change: 0.80,   pe: 48.40,  mktCap: '374B',  div: '0.00%', divAmt: '0.00', wkHigh: 1007.22, wkLow: 549.51 },
+        'DIS':   { name: 'Walt Disney Co.',             price: 114.40,  change: 0.40,   pe: 32.40,  mktCap: '209B',  div: '0.88%', divAmt: '0.45', wkHigh: 123.74,  wkLow: 83.91  },
+        'PARA':  { name: 'Paramount Global',            price: 12.40,   change: -0.40,  pe: 0,      mktCap: '8B',    div: '0.00%', divAmt: '0.00', wkHigh: 22.22,   wkLow: 9.32   },
+        'WBD':   { name: 'Warner Bros. Discovery',      price: 8.40,    change: -0.40,  pe: 0,      mktCap: '21B',   div: '0.00%', divAmt: '0.00', wkHigh: 13.48,   wkLow: 6.42   },
+        'FOX':   { name: 'Fox Corp.',                   price: 42.40,   change: 0.40,   pe: 14.40,  mktCap: '24B',   div: '1.42%', divAmt: '0.27', wkHigh: 52.49,   wkLow: 28.65  },
+        'NYT':   { name: 'New York Times Co.',          price: 48.40,   change: 0.40,   pe: 32.40,  mktCap: '8B',    div: '0.99%', divAmt: '0.12', wkHigh: 58.93,   wkLow: 36.50  },
+        'SPOT':  { name: 'Spotify Technology SA',       price: 368.40,  change: 1.20,   pe: 62.40,  mktCap: '71B',   div: '0.00%', divAmt: '0.00', wkHigh: 503.95,  wkLow: 166.44 },
+        'IAC':   { name: 'IAC Inc.',                    price: 58.40,   change: 0.40,   pe: 0,      mktCap: '4B',    div: '0.00%', divAmt: '0.00', wkHigh: 93.87,   wkLow: 36.98  },
+        'LYFT':  { name: 'Lyft Inc.',                   price: 14.40,   change: -0.60,  pe: 0,      mktCap: '6B',    div: '0.00%', divAmt: '0.00', wkHigh: 19.80,   wkLow: 8.84   },
+        'UBER':  { name: 'Uber Technologies Inc.',      price: 68.40,   change: 0.80,   pe: 28.40,  mktCap: '142B',  div: '0.00%', divAmt: '0.00', wkHigh: 87.00,   wkLow: 52.28  },
+        'ABNB':  { name: 'Airbnb Inc.',                 price: 148.40,  change: 0.60,   pe: 32.40,  mktCap: '95B',   div: '0.00%', divAmt: '0.00', wkHigh: 176.78,  wkLow: 110.33 },
+        'DASH':  { name: 'DoorDash Inc.',               price: 148.40,  change: 0.80,   pe: 0,      mktCap: '60B',   div: '0.00%', divAmt: '0.00', wkHigh: 196.63,  wkLow: 88.55  },
+        'EXPE':  { name: 'Expedia Group Inc.',          price: 148.40,  change: 0.40,   pe: 18.40,  mktCap: '19B',   div: '1.08%', divAmt: '0.40', wkHigh: 199.01,  wkLow: 104.52 },
+        'BKNG':  { name: 'Booking Holdings Inc.',       price: 4248.40, change: 0.40,   pe: 24.40,  mktCap: '149B',  div: '1.13%', divAmt: '9.60', wkHigh: 4959.99, wkLow: 2875.57 },
+        'MAR':   { name: 'Marriott Intl. Inc.',         price: 248.40,  change: 0.40,   pe: 22.40,  mktCap: '62B',   div: '0.97%', divAmt: '0.63', wkHigh: 289.33,  wkLow: 197.77 },
+        'HLT':   { name: 'Hilton Worldwide Holdings',   price: 218.80,  change: 0.40,   pe: 28.40,  mktCap: '57B',   div: '0.55%', divAmt: '0.15', wkHigh: 236.65,  wkLow: 161.56 },
+        'H':     { name: 'Hyatt Hotels Corp.',          price: 144.40,  change: 0.20,   pe: 22.40,  mktCap: '11B',   div: '0.28%', divAmt: '0.10', wkHigh: 175.32,  wkLow: 118.96 },
+        'WYNN':  { name: 'Wynn Resorts Ltd.',           price: 94.40,   change: 0.40,   pe: 24.40,  mktCap: '10B',   div: '4.24%', divAmt: '1.00', wkHigh: 109.13,  wkLow: 64.06  },
+        'MGM':   { name: 'MGM Resorts Intl.',           price: 38.40,   change: 0.60,   pe: 18.40,  mktCap: '12B',   div: '0.00%', divAmt: '0.00', wkHigh: 48.69,   wkLow: 28.73  },
+        'LVS':   { name: 'Las Vegas Sands Corp.',       price: 48.40,   change: 0.40,   pe: 28.40,  mktCap: '36B',   div: '4.13%', divAmt: '0.50', wkHigh: 58.13,   wkLow: 35.04  },
+        'CZR':   { name: 'Caesars Entertainment',       price: 34.40,   change: 0.40,   pe: 0,      mktCap: '7B',    div: '0.00%', divAmt: '0.00', wkHigh: 56.23,   wkLow: 26.26  },
+        'DKNG':  { name: 'DraftKings Inc.',             price: 34.40,   change: 1.20,   pe: 0,      mktCap: '16B',   div: '0.00%', divAmt: '0.00', wkHigh: 49.57,   wkLow: 12.71  },
+        'PENN':  { name: 'PENN Entertainment Inc.',     price: 18.40,   change: 0.40,   pe: 0,      mktCap: '3B',    div: '0.00%', divAmt: '0.00', wkHigh: 29.20,   wkLow: 12.60  },
+        'AAL':   { name: 'American Airlines Group',     price: 14.40,   change: -0.60,  pe: 6.40,   mktCap: '9B',    div: '0.00%', divAmt: '0.00', wkHigh: 20.42,   wkLow: 8.90   },
+        'DAL':   { name: 'Delta Air Lines Inc.',        price: 54.40,   change: -0.40,  pe: 8.80,   mktCap: '35B',   div: '1.47%', divAmt: '0.1125',wkHigh:58.26,   wkLow: 34.28  },
+        'UAL':   { name: 'United Airlines Holdings',    price: 74.40,   change: -0.60,  pe: 6.40,   mktCap: '24B',   div: '0.00%', divAmt: '0.00', wkHigh: 103.33,  wkLow: 38.23  },
+        'LUV':   { name: 'Southwest Airlines Co.',      price: 28.40,   change: -0.40,  pe: 14.40,  mktCap: '17B',   div: '1.41%', divAmt: '0.18', wkHigh: 34.72,   wkLow: 22.53  },
+        'ALK':   { name: 'Alaska Air Group Inc.',       price: 54.40,   change: -0.20,  pe: 8.80,   mktCap: '7B',    div: '0.00%', divAmt: '0.00', wkHigh: 65.12,   wkLow: 32.03  },
+        'JBLU':  { name: 'JetBlue Airways Corp.',       price: 6.40,    change: -0.60,  pe: 0,      mktCap: '2B',    div: '0.00%', divAmt: '0.00', wkHigh: 11.82,   wkLow: 4.32   },
+        'CCL':   { name: 'Carnival Corp.',              price: 22.40,   change: 0.40,   pe: 18.40,  mktCap: '27B',   div: '0.89%', divAmt: '0.05', wkHigh: 26.62,   wkLow: 12.78  },
+        'RCL':   { name: 'Royal Caribbean Group',       price: 218.40,  change: 0.60,   pe: 18.40,  mktCap: '56B',   div: '0.73%', divAmt: '0.40', wkHigh: 254.29,  wkLow: 78.12  },
+        'NCLH':  { name: 'Norwegian Cruise Line',       price: 24.40,   change: 0.40,   pe: 28.40,  mktCap: '10B',   div: '0.00%', divAmt: '0.00', wkHigh: 30.18,   wkLow: 13.04  },
+        'UPS':   { name: 'United Parcel Service',       price: 128.40,  change: -0.20,  pe: 16.40,  mktCap: '111B',  div: '5.30%', divAmt: '1.63', wkHigh: 166.91,  wkLow: 123.59 },
+        'FDX':   { name: 'FedEx Corp.',                 price: 264.80,  change: -0.40,  pe: 14.80,  mktCap: '65B',   div: '2.42%', divAmt: '1.38', wkHigh: 318.52,  wkLow: 215.00 },
+        'XPO':   { name: 'XPO Inc.',                    price: 108.40,  change: 0.40,   pe: 32.40,  mktCap: '12B',   div: '0.00%', divAmt: '0.00', wkHigh: 136.51,  wkLow: 53.36  },
+        'CHRW':  { name: 'C.H. Robinson Worldwide',     price: 94.40,   change: 0.20,   pe: 18.40,  mktCap: '12B',   div: '2.54%', divAmt: '0.55', wkHigh: 107.07,  wkLow: 74.65  },
+        'EXPD':  { name: 'Expeditors Intl. Washington', price: 118.40,  change: 0.20,   pe: 18.40,  mktCap: '18B',   div: '1.52%', divAmt: '0.69', wkHigh: 133.83,  wkLow: 100.68 },
+        'ZTO':   { name: 'ZTO Express Cayman',          price: 18.40,   change: 0.40,   pe: 16.40,  mktCap: '28B',   div: '3.26%', divAmt: '0.80', wkHigh: 24.00,   wkLow: 15.95  },
+        // ── Materials & Chemicals ─────────────────────────────────────────────
+        'LIN':   { name: 'Linde plc',                   price: 468.40,  change: 0.20,   pe: 28.40,  mktCap: '226B',  div: '1.28%', divAmt: '1.39', wkHigh: 485.47,  wkLow: 374.31 },
+        'APD':   { name: 'Air Products & Chemicals',    price: 298.40,  change: 0.20,   pe: 22.40,  mktCap: '67B',   div: '2.41%', divAmt: '1.77', wkHigh: 346.36,  wkLow: 216.62 },
+        'SHW':   { name: 'Sherwin-Williams Co.',        price: 344.80,  change: 0.40,   pe: 32.40,  mktCap: '88B',   div: '0.93%', divAmt: '0.79', wkHigh: 393.04,  wkLow: 261.94 },
+        'ECL':   { name: 'Ecolab Inc.',                 price: 248.80,  change: 0.40,   pe: 44.40,  mktCap: '71B',   div: '1.00%', divAmt: '0.59', wkHigh: 269.41,  wkLow: 178.43 },
+        'NEM':   { name: 'Newmont Corp.',               price: 44.40,   change: -0.60,  pe: 28.40,  mktCap: '56B',   div: '2.25%', divAmt: '0.25', wkHigh: 58.82,   wkLow: 32.98  },
+        'FCX':   { name: 'Freeport-McMoRan Inc.',       price: 48.40,   change: -0.80,  pe: 18.40,  mktCap: '70B',   div: '0.83%', divAmt: '0.15', wkHigh: 55.20,   wkLow: 31.44  },
+        'NUE':   { name: 'Nucor Corp.',                 price: 134.40,  change: -0.40,  pe: 12.40,  mktCap: '17B',   div: '1.49%', divAmt: '0.545',wkHigh: 219.41,  wkLow: 112.35 },
+        'X':     { name: 'United States Steel Corp.',   price: 38.40,   change: -0.60,  pe: 12.40,  mktCap: '7B',    div: '0.52%', divAmt: '0.05', wkHigh: 46.02,   wkLow: 22.63  },
+        'DOW':   { name: 'Dow Inc.',                    price: 38.40,   change: -0.40,  pe: 14.40,  mktCap: '26B',   div: '7.29%', divAmt: '0.70', wkHigh: 58.51,   wkLow: 32.39  },
+        'LYB':   { name: 'LyondellBasell Industries',   price: 74.40,   change: -0.40,  pe: 9.80,   mktCap: '24B',   div: '6.45%', divAmt: '1.25', wkHigh: 103.82,  wkLow: 65.26  },
+        'CE':    { name: 'Celanese Corp.',              price: 98.40,   change: -0.40,  pe: 8.80,   mktCap: '11B',   div: '3.25%', divAmt: '0.875',wkHigh: 173.54,  wkLow: 77.75  },
+        'PPG':   { name: 'PPG Industries Inc.',         price: 118.80,  change: 0.20,   pe: 18.40,  mktCap: '28B',   div: '2.36%', divAmt: '0.65', wkHigh: 147.00,  wkLow: 104.33 },
+        'RPM':   { name: 'RPM International Inc.',      price: 118.80,  change: 0.20,   pe: 22.40,  mktCap: '15B',   div: '1.65%', divAmt: '0.45', wkHigh: 128.42,  wkLow: 91.78  },
+        // ── Misc Growth & Crypto-adjacent ─────────────────────────────────────
+        'MSTR':  { name: 'MicroStrategy Inc.',          price: 298.40,  change: 3.20,   pe: 0,      mktCap: '60B',   div: '0.00%', divAmt: '0.00', wkHigh: 543.00,  wkLow: 89.42  },
+        'MARA':  { name: 'Marathon Digital Holdings',   price: 18.40,   change: 3.40,   pe: 0,      mktCap: '5B',    div: '0.00%', divAmt: '0.00', wkHigh: 34.35,   wkLow: 9.74   },
+        'RIOT':  { name: 'Riot Platforms Inc.',         price: 14.40,   change: 2.80,   pe: 0,      mktCap: '3B',    div: '0.00%', divAmt: '0.00', wkHigh: 27.42,   wkLow: 6.88   },
+        'CLSK':  { name: 'CleanSpark Inc.',             price: 12.40,   change: 2.40,   pe: 0,      mktCap: '2B',    div: '0.00%', divAmt: '0.00', wkHigh: 27.72,   wkLow: 7.27   },
+        'HUT':   { name: 'Hut 8 Corp.',                 price: 18.40,   change: 2.20,   pe: 0,      mktCap: '3B',    div: '0.00%', divAmt: '0.00', wkHigh: 44.38,   wkLow: 6.18   },
+        'SQ':    { name: 'Block Inc.',                  price: 74.40,   change: 1.20,   pe: 44.40,  mktCap: '44B',   div: '0.00%', divAmt: '0.00', wkHigh: 98.43,   wkLow: 42.58  },
+        'PYPL':  { name: 'PayPal Holdings Inc.',        price: 74.40,   change: 0.60,   pe: 18.40,  mktCap: '79B',   div: '0.00%', divAmt: '0.00', wkHigh: 90.23,   wkLow: 52.73  },
+        'ADYEY': { name: 'Adyen NV',                    price: 1248.40, change: 0.80,   pe: 56.40,  mktCap: '38B',   div: '0.00%', divAmt: '0.00', wkHigh: 1762.50, wkLow: 916.60 },
+        'GLBE':  { name: 'Global-E Online Ltd.',        price: 38.40,   change: 1.20,   pe: 0,      mktCap: '12B',   div: '0.00%', divAmt: '0.00', wkHigh: 54.96,   wkLow: 24.75  },
+        'SSNC':  { name: 'SS&C Technologies',           price: 68.40,   change: 0.20,   pe: 18.40,  mktCap: '16B',   div: '1.75%', divAmt: '0.25', wkHigh: 78.34,   wkLow: 53.88  },
+        'FIS':   { name: 'Fidelity National Info. Svc', price: 78.40,   change: 0.20,   pe: 14.40,  mktCap: '45B',   div: '2.04%', divAmt: '0.40', wkHigh: 91.64,   wkLow: 50.28  },
+        'FI':    { name: 'Fiserv Inc.',                 price: 218.40,  change: 0.40,   pe: 28.40,  mktCap: '136B',  div: '0.00%', divAmt: '0.00', wkHigh: 230.20,  wkLow: 146.02 },
+        'GPN':   { name: 'Global Payments Inc.',        price: 94.40,   change: 0.20,   pe: 14.40,  mktCap: '25B',   div: '1.06%', divAmt: '0.25', wkHigh: 155.13,  wkLow: 84.07  },
+        'WEX':   { name: 'WEX Inc.',                    price: 174.40,  change: 0.20,   pe: 18.40,  mktCap: '7B',    div: '0.00%', divAmt: '0.00', wkHigh: 233.53,  wkLow: 148.22 },
+        'FOUR':  { name: 'Shift4 Payments Inc.',        price: 74.40,   change: 0.60,   pe: 0,      mktCap: '5B',    div: '0.00%', divAmt: '0.00', wkHigh: 107.33,  wkLow: 49.24  },
+        'PAYO':  { name: 'Payoneer Global Inc.',        price: 6.40,    change: 0.40,   pe: 24.40,  mktCap: '2B',    div: '0.00%', divAmt: '0.00', wkHigh: 9.90,    wkLow: 4.34   },
+        'FLYW':  { name: 'Flywire Corp.',               price: 14.40,   change: 0.40,   pe: 0,      mktCap: '1B',    div: '0.00%', divAmt: '0.00', wkHigh: 32.79,   wkLow: 10.72  },
+        'RPAY':  { name: 'Repay Holdings Corp.',        price: 8.40,    change: 0.20,   pe: 0,      mktCap: '0.6B',  div: '0.00%', divAmt: '0.00', wkHigh: 15.12,   wkLow: 6.78   },
+        'BILL':  { name: 'Bill Holdings Inc.',          price: 58.40,   change: 0.60,   pe: 0,      mktCap: '5B',    div: '0.00%', divAmt: '0.00', wkHigh: 206.65,  wkLow: 41.73  },
+        // ── Additional US Tech ────────────────────────────────────────────────
+        'ACN':   { name: 'Accenture plc',               price: 314.60,  change: 0.40,   pe: 28.40,  mktCap: '198B',  div: '1.78%', divAmt: '1.29', wkHigh: 383.26,  wkLow: 268.01 },
+        'INTU':  { name: 'Intuit Inc.',                 price: 618.40,  change: 0.60,   pe: 56.40,  mktCap: '174B',  div: '0.65%', divAmt: '0.90', wkHigh: 712.78,  wkLow: 462.16 },
+        'ADBE':  { name: 'Adobe Inc.',                  price: 428.40,  change: 0.40,   pe: 28.40,  mktCap: '189B',  div: '0.00%', divAmt: '0.00', wkHigh: 638.00,  wkLow: 392.10 },
+        'ANSS':  { name: 'ANSYS Inc.',                  price: 318.40,  change: 0.40,   pe: 44.40,  mktCap: '27B',   div: '0.00%', divAmt: '0.00', wkHigh: 413.50,  wkLow: 279.87 },
+        'PTC':   { name: 'PTC Inc.',                    price: 168.40,  change: 0.40,   pe: 36.40,  mktCap: '21B',   div: '0.00%', divAmt: '0.00', wkHigh: 219.41,  wkLow: 143.78 },
+        'MANH':  { name: 'Manhattan Associates Inc.',   price: 218.40,  change: 0.60,   pe: 58.40,  mktCap: '13B',   div: '0.00%', divAmt: '0.00', wkHigh: 297.91,  wkLow: 180.07 },
+        'EPAM':  { name: 'EPAM Systems Inc.',           price: 198.40,  change: 0.40,   pe: 24.40,  mktCap: '11B',   div: '0.00%', divAmt: '0.00', wkHigh: 288.35,  wkLow: 150.45 },
+        'CDAY':  { name: 'Ceridian HCM Holding',        price: 48.40,   change: 0.20,   pe: 48.40,  mktCap: '7B',    div: '0.00%', divAmt: '0.00', wkHigh: 75.48,   wkLow: 34.64  },
+        'PAYC':  { name: 'Paycom Software Inc.',        price: 148.40,  change: 0.40,   pe: 28.40,  mktCap: '8B',    div: '1.08%', divAmt: '0.375',wkHigh: 246.25,  wkLow: 128.92 },
+        'PCTY':  { name: 'Paylocity Holding Corp.',     price: 148.40,  change: 0.40,   pe: 38.40,  mktCap: '8B',    div: '0.00%', divAmt: '0.00', wkHigh: 219.43,  wkLow: 128.64 },
+        'SPSC':  { name: 'SPS Commerce Inc.',           price: 148.40,  change: 0.40,   pe: 68.40,  mktCap: '4B',    div: '0.00%', divAmt: '0.00', wkHigh: 210.12,  wkLow: 137.91 },
+        'QTWO':  { name: 'Q2 Holdings Inc.',            price: 68.40,   change: 0.60,   pe: 0,      mktCap: '4B',    div: '0.00%', divAmt: '0.00', wkHigh: 84.05,   wkLow: 30.83  },
+        'APPN':  { name: 'Appian Corp.',                price: 24.40,   change: 0.40,   pe: 0,      mktCap: '2B',    div: '0.00%', divAmt: '0.00', wkHigh: 68.98,   wkLow: 20.64  },
+        'BRZE':  { name: 'Braze Inc.',                  price: 34.40,   change: 0.80,   pe: 0,      mktCap: '3B',    div: '0.00%', divAmt: '0.00', wkHigh: 64.89,   wkLow: 25.92  },
+        'FRSH':  { name: 'Freshworks Inc.',             price: 14.40,   change: 0.40,   pe: 0,      mktCap: '4B',    div: '0.00%', divAmt: '0.00', wkHigh: 28.34,   wkLow: 11.08  },
+        'CFLT':  { name: 'Confluent Inc.',              price: 22.40,   change: 0.60,   pe: 0,      mktCap: '7B',    div: '0.00%', divAmt: '0.00', wkHigh: 36.68,   wkLow: 15.11  },
+        'DOMO':  { name: 'Domo Inc.',                   price: 6.40,    change: -0.40,  pe: 0,      mktCap: '0.4B',  div: '0.00%', divAmt: '0.00', wkHigh: 27.49,   wkLow: 4.92   },
+        'ESTC':  { name: 'Elastic NV',                  price: 84.40,   change: 0.80,   pe: 0,      mktCap: '10B',   div: '0.00%', divAmt: '0.00', wkHigh: 129.33,  wkLow: 61.22  },
+        'SUMO':  { name: 'Sumo Logic Inc.',             price: 14.40,   change: 0.20,   pe: 0,      mktCap: '1B',    div: '0.00%', divAmt: '0.00', wkHigh: 22.50,   wkLow: 9.49   },
+        'NEWR':  { name: 'New Relic Inc.',              price: 84.40,   change: 0.40,   pe: 0,      mktCap: '6B',    div: '0.00%', divAmt: '0.00', wkHigh: 114.50,  wkLow: 54.28  },
+        // ── Additional Healthcare ─────────────────────────────────────────────
+        'EXAS':  { name: 'Exact Sciences Corp.',        price: 48.40,   change: -0.40,  pe: 0,      mktCap: '8B',    div: '0.00%', divAmt: '0.00', wkHigh: 88.92,   wkLow: 35.83  },
+        'NVCR':  { name: 'NovoCure Ltd.',               price: 18.40,   change: -0.60,  pe: 0,      mktCap: '2B',    div: '0.00%', divAmt: '0.00', wkHigh: 77.29,   wkLow: 12.88  },
+        'SEER':  { name: 'Seer Inc.',                   price: 4.40,    change: -0.40,  pe: 0,      mktCap: '0.2B',  div: '0.00%', divAmt: '0.00', wkHigh: 12.80,   wkLow: 2.63   },
+        'RXRX':  { name: 'Recursion Pharmaceuticals',   price: 8.40,    change: -0.80,  pe: 0,      mktCap: '2B',    div: '0.00%', divAmt: '0.00', wkHigh: 18.86,   wkLow: 4.97   },
+        'ARWR':  { name: 'Arrowhead Pharmaceuticals',   price: 18.40,   change: -0.60,  pe: 0,      mktCap: '2B',    div: '0.00%', divAmt: '0.00', wkHigh: 49.78,   wkLow: 14.01  },
+        'NTLA':  { name: 'Intellia Therapeutics',       price: 14.40,   change: -0.80,  pe: 0,      mktCap: '1B',    div: '0.00%', divAmt: '0.00', wkHigh: 49.00,   wkLow: 10.42  },
+        'EDIT':  { name: 'Editas Medicine Inc.',        price: 4.40,    change: -0.60,  pe: 0,      mktCap: '0.3B',  div: '0.00%', divAmt: '0.00', wkHigh: 20.82,   wkLow: 2.91   },
+        'CRSP':  { name: 'CRISPR Therapeutics AG',      price: 48.40,   change: -0.80,  pe: 0,      mktCap: '4B',    div: '0.00%', divAmt: '0.00', wkHigh: 93.84,   wkLow: 33.08  },
+        'BEAM':  { name: 'Beam Therapeutics Inc.',      price: 24.40,   change: -0.60,  pe: 0,      mktCap: '1B',    div: '0.00%', divAmt: '0.00', wkHigh: 57.12,   wkLow: 14.98  },
+        'ALNY':  { name: 'Alnylam Pharmaceuticals',     price: 218.40,  change: -0.40,  pe: 0,      mktCap: '28B',   div: '0.00%', divAmt: '0.00', wkHigh: 308.00,  wkLow: 141.00 },
+        'IONS':  { name: 'Ionis Pharmaceuticals',       price: 38.40,   change: -0.20,  pe: 0,      mktCap: '5B',    div: '0.00%', divAmt: '0.00', wkHigh: 56.44,   wkLow: 30.81  },
+        'RARE':  { name: 'Ultragenyx Pharmaceutical',   price: 48.40,   change: -0.40,  pe: 0,      mktCap: '3B',    div: '0.00%', divAmt: '0.00', wkHigh: 84.53,   wkLow: 28.61  },
+        'HALO':  { name: 'Halozyme Therapeutics',       price: 44.40,   change: 0.40,   pe: 18.40,  mktCap: '5B',    div: '0.00%', divAmt: '0.00', wkHigh: 56.75,   wkLow: 33.89  },
+        'INVA':  { name: 'Innoviva Inc.',               price: 18.40,   change: 0.20,   pe: 12.40,  mktCap: '1B',    div: '0.00%', divAmt: '0.00', wkHigh: 24.34,   wkLow: 14.06  },
+        'AMGN':  { name: 'Amgen Inc.',                  price: 298.40,  change: -0.20,  pe: 18.40,  mktCap: '160B',  div: '3.36%', divAmt: '2.25', wkHigh: 340.00,  wkLow: 248.54 },
+        // ── Additional Consumer / Retail ──────────────────────────────────────
+        'LULU':  { name: 'Lululemon Athletica Inc.',    price: 298.40,  change: -0.60,  pe: 28.40,  mktCap: '37B',   div: '0.00%', divAmt: '0.00', wkHigh: 516.39,  wkLow: 228.00 },
+        'ONON':  { name: 'On Holding AG',               price: 44.40,   change: 0.80,   pe: 44.40,  mktCap: '14B',   div: '0.00%', divAmt: '0.00', wkHigh: 66.41,   wkLow: 27.54  },
+        'SKX':   { name: 'Skechers USA Inc.',           price: 68.40,   change: 0.40,   pe: 14.40,  mktCap: '10B',   div: '0.00%', divAmt: '0.00', wkHigh: 78.00,   wkLow: 46.13  },
+        'CROX':  { name: 'Crocs Inc.',                  price: 98.40,   change: 0.40,   pe: 9.80,   mktCap: '5B',    div: '0.00%', divAmt: '0.00', wkHigh: 159.21,  wkLow: 70.58  },
+        'DECK':  { name: 'Deckers Outdoor Corp.',       price: 148.40,  change: -0.40,  pe: 18.40,  mktCap: '5B',    div: '0.00%', divAmt: '0.00', wkHigh: 219.43,  wkLow: 95.05  },
+        'VFC':   { name: 'VF Corp.',                    price: 14.40,   change: -0.60,  pe: 0,      mktCap: '6B',    div: '0.00%', divAmt: '0.00', wkHigh: 32.84,   wkLow: 10.87  },
+        'HBI':   { name: "Hanesbrands Inc.",            price: 8.40,    change: -0.40,  pe: 12.40,  mktCap: '3B',    div: '0.00%', divAmt: '0.00', wkHigh: 13.66,   wkLow: 4.28   },
+        'RL':    { name: 'Ralph Lauren Corp.',          price: 198.40,  change: 0.40,   pe: 18.40,  mktCap: '13B',   div: '2.02%', divAmt: '1.00', wkHigh: 249.63,  wkLow: 118.15 },
+        'AEO':   { name: 'American Eagle Outfitters',   price: 18.40,   change: -0.40,  pe: 14.40,  mktCap: '3B',    div: '3.26%', divAmt: '0.15', wkHigh: 27.62,   wkLow: 13.23  },
+        'ANF':   { name: 'Abercrombie & Fitch Co.',     price: 88.40,   change: 0.60,   pe: 14.40,  mktCap: '5B',    div: '0.00%', divAmt: '0.00', wkHigh: 194.99,  wkLow: 62.81  },
+        'BOOT':  { name: 'Boot Barn Holdings Inc.',     price: 148.40,  change: 0.40,   pe: 22.40,  mktCap: '4B',    div: '0.00%', divAmt: '0.00', wkHigh: 204.45,  wkLow: 68.74  },
+        'FIVE':  { name: 'Five Below Inc.',             price: 98.40,   change: -0.40,  pe: 18.40,  mktCap: '5B',    div: '0.00%', divAmt: '0.00', wkHigh: 215.08,  wkLow: 80.39  },
+        'ULTA':  { name: 'Ulta Beauty Inc.',            price: 374.80,  change: 0.20,   pe: 18.40,  mktCap: '19B',   div: '0.00%', divAmt: '0.00', wkHigh: 574.76,  wkLow: 330.58 },
+        'SFM':   { name: "Sprouts Farmers Market",      price: 118.40,  change: 0.60,   pe: 28.40,  mktCap: '12B',   div: '0.00%', divAmt: '0.00', wkHigh: 139.31,  wkLow: 53.24  },
+        'CASY':  { name: "Casey's General Stores",      price: 398.40,  change: 0.40,   pe: 28.40,  mktCap: '8B',    div: '0.60%', divAmt: '0.55', wkHigh: 425.92,  wkLow: 274.62 },
+        // ── Additional Industrials ────────────────────────────────────────────
+        'CARR':  { name: 'Carrier Global Corp.',        price: 68.40,   change: 0.40,   pe: 22.40,  mktCap: '57B',   div: '1.17%', divAmt: '0.19', wkHigh: 78.69,   wkLow: 52.48  },
+        'OTIS':  { name: 'Otis Worldwide Corp.',        price: 94.40,   change: 0.20,   pe: 28.40,  mktCap: '39B',   div: '1.48%', divAmt: '0.32', wkHigh: 99.82,   wkLow: 77.57  },
+        'HUBB':  { name: 'Hubbell Inc.',                price: 448.40,  change: 0.40,   pe: 22.40,  mktCap: '12B',   div: '1.52%', divAmt: '1.56', wkHigh: 510.73,  wkLow: 308.97 },
+        'IR':    { name: 'Ingersoll Rand Inc.',         price: 84.40,   change: 0.40,   pe: 28.40,  mktCap: '36B',   div: '0.19%', divAmt: '0.04', wkHigh: 98.61,   wkLow: 60.37  },
+        'GNRC':  { name: 'Generac Holdings Inc.',       price: 148.40,  change: 0.60,   pe: 28.40,  mktCap: '9B',    div: '0.00%', divAmt: '0.00', wkHigh: 176.59,  wkLow: 104.14 },
+        'ALLE':  { name: 'Allegion plc',                price: 124.40,  change: 0.20,   pe: 18.40,  mktCap: '9B',    div: '1.45%', divAmt: '0.48', wkHigh: 148.38,  wkLow: 100.96 },
+        'MAS':   { name: 'Masco Corp.',                 price: 68.40,   change: 0.20,   pe: 18.40,  mktCap: '13B',   div: '1.46%', divAmt: '0.285',wkHigh: 80.49,   wkLow: 51.32  },
+        'SWK':   { name: 'Stanley Black & Decker',      price: 74.40,   change: -0.40,  pe: 18.40,  mktCap: '12B',   div: '3.76%', divAmt: '0.82', wkHigh: 104.50,  wkLow: 60.30  },
+        'FAST':  { name: 'Fastenal Co.',                price: 74.40,   change: 0.20,   pe: 38.40,  mktCap: '42B',   div: '2.15%', divAmt: '0.39', wkHigh: 80.00,   wkLow: 54.64  },
+        'WSO':   { name: 'Watsco Inc.',                 price: 498.40,  change: 0.20,   pe: 28.40,  mktCap: '19B',   div: '2.29%', divAmt: '2.65', wkHigh: 560.30,  wkLow: 363.78 },
+        'POOL':  { name: 'Pool Corp.',                  price: 348.40,  change: 0.20,   pe: 28.40,  mktCap: '14B',   div: '1.38%', divAmt: '1.10', wkHigh: 430.19,  wkLow: 284.32 },
+        'RBC':   { name: 'RBC Bearings Inc.',           price: 298.40,  change: 0.20,   pe: 38.40,  mktCap: '7B',    div: '0.00%', divAmt: '0.00', wkHigh: 338.90,  wkLow: 241.27 },
+        // ── Additional Energy ─────────────────────────────────────────────────
+        'CTRA':  { name: 'Coterra Energy Inc.',         price: 28.40,   change: -0.40,  pe: 11.40,  mktCap: '22B',   div: '3.38%', divAmt: '0.21', wkHigh: 33.49,   wkLow: 23.80  },
+        'AR':    { name: 'Antero Resources Corp.',      price: 38.40,   change: -0.40,  pe: 14.40,  mktCap: '12B',   div: '0.00%', divAmt: '0.00', wkHigh: 43.62,   wkLow: 19.03  },
+        'EQT':   { name: 'EQT Corp.',                   price: 48.40,   change: -0.60,  pe: 14.40,  mktCap: '16B',   div: '1.65%', divAmt: '0.1575',wkHigh:44.32,   wkLow: 28.76  },
+        'CHK':   { name: 'Chesapeake Energy Corp.',     price: 78.40,   change: -0.60,  pe: 8.40,   mktCap: '10B',   div: '2.04%', divAmt: '0.575',wkHigh: 99.42,   wkLow: 65.67  },
+        'SW':    { name: 'Smurfit WestRock plc',        price: 48.40,   change: 0.20,   pe: 14.40,  mktCap: '22B',   div: '3.10%', divAmt: '0.375',wkHigh: 58.42,   wkLow: 36.59  },
+        'PKG':   { name: 'Packaging Corp. of America',  price: 198.40,  change: 0.20,   pe: 16.40,  mktCap: '14B',   div: '2.22%', divAmt: '1.00', wkHigh: 241.35,  wkLow: 154.76 },
+        'IP':    { name: 'International Paper Co.',     price: 44.40,   change: -0.20,  pe: 14.40,  mktCap: '15B',   div: '4.05%', divAmt: '0.4625',wkHigh:53.01,   wkLow: 32.71  },
+        'SEE':   { name: 'Sealed Air Corp.',            price: 28.40,   change: -0.20,  pe: 12.40,  mktCap: '4B',    div: '2.11%', divAmt: '0.20', wkHigh: 44.98,   wkLow: 21.68  },
+        // ── Additional Finance ────────────────────────────────────────────────
+        'RE':    { name: 'Everest Group Ltd.',          price: 348.40,  change: 0.40,   pe: 8.80,   mktCap: '13B',   div: '2.13%', divAmt: '1.75', wkHigh: 403.00,  wkLow: 314.14 },
+        'RNR':   { name: 'RenaissanceRe Holdings',      price: 248.40,  change: 0.40,   pe: 8.80,   mktCap: '11B',   div: '0.96%', divAmt: '0.545',wkHigh: 284.91,  wkLow: 198.29 },
+        'AJG':   { name: 'Arthur J. Gallagher & Co.',   price: 298.40,  change: 0.40,   pe: 38.40,  mktCap: '58B',   div: '1.07%', divAmt: '0.60', wkHigh: 307.00,  wkLow: 220.82 },
+        'MMC':   { name: 'Marsh & McLennan Cos.',       price: 224.80,  change: 0.40,   pe: 28.40,  mktCap: '112B',  div: '1.43%', divAmt: '0.715',wkHigh: 233.48,  wkLow: 183.37 },
+        'WTW':   { name: 'Willis Towers Watson',        price: 298.40,  change: 0.40,   pe: 22.40,  mktCap: '14B',   div: '1.34%', divAmt: '0.88', wkHigh: 345.63,  wkLow: 232.36 },
+        'AON':   { name: 'Aon plc',                     price: 348.40,  change: 0.40,   pe: 28.40,  mktCap: '69B',   div: '0.86%', divAmt: '0.675',wkHigh: 362.24,  wkLow: 278.23 },
+        'SEIC':  { name: 'SEI Investments Co.',         price: 74.40,   change: 0.20,   pe: 18.40,  mktCap: '11B',   div: '1.08%', divAmt: '0.185',wkHigh: 80.35,   wkLow: 57.29  },
+        'LPLA':  { name: 'LPL Financial Holdings',      price: 298.40,  change: 0.40,   pe: 18.40,  mktCap: '16B',   div: '0.40%', divAmt: '0.30', wkHigh: 397.23,  wkLow: 198.28 },
+        'SIRI':  { name: 'Sirius XM Holdings Inc.',     price: 2.80,    change: -0.20,  pe: 12.40,  mktCap: '9B',    div: '4.29%', divAmt: '0.027',wkHigh: 6.45,    wkLow: 2.08   },
+        'NWSA':  { name: 'News Corp Class A',           price: 28.40,   change: 0.20,   pe: 18.40,  mktCap: '17B',   div: '1.13%', divAmt: '0.10', wkHigh: 33.22,   wkLow: 21.56  },
+        // ── Biotech / Specialty Pharma ─────────────────────────────────────────
+        'BMRN':  { name: 'BioMarin Pharmaceutical',     price: 68.40,   change: -0.20,  pe: 24.40,  mktCap: '13B',   div: '0.00%', divAmt: '0.00', wkHigh: 102.42,  wkLow: 60.22  },
+        'SRPT':  { name: 'Sarepta Therapeutics',        price: 98.40,   change: -0.60,  pe: 0,      mktCap: '8B',    div: '0.00%', divAmt: '0.00', wkHigh: 207.32,  wkLow: 73.56  },
+        'NBIX':  { name: 'Neurocrine Biosciences',      price: 118.40,  change: -0.40,  pe: 22.40,  mktCap: '11B',   div: '0.00%', divAmt: '0.00', wkHigh: 154.00,  wkLow: 89.16  },
+        'PTCT':  { name: 'PTC Therapeutics Inc.',       price: 34.40,   change: -0.40,  pe: 0,      mktCap: '2B',    div: '0.00%', divAmt: '0.00', wkHigh: 55.00,   wkLow: 22.88  },
+        'ACAD':  { name: 'ACADIA Pharmaceuticals',      price: 18.40,   change: -0.40,  pe: 0,      mktCap: '3B',    div: '0.00%', divAmt: '0.00', wkHigh: 32.43,   wkLow: 14.62  },
+        'PRGO':  { name: 'Perrigo Co. plc',             price: 24.40,   change: -0.20,  pe: 0,      mktCap: '3B',    div: '3.69%', divAmt: '0.26', wkHigh: 33.75,   wkLow: 18.78  },
+        'JAZZ':  { name: 'Jazz Pharmaceuticals plc',    price: 118.40,  change: -0.20,  pe: 12.40,  mktCap: '7B',    div: '0.00%', divAmt: '0.00', wkHigh: 161.64,  wkLow: 100.75 },
+        'INCY':  { name: 'Incyte Corp.',                price: 58.40,   change: -0.20,  pe: 18.40,  mktCap: '12B',   div: '0.00%', divAmt: '0.00', wkHigh: 72.48,   wkLow: 50.20  },
+        'HZNP':  { name: 'Horizon Therapeutics',        price: 116.40,  change: -0.20,  pe: 36.40,  mktCap: '28B',   div: '0.00%', divAmt: '0.00', wkHigh: 120.34,  wkLow: 57.38  },
+        // ── EV & Clean Energy ─────────────────────────────────────────────────
+        'TSCO':  { name: 'Tractor Supply Co.',          price: 248.80,  change: 0.40,   pe: 22.40,  mktCap: '27B',   div: '1.93%', divAmt: '1.10', wkHigh: 282.19,  wkLow: 191.81 },
+        'CEG':   { name: 'Constellation Energy Corp.',  price: 218.40,  change: 1.20,   pe: 28.40,  mktCap: '66B',   div: '0.55%', divAmt: '0.35', wkHigh: 339.86,  wkLow: 100.16 },
+        'VST':   { name: 'Vistra Corp.',                price: 98.40,   change: 0.80,   pe: 14.40,  mktCap: '31B',   div: '0.71%', divAmt: '0.2175',wkHigh:179.00,  wkLow: 36.53  },
+        'BE':    { name: 'Bloom Energy Corp.',          price: 14.40,   change: 0.80,   pe: 0,      mktCap: '3B',    div: '0.00%', divAmt: '0.00', wkHigh: 22.64,   wkLow: 9.22   },
+        'FSLR':  { name: 'First Solar Inc.',            price: 198.40,  change: 0.80,   pe: 18.40,  mktCap: '21B',   div: '0.00%', divAmt: '0.00', wkHigh: 306.00,  wkLow: 128.77 },
+        'ENPH':  { name: 'Enphase Energy Inc.',         price: 74.40,   change: -0.80,  pe: 24.40,  mktCap: '10B',   div: '0.00%', divAmt: '0.00', wkHigh: 163.05,  wkLow: 58.77  },
+        'SEDG':  { name: 'SolarEdge Technologies',      price: 18.40,   change: -1.20,  pe: 0,      mktCap: '1B',    div: '0.00%', divAmt: '0.00', wkHigh: 153.26,  wkLow: 13.97  },
+        'RUN':   { name: 'Sunrun Inc.',                 price: 8.40,    change: -0.80,  pe: 0,      mktCap: '2B',    div: '0.00%', divAmt: '0.00', wkHigh: 24.31,   wkLow: 5.94   },
+        'NOVA':  { name: 'Sunnova Energy Intl.',        price: 4.40,    change: -1.20,  pe: 0,      mktCap: '0.5B',  div: '0.00%', divAmt: '0.00', wkHigh: 19.89,   wkLow: 1.67   },
+        'PLUG':  { name: 'Plug Power Inc.',             price: 2.80,    change: -1.40,  pe: 0,      mktCap: '2B',    div: '0.00%', divAmt: '0.00', wkHigh: 10.57,   wkLow: 1.65   },
+        'BLDP':  { name: 'Ballard Power Systems',       price: 2.80,    change: -0.80,  pe: 0,      mktCap: '1B',    div: '0.00%', divAmt: '0.00', wkHigh: 5.18,    wkLow: 1.94   },
+        // ── Emerging / Special Situations ─────────────────────────────────────
+        'SMCI':  { name: 'Super Micro Computer Inc.',   price: 44.40,   change: 2.80,   pe: 14.40,  mktCap: '26B',   div: '0.00%', divAmt: '0.00', wkHigh: 122.90,  wkLow: 17.25  },
+        'NVAX':  { name: 'Novavax Inc.',                price: 8.40,    change: -0.60,  pe: 0,      mktCap: '1B',    div: '0.00%', divAmt: '0.00', wkHigh: 23.97,   wkLow: 4.93   },
+        'SGEN':  { name: 'Seagen Inc.',                 price: 218.40,  change: 0.20,   pe: 0,      mktCap: '40B',   div: '0.00%', divAmt: '0.00', wkHigh: 232.68,  wkLow: 105.37 },
+        'FATE':  { name: 'Fate Therapeutics Inc.',      price: 8.40,    change: -0.60,  pe: 0,      mktCap: '0.8B',  div: '0.00%', divAmt: '0.00', wkHigh: 18.04,   wkLow: 5.18   },
+        'CLOV':  { name: 'Clover Health Investments',   price: 1.80,    change: -0.40,  pe: 0,      mktCap: '0.5B',  div: '0.00%', divAmt: '0.00', wkHigh: 6.29,    wkLow: 1.08   },
+        'GDRX':  { name: 'GoodRx Holdings Inc.',        price: 6.40,    change: 0.20,   pe: 0,      mktCap: '2B',    div: '0.00%', divAmt: '0.00', wkHigh: 10.77,   wkLow: 4.64   },
+        'HIMS':  { name: 'Hims & Hers Health Inc.',     price: 18.40,   change: 1.20,   pe: 0,      mktCap: '4B',    div: '0.00%', divAmt: '0.00', wkHigh: 34.73,   wkLow: 7.34   },
+        'ONEM':  { name: '1-800-Flowers.com Inc.',      price: 8.40,    change: -0.20,  pe: 14.40,  mktCap: '0.5B',  div: '0.00%', divAmt: '0.00', wkHigh: 14.82,   wkLow: 5.53   },
+        'TDOC':  { name: 'Teladoc Health Inc.',         price: 8.40,    change: -0.60,  pe: 0,      mktCap: '1B',    div: '0.00%', divAmt: '0.00', wkHigh: 31.99,   wkLow: 5.71   },
+        'AMWL':  { name: 'American Well Corp.',         price: 1.80,    change: -0.40,  pe: 0,      mktCap: '0.3B',  div: '0.00%', divAmt: '0.00', wkHigh: 7.94,    wkLow: 0.90   },
+        'ACCD':  { name: 'Accolade Inc.',               price: 4.40,    change: -0.40,  pe: 0,      mktCap: '0.3B',  div: '0.00%', divAmt: '0.00', wkHigh: 21.87,   wkLow: 2.77   },
+        'PHR':   { name: 'Phreesia Inc.',               price: 18.40,   change: 0.20,   pe: 0,      mktCap: '1B',    div: '0.00%', divAmt: '0.00', wkHigh: 39.59,   wkLow: 13.91  },
+        'HLTH':  { name: 'Cue Health Inc.',             price: 2.40,    change: -0.40,  pe: 0,      mktCap: '0.2B',  div: '0.00%', divAmt: '0.00', wkHigh: 11.44,   wkLow: 0.85   },
+        'CHNG':  { name: 'Change Healthcare Inc.',      price: 27.40,   change: 0.10,   pe: 18.40,  mktCap: '14B',   div: '0.00%', divAmt: '0.00', wkHigh: 31.25,   wkLow: 17.54  },
+        'ALHC':  { name: 'Alignment Healthcare Inc.',   price: 8.40,    change: 0.20,   pe: 0,      mktCap: '1B',    div: '0.00%', divAmt: '0.00', wkHigh: 18.13,   wkLow: 4.28   },
+        'TNDM':  { name: 'Tandem Diabetes Care Inc.',   price: 18.40,   change: -0.40,  pe: 0,      mktCap: '1B',    div: '0.00%', divAmt: '0.00', wkHigh: 67.74,   wkLow: 14.24  },
     };
 
     // ────────────────────────────────────────────────
@@ -6319,7 +6746,9 @@ function startNewsEngine() {
                 divAmt: d.divAmt,
                 wkHigh,
                 wkLow,
-                sector: inferSector(symbol, d.name)
+                sector: d.sector || inferSector(symbol, d.name),
+                assetClass: d.assetClass || null,
+                session: d.session || 'NYSE',
             };
         });
         renderGrid();
@@ -14500,24 +14929,15 @@ function startNewsEngine() {
 
     // ── initApp — clear startup sequence per spec ──────────────────────────
     // ── Account version reset ─────────────────────────────────────────────
-    const VESTRA_ACCOUNT_VERSION = 'v2026-beta-1';
+    const VESTRA_ACCOUNT_VERSION = 'v2026-beta-2';
     function resetOldAccounts() {
         try {
             const storedVer = localStorage.getItem('vestra_account_version');
             if (storedVer !== VESTRA_ACCOUNT_VERSION) {
-                // Wipe all user data for fresh beta start
-                const keysToRemove = [];
-                for (let i = 0; i < localStorage.length; i++) {
-                    const k = localStorage.key(i);
-                    if (k && (k.startsWith('shared:user:') || k.startsWith('vestra_user_') ||
-                        k.startsWith('vestra_acad') || k === 'vestra_lastuser' ||
-                        k === 'vestra_challenge_v1' || k === 'vestra_prefs')) {
-                        keysToRemove.push(k);
-                    }
-                }
-                keysToRemove.forEach(k => localStorage.removeItem(k));
+                // Full wipe for beta reset
+                try { localStorage.clear(); } catch(e) {}
                 localStorage.setItem('vestra_account_version', VESTRA_ACCOUNT_VERSION);
-                console.log('[Vestra] Beta reset: old accounts cleared');
+                console.log('[Vestra] Beta reset complete - fresh start');
             }
         } catch(e) {}
     }
@@ -15266,28 +15686,48 @@ function startNewsEngine() {
         const el = document.getElementById('maContent');
         if (!el) return;
         tab = tab || _maActiveTab;
-        const assetList = stocks.filter(function(s) { return (s.assetClass || '') === tab; });
+
+        // Build asset list — prefer live stocks array (has price ticks), fall back to realStockData
+        let assetList = (stocks || []).filter(function(s) { return (s.assetClass || '') === tab; });
+
+        // Fallback: if stocks not yet loaded or assetClass not set, read from realStockData directly
+        if (!assetList.length && typeof realStockData !== 'undefined') {
+            assetList = Object.keys(realStockData)
+                .filter(function(sym) { return (realStockData[sym].assetClass || '') === tab; })
+                .map(function(sym) {
+                    var d = realStockData[sym];
+                    return { symbol: sym, name: d.name, price: d.price, change: d.change,
+                             assetClass: d.assetClass, sector: d.sector };
+                });
+        }
+
         if (!assetList.length) {
-            el.innerHTML = '<div style="text-align:center;color:#6868a0;padding:40px;">No assets in this category yet.</div>';
+            el.innerHTML = '<div style="text-align:center;color:#6868a0;padding:40px;font-size:13px;">No ' + tab + ' assets found. Log in and place a trade to initialise market data.</div>';
             return;
         }
+
+        const tabColors = { Commodity:'#f59e0b', Forex:'#22d3ee', Crypto:'#a78bfa', Index:'#4ade80' };
+        const accent = tabColors[tab] || '#d4a84b';
+
         el.innerHTML = '<div style="display:grid;gap:6px;">' +
             assetList.map(function(s) {
                 var isPos = (s.change || 0) >= 0;
-                var held = portfolio[s.symbol] || 0;
-                return '<div onclick="openStockDetail(stocks.find(function(x){return x.symbol===\'' + s.symbol + '\'}))" '
+                var held = (typeof portfolio !== 'undefined' && portfolio[s.symbol]) || 0;
+                var priceDisplay = typeof s.price === 'number'
+                    ? '$' + s.price.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:4})
+                    : '—';
+                return '<div onclick="(function(sym){var st=(stocks||[]).find(function(x){return x.symbol===sym;});if(st)openStockDetail(st);})(\''+s.symbol+'\')" '
                     + 'style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;'
                     + 'padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background 0.15s;" '
                     + 'onmouseover="this.style.background=\'rgba(255,255,255,0.06)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.03)\'">'
+                    + '<div style="width:36px;height:36px;border-radius:8px;background:rgba('+accent.replace('#','').match(/../g).map(function(h){return parseInt(h,16);}).join(',')+',0.15);border:1px solid rgba('+accent.replace('#','').match(/../g).map(function(h){return parseInt(h,16);}).join(',')+',0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+                    + '<span style="font-size:9px;font-weight:700;color:'+accent+';">'+s.symbol.substring(0,4)+'</span></div>'
                     + '<div style="flex:1;min-width:0;">'
-                    + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
-                    + '<span style="font-size:13px;font-weight:700;color:#f0f0fa;">' + s.symbol + '</span>'
-                    + '<span style="font-size:11px;color:#6868a0;">' + s.name + '</span>'
-                    + '</div>'
-                    + (held > 0 ? '<div style="font-size:10px;color:#d4a84b;margin-top:2px;">Holding ' + held + ' units</div>' : '')
+                    + '<div style="font-size:13px;font-weight:700;color:#f0f0fa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + s.name + '</div>'
+                    + '<div style="font-size:10px;color:#6868a0;margin-top:1px;">' + s.symbol + (held > 0 ? ' · <span style="color:#d4a84b;">Holding '+held+'</span>' : '') + '</div>'
                     + '</div>'
                     + '<div style="text-align:right;flex-shrink:0;">'
-                    + '<div style="font-size:13px;font-weight:700;color:#f0f0fa;font-family:var(--v-mono);">$' + s.price.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:4}) + '</div>'
+                    + '<div style="font-size:13px;font-weight:700;color:#f0f0fa;font-family:var(--v-mono);">' + priceDisplay + '</div>'
                     + '<div style="font-size:11px;color:' + (isPos?'#4ade80':'#f87171') + ';">' + (isPos?'+':'') + (s.change||0).toFixed(2) + '%</div>'
                     + '</div>'
                     + '</div>';
@@ -16939,12 +17379,11 @@ function startNewsEngine() {
     function checkLeaderboardIntegrity(user) {
         // Returns { eligible, reason }
         if (!user) return { eligible: false, reason: 'Invalid account' };
-        if ((user.totalTrades || 0) < 1) return { eligible: false, reason: 'Place your first trade to qualify' };
-        if ((user.riskViolations || 0) > 10) return { eligible: false, reason: 'Too many risk violations' };
-        if ((user.integrityScore ?? 100) < 40) return { eligible: false, reason: 'Integrity score too low' };
-        const _base = user.startCash || 10000;
-        const _ret = user.totalValue ? ((user.totalValue - _base) / _base * 100) : 0;
-        if (_ret > 500) return { eligible: false, reason: 'Return flagged for review (>500%)' };
+        if (!user.username) return { eligible: false, reason: 'No username' };
+        const balance = user.cash || user.balance || 0;
+        const totalVal = user.totalValue || balance;
+        if (totalVal <= 0 && balance <= 0) return { eligible: false, reason: 'No balance' };
+        // Beta: only require account exists and has a balance
         return { eligible: true, reason: 'Verified' };
     }
 
@@ -17333,13 +17772,27 @@ function startNewsEngine() {
     const _origOpenAICoachV8 = window.openAICoach || function(){};
     window.openAICoach = function() {
         const el = document.getElementById('aiCoachModal');
-        if (el) {
-            el.style.display = 'flex';
-            switchAITab('chat');
-            setTimeout(() => {
-                if (typeof renderAICoach === 'function') try { renderAICoach(); } catch(e){}
-            }, 100);
-        }
+        if (!el) return;
+        el.style.display = 'flex';
+        switchAITab('chat');
+        setTimeout(function() {
+            // Inject greeting if chat is empty
+            const msgs = document.getElementById('aiChatMessages');
+            if (msgs && msgs.children.length === 0) {
+                const name = (currentUser && currentUser.displayName) || 'Trader';
+                const equity = currentUser ? (cash + getPortfolioValue()).toFixed(0) : '100,000';
+                const tradeCount = (transactions || []).filter(function(t){ return t.type === 'SELL'; }).length;
+                let greeting = '**Hello ' + name + '!** I am your Vestra AI Coach.\n\n';
+                if (tradeCount > 0) {
+                    greeting += 'You have made **' + tradeCount + ' closed trade' + (tradeCount > 1 ? 's' : '') + '**. ';
+                    greeting += 'Ask me anything — your performance, risk management, trading psychology, or market concepts.';
+                } else {
+                    greeting += 'Start by placing a trade, or ask me anything about trading right now:\n\n• What is a stop loss?\n• How much should I risk per trade?\n• Why do traders lose money?';
+                }
+                if (typeof appendAIMessage === 'function') appendAIMessage('assistant', greeting);
+            }
+            if (typeof renderAICoach === 'function') try { renderAICoach(); } catch(e){}
+        }, 80);
     };
 
     window.closeAICoach = function() {
@@ -21168,20 +21621,35 @@ q = probability of losing (1 − p)
         const el = document.getElementById('academyModal');
         if (!el) return;
         el.style.display = 'flex';
-        _acad.activeCourse = courseIdx || 0;
+        _acad.activeCourse = (courseIdx !== undefined && courseIdx !== null) ? courseIdx : 0;
         _acad.activeLesson = null;
+        // Use two nested timeouts: first to paint display:flex, second to render
         setTimeout(function() {
-            try { _renderAcademy(); }
-            catch(e) {
+            setTimeout(function() {
                 const b = document.getElementById('academyBody');
-                if (b) b.innerHTML = '<div style="color:#f87171;padding:20px;">Error loading academy. Please refresh.</div>';
-                console.error('_renderAcademy error:', e);
-            }
-            if (lessonIdx !== undefined) {
-                setTimeout(function() {
-                    try { openLesson(courseIdx || 0, lessonIdx); } catch(e) {}
-                }, 100);
-            }
+                if (!b) return;
+                try {
+                    _renderAcademy();
+                } catch(e) {
+                    console.error('[Academy] _renderAcademy error:', e);
+                    // Emergency fallback: simple course list
+                    b.innerHTML = '<div style="padding:24px;">' +
+                        '<div style="font-size:14px;font-weight:700;color:#f0f0fa;margin-bottom:16px;">Select a Course</div>' +
+                        ACADEMY_COURSES.map(function(c, ci) {
+                            return '<div onclick="_setActiveCourse(' + ci + ');try{_renderAcademy();}catch(x){}" '
+                                + 'style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;'
+                                + 'padding:14px 18px;margin-bottom:8px;cursor:pointer;">'
+                                + '<div style="font-size:13px;font-weight:700;color:#f0f0fa;">' + c.title + '</div>'
+                                + '<div style="font-size:11px;color:#8888a8;margin-top:3px;">' + c.subtitle + '</div>'
+                                + '</div>';
+                        }).join('') + '</div>';
+                }
+                if (lessonIdx !== undefined) {
+                    setTimeout(function() {
+                        try { openLesson(_acad.activeCourse, lessonIdx); } catch(e) {}
+                    }, 100);
+                }
+            }, 30);
         }, 0);
     }
     function closeAcademy() {
