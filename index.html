@@ -7,19 +7,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vestra | Structured Trading Intelligence Platform</title>
-    <meta name="description" content="Vestra is a professional trading simulator. Start with $10,000 in virtual capital, progress through tiers, and develop real trading discipline — with zero financial risk.">
+    <meta name="description" content="Vestra is a professional trading simulator. Start with $100,000 in virtual capital, progress through tiers, and develop real trading discipline — with zero financial risk.">
     <meta name="keywords" content="trading simulator, stock market practice, paper trading, trading education, investment simulation">
     <meta name="robots" content="index, follow">
     <meta name="author" content="Vestra">
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Vestra — Practice Trading with $10,000 Virtual Capital">
+    <meta property="og:title" content="Vestra — Practice Trading with $100,000 Virtual Capital">
     <meta property="og:description" content="Practice trading with $10,000 virtual capital. Real stocks, real-time data, zero financial risk. Build your edge at Cadet tier.">
     <meta property="og:site_name" content="Vestra">
     <meta property="og:image" content="https://vestra.app/og-image.png">
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Vestra — Practice Trading with $10,000 Virtual Capital">
+    <meta name="twitter:title" content="Vestra — Practice Trading with $100,000 Virtual Capital">
     <meta name="twitter:description" content="Practice trading with real stocks and zero risk. Build strategies, compete, improve.">
     <!-- Favicon — Vestra "V" logomark -->
             <script src="https://cdn.tailwindcss.com"></script>
@@ -120,10 +120,10 @@
 
         /* Nav */
         .home-nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            position: sticky; top: 0; left: 0; right: 0; z-index: 100;
             padding: 0 48px; height: 72px;
             display: flex; align-items: center; justify-content: space-between;
-            background: rgba(10,10,15,0.85); backdrop-filter: blur(20px);
+            background: rgba(10,10,15,0.97); backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         .home-nav .logo { font-family: var(--v-serif); font-size: 1.75rem; color: #ffffff; }
@@ -1580,11 +1580,17 @@
             font-family: 'Sora', sans-serif !important;
         }
 
+        /* ── Beta Banner (always at top, flows normally) ── */
+        #betaBanner {
+            position: relative !important;
+            z-index: 10001 !important;
+            width: 100%;
+        }
         /* ── NAV ── */
         .v-nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+            position: sticky; top: 0; left: 0; right: 0; z-index: 200;
             height: 64px;
-            background: rgba(9,9,14,0.92);
+            background: rgba(9,9,14,0.97);
             backdrop-filter: blur(24px) saturate(1.6);
             border-bottom: 1px solid rgba(255,255,255,0.07);
             transition: background 0.3s, box-shadow 0.3s;
@@ -1766,7 +1772,7 @@
             min-height: 100vh;
             display: flex;
             align-items: center;
-            padding: 100px 0 80px;
+            padding: 60px 0 80px;
             position: relative;
             overflow: hidden;
         }
@@ -4107,10 +4113,10 @@
         </div>
         <h1 class="v-hero-headline">
           Trade Smarter.<br>
-          <span style="color:var(--v-gold);font-weight:600;display:block;font-size:0.85em;">Start with $10K.</span>
+          <span style="color:var(--v-gold);font-weight:600;display:block;font-size:0.85em;">Start with $100K.</span>
         </h1>
         <p class="v-hero-sub">
-          Vestra is a professional trading simulator built for skill development. Trade real stocks with $10,000 in virtual capital, track your decision-making, and eliminate costly habits — before they cost you anything.
+          Vestra is a professional trading simulator built for skill development. Trade real stocks with $100,000 in virtual capital, track your decision-making, and eliminate costly habits — before they cost you anything.
         </p>
 
         <div class="v-hero-cta">
@@ -4129,7 +4135,7 @@
           </div>
           <div class="v-hero-stat-div"></div>
           <div class="v-hero-stat">
-            <span class="v-hero-stat-n">$10K</span>
+            <span class="v-hero-stat-n">$100K</span>
             <span class="v-hero-stat-l">virtual capital</span>
           </div>
           <div class="v-hero-stat-div"></div>
@@ -4517,7 +4523,7 @@
     <div class="v-cta-inner">
       <p class="v-eyebrow center">Zero Risk. Real Skill.</p>
       <h2 class="v-cta-title">Start Practicing<br>Trading Today.</h2>
-      <p class="v-cta-desc">$10,000 in virtual capital. Real market data. No credit card. No financial risk. Just you, the market, and the discipline to improve.</p>
+      <p class="v-cta-desc">$100,000 in virtual capital. Real market data. No credit card. No financial risk. Just you, the market, and the discipline to improve.</p>
       <div class="v-cta-btns">
         <button class="v-btn v-btn-primary v-btn-xl" onclick="showAuthFromHome('register')">
           Create Free Account
@@ -5055,7 +5061,7 @@
                 </span>
             </div>
             <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.04);font-size:10px;color:#6868a0;">
-                <span class="v-tooltip">Buying Power: <span id="buyingPower" class="pl-value" style="color:#f0f0fa;font-weight:700;font-family:var(--v-mono);" id="initialBalanceDisplay">$10,000.00</span>
+                <span class="v-tooltip">Buying Power: <span id="buyingPower" class="pl-value" style="color:#f0f0fa;font-weight:700;font-family:var(--v-mono);" id="initialBalanceDisplay">$100,000.00</span>
                     <div class="v-tooltip-popup">
                         <div class="v-tooltip-title">Buying Power</div>
                         <div class="v-tooltip-body">Available cash (×leverage if enabled) for new positions. Never risk more than 2% on a single trade.</div>
@@ -5483,7 +5489,7 @@
         <div class="bg-[#2c2c2e] rounded-2xl p-6 border border-gray-700">
             <h3 class="text-white text-lg font-medium mb-4">Trade <span id="tradeSymLabel" class="text-gray-400"></span></h3>
             <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
-                <div class="bg-[#1c1c1e] rounded-xl p-4"><div class="text-gray-400 mb-1">Buying Power</div><div class="text-white font-semibold text-lg" id="dBuyPow">$10,000</div></div>
+                <div class="bg-[#1c1c1e] rounded-xl p-4"><div class="text-gray-400 mb-1">Buying Power</div><div class="text-white font-semibold text-lg" id="dBuyPow">$100,000</div></div>
                 <div class="bg-[#1c1c1e] rounded-xl p-4"><div class="text-gray-400 mb-1">Shares Owned</div><div class="text-white font-semibold text-lg" id="dShares">0</div></div>
             </div>
             <div class="grid grid-cols-3 gap-2 mb-3">
@@ -8881,8 +8887,8 @@ function startNewsEngine() {
             }
         }
 
-        const pl    = totalEquity - (currentUser?.startCash || 10000);
-        const plPct = ((pl / (currentUser?.startCash || 10000)) * 100).toFixed(2);
+        const pl    = totalEquity - (currentUser?.startCash || 100000);
+        const plPct = ((pl / (currentUser?.startCash || 100000)) * 100).toFixed(2);
         const plEl  = document.getElementById('plDisplay');
         if (plEl) {
             plEl.innerText = (pl >= 0 ? '+$' : '-$') + Math.abs(pl).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' (' + (pl >= 0 ? '+' : '') + plPct + '%)';
@@ -8975,11 +8981,28 @@ function startNewsEngine() {
 
     ensureStorageAdapter();
 
+    // ── STARTUP ACCOUNT RESET ──────────────────────────────────────────────
+    // Clears old/corrupted accounts from previous versions on first load
+    (function performStartupReset() {
+        const SCHEMA_VERSION = 'vestra_v10_schema';
+        try {
+            const hasReset = localStorage.getItem(SCHEMA_VERSION);
+            if (!hasReset) {
+                // Preserve theme preference only
+                const savedTheme = localStorage.getItem('vestra_theme');
+                localStorage.clear();
+                if (savedTheme) localStorage.setItem('vestra_theme', savedTheme);
+                localStorage.setItem(SCHEMA_VERSION, '1');
+                console.log('[Vestra] Account database reset to v10 schema. Starting balance: $100,000');
+            }
+        } catch(e) {}
+    })();
+
     function toggleAuthMode() {
         authMode = authMode === 'login' ? 'register' : 'login';
         const isReg = authMode === 'register';
         document.getElementById('authTitle').innerText = isReg ? 'Create account' : 'Sign in';
-        document.getElementById('authSubtitle').innerText = isReg ? 'Start with $10,000 USD' : 'to your trading account';
+        document.getElementById('authSubtitle').innerText = isReg ? 'Start with $100,000 USD' : 'to your trading account';
         document.getElementById('authSubmitBtn').innerText = isReg ? 'Create Account' : 'Sign In';
         document.getElementById('authToggleText').innerText = isReg ? 'Already have an account?' : "Don't have an account?";
         document.getElementById('authToggleBtn').innerText = isReg ? 'Sign in' : 'Create account';
@@ -9157,7 +9180,7 @@ function startNewsEngine() {
     function logOut() {
         if (!confirm('Sign out? Your progress is saved.')) return;
         currentUser = null;
-        cash = 10000;
+        cash = 100000;
         portfolio = {};
         document.body.style.overflow = '';
         const el = (id) => document.getElementById(id);
@@ -9209,7 +9232,7 @@ function startNewsEngine() {
         currentUser.tradeStreak = tradeStreak;
         currentUser.dailyQuest = dailyQuest;
         currentUser.totalValue = cash + portfolioValue;
-        currentUser.profit = (cash + portfolioValue) - (currentUser.startCash || 10000);
+        currentUser.profit = (cash + portfolioValue) - (currentUser.startCash || 100000);
         currentUser.totalShares = totalShares;
         currentUser.realizedPL = Number(currentUser.realizedPL || 0);
         if (countTrade) currentUser.totalTrades = (currentUser.totalTrades || 0) + 1;
@@ -10027,21 +10050,68 @@ function startNewsEngine() {
     function renderNews() {
         const feed = document.getElementById('newsFeed');
         if (!feed) return;
-        const movers = stocks.slice().sort((a,b)=>Math.abs(b.change)-Math.abs(a.change)).slice(0,4);
-        feed.innerHTML = movers.map((s, i) => {
+
+        // Realistic financial news headlines (rotate based on time)
+        const HEADLINES = [
+            { title: 'Federal Reserve Signals Potential Rate Cuts Later This Year', desc: 'Fed Chair indicates the central bank is watching inflation data closely before adjusting policy.', source: 'Reuters', tag: 'Macro', tagColor: '#60a5fa' },
+            { title: 'S&P 500 Rallies on Strong Corporate Earnings Season', desc: 'Over 70% of S&P 500 companies have beaten earnings estimates, lifting the index to new highs.', source: 'Bloomberg', tag: 'Equities', tagColor: '#4ade80' },
+            { title: 'Nvidia Reports Record Revenue, Citing AI Infrastructure Demand', desc: 'The chipmaker posted quarterly revenue of $22.1B, a 122% increase year-over-year.', source: 'CNBC', tag: 'Technology', tagColor: '#a78bfa' },
+            { title: 'Oil Prices Slide on Rising US Inventories and Demand Concerns', desc: 'WTI crude fell to $71.40 per barrel after EIA data showed an unexpected build in stockpiles.', source: 'WSJ', tag: 'Commodities', tagColor: '#f59e0b' },
+            { title: 'Treasury Yields Rise as Investors Reassess Rate Cut Timeline', desc: '10-year Treasury yield climbed to 4.48% amid stronger-than-expected jobs data.', source: 'FT', tag: 'Bonds', tagColor: '#22d3ee' },
+            { title: 'Apple Announces $110 Billion Share Buyback, Largest in Company History', desc: 'The buyback announcement follows Q2 results that beat Wall Street expectations on services revenue.', source: 'Reuters', tag: 'Buyback', tagColor: '#4ade80' },
+            { title: 'Microsoft Azure Revenue Growth Accelerates on AI Adoption', desc: 'Cloud segment grew 31% year-over-year, driven by Copilot and OpenAI integrations.', source: 'Bloomberg', tag: 'Technology', tagColor: '#a78bfa' },
+            { title: 'China Manufacturing PMI Contracts for Second Consecutive Month', desc: 'The Caixin PMI reading of 49.4 signals contraction, raising concerns about global growth outlook.', source: 'WSJ', tag: 'Macro', tagColor: '#f87171' },
+            { title: 'Bitcoin Surges Past $68,000 as ETF Inflows Accelerate', desc: 'Spot Bitcoin ETFs recorded $500M in net inflows on Wednesday, their highest single-day figure in weeks.', source: 'CoinDesk', tag: 'Crypto', tagColor: '#f59e0b' },
+            { title: 'Alphabet Beats Q1 Estimates on Search and Cloud Strength', desc: 'Google parent reports 15% revenue growth, with YouTube advertising revenue surpassing analyst forecasts.', source: 'CNBC', tag: 'Technology', tagColor: '#4ade80' },
+            { title: 'Bank of Japan Hints at Further Rate Hikes as Yen Strengthens', desc: 'The BOJ signalled willingness to raise rates further if wage growth and inflation remain elevated.', source: 'FT', tag: 'Forex', tagColor: '#22d3ee' },
+            { title: 'Meta Platforms Raises Full-Year Capital Expenditure Guidance for AI', desc: 'Meta increased its 2024 capex forecast to $35-40B, citing accelerating investments in data centres.', source: 'Bloomberg', tag: 'Technology', tagColor: '#a78bfa' },
+            { title: 'US Retail Sales Data Exceeds Expectations, Boosting Consumer Outlook', desc: 'Retail sales rose 0.7% in April, beating forecasts of 0.4%, signalling resilient consumer spending.', source: 'Reuters', tag: 'Economy', tagColor: '#4ade80' },
+            { title: 'Gold Reaches Record High Amid Geopolitical Uncertainty', desc: 'Spot gold touched $2,380 per troy ounce as investors sought safe-haven assets.', source: 'Kitco', tag: 'Commodities', tagColor: '#d4a84b' },
+            { title: 'Healthcare Sector Outperforms as Defensive Rotation Accelerates', desc: 'Healthcare ETFs saw $1.2B in inflows this week as investors rotate from growth into defensive sectors.', source: 'Barron\'s', tag: 'Sectors', tagColor: '#34d399' },
+        ];
+
+        // Also show market movers as dynamic headlines
+        const movers = stocks.slice().sort((a,b) => Math.abs(b.change) - Math.abs(a.change)).slice(0, 3);
+        const moverHeadlines = movers.map(s => {
             const pos = s.change >= 0;
-            const sentiment = pos ? 'Bullish' : 'Bearish';
-            const tagStyle = pos
-                ? 'background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.25);'
-                : 'background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);';
-            const source = ['Reuters','Bloomberg','CNBC','WSJ'][i % 4];
-            const headline = pos ? (s.symbol + ' climbs as momentum buyers step in') : (s.symbol + ' slips as sellers pressure the tape');
-            return '<div style="padding:14px;border:1px solid rgba(255,255,255,0.08);border-radius:10px;background:#1a1a24;">'
-                + '<div style="font-size:11px;color:#8888a8;margin-bottom:6px;"><span style="font-weight:700;color:#b0b0c8;">' + source + '</span> · ' + (15 + i * 10) + ' min ago</div>'
-                + '<div style="font-size:0.875rem;font-weight:500;color:#e0e0f5;line-height:1.4;margin-bottom:8px;">' + headline + '</div>'
-                + '<div style="display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;' + tagStyle + '">' + sentiment + '</div>'
-                + '</div>';
-        }).join('');
+            return {
+                title: pos
+                    ? `${s.name} (${s.symbol}) Gains ${Math.abs(s.change).toFixed(1)}% on Strong Momentum`
+                    : `${s.name} (${s.symbol}) Declines ${Math.abs(s.change).toFixed(1)}% Amid Selling Pressure`,
+                desc: pos
+                    ? `Shares closed at $${s.price.toFixed(2)}, outperforming the sector average. Volume above 30-day average.`
+                    : `${s.symbol} retreated to $${s.price.toFixed(2)} as investors took profits following recent gains.`,
+                source: ['Reuters', 'Bloomberg', 'CNBC'][Math.floor(Math.random()*3)],
+                tag: pos ? 'Bullish' : 'Bearish',
+                tagColor: pos ? '#4ade80' : '#f87171',
+                dynamic: true
+            };
+        });
+
+        // Mix static headlines with dynamic movers
+        const now = Date.now();
+        const seed = Math.floor(now / 300000); // rotate every 5 min
+        const staticCount = Math.min(5, HEADLINES.length);
+        const selected = [];
+        for (let i = 0; i < staticCount; i++) {
+            selected.push(HEADLINES[(seed + i) % HEADLINES.length]);
+        }
+        const allHeadlines = [...moverHeadlines, ...selected].slice(0, 8);
+
+        const timeAgo = (i) => {
+            const mins = [2, 7, 14, 22, 35, 48, 62, 84][i % 8];
+            return mins < 60 ? `${mins}m ago` : `${Math.floor(mins/60)}h ago`;
+        };
+
+        feed.innerHTML = allHeadlines.map((h, i) => `
+            <div style="padding:14px;border:1px solid rgba(255,255,255,0.08);border-radius:10px;background:#1a1a24;cursor:default;transition:border-color .15s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.18)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+                    <div style="font-size:10px;color:#8888a8;"><span style="font-weight:700;color:#b0b0c8;">${h.source}</span> · ${timeAgo(i)}</div>
+                    <div style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:${h.tagColor}22;color:${h.tagColor};border:1px solid ${h.tagColor}44;">${h.tag}</div>
+                </div>
+                <div style="font-size:13px;font-weight:600;color:#e8e8f5;line-height:1.45;margin-bottom:6px;">${h.title}</div>
+                <div style="font-size:11px;color:#6868a0;line-height:1.5;">${h.desc}</div>
+            </div>`).join('');
     }
 
     function renderDetailNews(symbol) {
@@ -10838,7 +10908,7 @@ function startNewsEngine() {
         if (perfHistory.length >= 3) return; // already have data
         if (!transactions || !transactions.length) return;
 
-        const startCash = currentUser?.startCash || 10000;
+        const startCash = currentUser?.startCash || 100000;
         const sorted    = [...transactions].sort((a, b) => (a.timestamp||a.ts||0) - (b.timestamp||b.ts||0));
         let   running   = startCash;
 
@@ -10895,7 +10965,7 @@ function startNewsEngine() {
             const cutMs = cutoffs[perfPeriod] || 86400000;
             const pts = perfPeriod === '1D' ? 24 : perfPeriod === '5D' ? 30 : perfPeriod === '1M' ? 30 : perfPeriod === '6M' ? 26 : 52;
             const interval = cutMs / pts;
-            const startVal = currentUser?.startCash || 10000;
+            const startVal = currentUser?.startCash || 100000;
             const endVal = cash + Object.keys(portfolio).reduce((s,sym) => { const st=getStockBySymbol(sym); return s+(st?st.price*portfolio[sym]:0); }, 0);
             // Merge with real data
             const seed2 = (currentUser?.username||'x').charCodeAt(0);
@@ -10941,7 +11011,7 @@ function startNewsEngine() {
         const fillColor = isPos ? 'rgba(74,222,128,0.12)' : 'rgba(248,113,113,0.12)';
 
         // Baseline at start value
-        const baseY = toY(currentUser?.startCash || 10000);
+        const baseY = toY(currentUser?.startCash || 100000);
         ctx.beginPath();
         ctx.setLineDash([4, 4]);
         ctx.moveTo(0, baseY); ctx.lineTo(W, baseY);
@@ -10963,7 +11033,7 @@ function startNewsEngine() {
 
         // Current value label
         const cur = data[data.length - 1].value;
-        const startV = currentUser?.startCash || 10000;
+        const startV = currentUser?.startCash || 100000;
         const pct = ((cur - startV) / startV * 100).toFixed(2);
         ctx.font = `bold ${11 * dpr / dpr}px DM Sans, sans-serif`;
         ctx.fillStyle = lineColor;
@@ -13522,7 +13592,7 @@ function startNewsEngine() {
         const cagr    = computeCAGR();
         const stats   = calcPortfolioStats();
         const equity  = _calcTotalEquity();
-        const startCash = currentUser?.startCash || 10000;
+        const startCash = currentUser?.startCash || 100000;
 
         // ── Update 4-box top grid ─────────────────────────────────────────
         const sharpe = ra.sharpe;
@@ -14863,7 +14933,7 @@ function startNewsEngine() {
 
     // ── FAQ Content ───────────────────────────────────────────────────
     const FAQ_ITEMS = [
-        { q: 'Is Vestra free to use?', a: 'Yes. Vestra is completely free — no credit card, no subscription. Create an account and start trading with $10,000 virtual cash instantly.' },
+        { q: 'Is Vestra free to use?', a: 'Yes. Vestra is completely free — no credit card, no subscription. Create an account and start trading with $100,000 virtual cash instantly.' },
         { q: 'Does Vestra use real money?', a: 'No. All portfolio values, trades, and returns are entirely virtual. No real currency is ever at risk. This is a simulation platform only.' },
         { q: 'How do I get live stock prices?', a: 'Vestra integrates with the Finnhub API for real-time data. Get a free API key from finnhub.io and enter it via the Live button in the header. Without a key, prices update with simulated movements.' },
         { q: 'What is Realism Mode?', a: 'Realism Mode enforces real trading constraints: orders only execute during market hours, bid-ask spread simulation applies, and you compete on a separate leaderboard. Click SIM/REALISM in the toolbar to switch.' },
@@ -14984,7 +15054,7 @@ function startNewsEngine() {
             return hist.map(p => ({ ts: p.ts, val: p.v || p.value || 0 })).filter(p => p.val > 0);
         }
         // Fallback: synthetic curve from transactions
-        const startCash = currentUser?.startCash || 10000;
+        const startCash = currentUser?.startCash || 100000;
         const txSorted  = [...(transactions||[])].sort((a,b)=>(a.timestamp||a.ts||0)-(b.timestamp||b.ts||0));
         if (!txSorted.length) return [{ ts: Date.now(), val: startCash }];
         let runCash = startCash;
@@ -17557,7 +17627,7 @@ function startNewsEngine() {
 
         return `VESTRA TRADING SIMULATOR — User Context:
 - Portfolio Value: $${totalValue.toFixed(0)} (${totalReturn > 0 ? '+' : ''}${totalReturn}% return)
-- Starting Capital: $10,000 | Cash Remaining: $${(cash||0).toFixed(0)}
+- Starting Capital: $100,000 | Cash Remaining: $${(cash||0).toFixed(0)}
 - Total Trades: ${(currentUser.totalTrades||0)} | Win Rate: ${winRate}%
 - Open Positions (${openPositions}): ${holdings || 'none'}
 - Recent Closed Trades: ${recentTrades || 'none yet'}
@@ -18164,7 +18234,7 @@ Please provide:
         const ulcer   = computeUlcerIndex();
         const symStats = computeSymbolStats();
         const equity  = _calcTotalEquity();
-        const startCash = currentUser?.startCash || 10000;
+        const startCash = currentUser?.startCash || 100000;
         const totalRet  = equity > 0 ? ((equity - startCash) / startCash * 100).toFixed(1) : '0.0';
 
         if (!stats) {
@@ -19069,7 +19139,7 @@ Please provide:
         const streak = computeStreakStats();
         const dd     = analyzeDrawdowns();
         const equity = _calcTotalEquity();
-        const sc2    = currentUser?.startCash || 10000;
+        const sc2    = currentUser?.startCash || 100000;
         const totalRet = equity > 0 ? ((equity - sc2) / sc2 * 100).toFixed(1) : '0.0';
         const date   = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
 
@@ -19273,7 +19343,7 @@ Vestra Paper Trading Simulator`;
                     uid: generateUID(), username: gid,
                     displayName: 'Google Trader', email: gid + '@gmail.com',
                     provider: 'google', ssoAccount: true, passwordHash: null,
-                    cash: 10000, startCash: 10000, portfolio: {},
+                    cash: 100000, startCash: 100000, portfolio: {},
                     joinedAt: Date.now(), totalTrades: 0, integrityScore: 100,
                     riskViolations: 0, tradingMode: 'standard',
                     competitionEligible: true, realizedPL: 0, verifiedAccount: true
@@ -19323,7 +19393,7 @@ Vestra Paper Trading Simulator`;
                         email: profile.email || '',
                         avatar: profile.picture || null,
                         provider: 'google', ssoAccount: true, passwordHash: null,
-                        cash: 10000, startCash: 10000, portfolio: {},
+                        cash: 100000, startCash: 100000, portfolio: {},
                         joinedAt: Date.now(), totalTrades: 0, integrityScore: 100,
                         riskViolations: 0, tradingMode: 'standard',
                         competitionEligible: true, realizedPL: 0, verifiedAccount: true
@@ -19345,7 +19415,7 @@ Vestra Paper Trading Simulator`;
                 uid: generateUID(), username: aid,
                 displayName: 'Apple Trader', email: aid + '@icloud.com',
                 provider: 'apple', ssoAccount: true, passwordHash: null,
-                cash: 10000, startCash: 10000, portfolio: {},
+                cash: 100000, startCash: 100000, portfolio: {},
                 joinedAt: Date.now(), totalTrades: 0, integrityScore: 100,
                 riskViolations: 0, tradingMode: 'standard',
                 competitionEligible: true, realizedPL: 0, verifiedAccount: true
@@ -19452,7 +19522,7 @@ Vestra Paper Trading Simulator`;
 
         const u         = currentUser;
         const equity    = _calcTotalEquity();
-        const startCash = u.startCash || 10000;
+        const startCash = u.startCash || 100000;
         const totalRet  = equity > 0 ? ((equity - startCash) / startCash * 100).toFixed(1) : '0.0';
         const stats     = calcPortfolioStats();
         const avatarSrc = u.avatar
@@ -19580,7 +19650,7 @@ Vestra Paper Trading Simulator`;
             const st = getStockBySymbol?.(qty?.sym || '') || {};
             return s + ((st.price || 0) * (qty || 0));
         }, 0);
-        const startCash = u.startCash || 10000;
+        const startCash = u.startCash || 100000;
         const totalRet  = ((equity - startCash) / startCash * 100).toFixed(1);
         const avatarSrc = u.avatar
             ? `<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="${u.displayName}">`
@@ -19729,9 +19799,9 @@ Vestra Paper Trading Simulator`;
         // Reset progress
         var resetBtn = document.getElementById('settingsResetBtn');
         if (resetBtn) resetBtn.addEventListener('click', function() {
-            if (!confirm('Reset portfolio to $10,000? Your account and history will be cleared.')) return;
-            cash = 10000; portfolio = {}; transactions = []; costBasis = {}; achievements = [];
-            if (currentUser) { currentUser.cash=10000; currentUser.portfolio={}; currentUser.transactions=[]; currentUser.costBasis={}; currentUser.achievements=[]; currentUser.realizedPL=0; currentUser.totalTrades=0; saveUserData(false); }
+            if (!confirm('Reset portfolio to $100,000? Your account and history will be cleared.')) return;
+            cash = 100000; portfolio = {}; transactions = []; costBasis = {}; achievements = [];
+            if (currentUser) { currentUser.cash=100000; currentUser.startCash=100000; currentUser.balance=100000; currentUser.portfolioValue=100000; currentUser.portfolio={}; currentUser.transactions=[]; currentUser.costBasis={}; currentUser.achievements=[]; currentUser.realizedPL=0; currentUser.totalTrades=0; currentUser.xp=0; currentUser.tier='Beginner'; saveUserData(false); }
             closeSettingsModal(); if (typeof updateUI==='function') updateUI();
         });
         // Delete account
@@ -19747,6 +19817,15 @@ Vestra Paper Trading Simulator`;
         });
         var saveBtn = document.getElementById('settingsSaveClose');
         if (saveBtn) saveBtn.addEventListener('click', closeSettingsModal);
+
+        // Moderator panel button (only visible if logged in as moderator)
+        if (isModeratorUser && isModeratorUser()) {
+            var modSection = document.createElement('div');
+            modSection.style.cssText = 'margin-top:16px;padding-top:16px;border-top:1px solid rgba(245,158,11,0.2);';
+            modSection.innerHTML = '<div style="font-size:10px;font-weight:700;color:#f59e0b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">Admin</div>'
+                + '<button onclick="closeSettingsModal();openModeratorDash();" style="width:100%;padding:12px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#f59e0b;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--v-sans);">Open Moderator Dashboard</button>';
+            el.appendChild(modSection);
+        }
     }
 
     function _togglePref(key) {
@@ -19754,6 +19833,194 @@ Vestra Paper Trading Simulator`;
         _savePrefs();
         _renderSettings();
     }
+
+    // ════════════════════════════════════════════════════════════════════════
+    //  MODERATOR / ADMIN SYSTEM
+    //  Username: moderator | Password: vestra_admin_2024
+    // ════════════════════════════════════════════════════════════════════════
+    const MOD_USERNAME = 'moderator';
+    const MOD_PASSWORD_HASH = simpleHash('vestra_admin_2024');
+
+    function isModeratorUser() {
+        return currentUser && currentUser.username === MOD_USERNAME && currentUser.role === 'admin';
+    }
+
+    function openModeratorDash() {
+        if (!isModeratorUser()) {
+            showTradeToast('INFO', 0, 'Access denied. Moderator login required.', 0, false);
+            return;
+        }
+        const el = document.getElementById('modDashModal');
+        if (el) { el.style.display = 'flex'; _renderModDash(); }
+    }
+    function closeModeratorDash() {
+        const el = document.getElementById('modDashModal');
+        if (el) el.style.display = 'none';
+    }
+
+    async function _renderModDash() {
+        const body = document.getElementById('modDashBody');
+        if (!body) return;
+
+        // Load all user accounts from storage
+        const storage = ensureStorageAdapter();
+        let userList = [];
+        try {
+            const keys = await storage.list('user:', true);
+            for (const key of (keys.keys || [])) {
+                try {
+                    const result = await storage.get(key, true);
+                    if (result && result.value) {
+                        const u = JSON.parse(result.value);
+                        if (u.username !== MOD_USERNAME) userList.push(u);
+                    }
+                } catch(e) {}
+            }
+        } catch(e) {}
+
+        body.innerHTML = `
+        <div style="margin-bottom:20px;">
+            <div style="font-size:10px;font-weight:700;color:#f59e0b;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">ADMIN PANEL</div>
+            <div style="font-size:13px;color:#8888a8;">${userList.length} registered user${userList.length !== 1 ? 's' : ''}</div>
+        </div>
+
+        ${userList.length === 0 ? `<div style="padding:32px;text-align:center;color:#6868a0;font-size:13px;">No registered accounts found.</div>` : `
+        <div style="display:flex;flex-direction:column;gap:8px;">
+        ${userList.map(u => {
+            const equity = (u.cash || 0) + (u.portfolioValue || 0);
+            const pl = equity - (u.startCash || 100000);
+            const plPos = pl >= 0;
+            return `
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 16px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <div>
+                        <div style="font-size:13px;font-weight:700;color:#f0f0fa;">${u.displayName || u.username}</div>
+                        <div style="font-size:10px;color:#6868a0;">@${u.username} · ${u.tier || 'Beginner'} · ${u.xp || 0} XP</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:13px;font-weight:700;font-family:var(--v-mono);color:#f0f0fa;">$${(u.cash || 0).toLocaleString(undefined,{maximumFractionDigits:0})}</div>
+                        <div style="font-size:11px;color:${plPos?'#4ade80':'#f87171'};">${plPos?'+':'-'}$${Math.abs(pl).toLocaleString(undefined,{maximumFractionDigits:0})}</div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <button onclick="_modEditUser('${u.username}')" style="font-size:10px;padding:4px 10px;background:rgba(212,168,75,0.1);border:1px solid rgba(212,168,75,0.3);color:#d4a84b;border-radius:6px;cursor:pointer;font-family:var(--v-sans);">Edit</button>
+                    <button onclick="_modResetUser('${u.username}')" style="font-size:10px;padding:4px 10px;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.3);color:#60a5fa;border-radius:6px;cursor:pointer;font-family:var(--v-sans);">Reset Portfolio</button>
+                    <button onclick="_modDeleteUser('${u.username}')" style="font-size:10px;padding:4px 10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#f87171;border-radius:6px;cursor:pointer;font-family:var(--v-sans);">Delete</button>
+                </div>
+            </div>`;
+        }).join('')}
+        </div>`}
+
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.07);">
+            <div style="font-size:10px;font-weight:700;color:#6868a0;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Moderator Actions</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button onclick="_modClearAll()" style="font-size:11px;padding:8px 14px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;border-radius:8px;cursor:pointer;font-family:var(--v-sans);font-weight:600;">Clear All Accounts</button>
+                <button onclick="_renderModDash()" style="font-size:11px;padding:8px 14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#c0c0d8;border-radius:8px;cursor:pointer;font-family:var(--v-sans);font-weight:600;">Refresh</button>
+            </div>
+        </div>`;
+    }
+
+    async function _modEditUser(username) {
+        const storage = ensureStorageAdapter();
+        try {
+            const result = await storage.get('user:' + username, true);
+            if (!result || !result.value) return alert('User not found.');
+            const u = JSON.parse(result.value);
+
+            const newCash = parseFloat(prompt(`Edit cash for @${username} (current: $${u.cash}):`, u.cash));
+            if (!isNaN(newCash) && newCash >= 0) u.cash = newCash;
+
+            const newXP = parseInt(prompt(`Edit XP for @${username} (current: ${u.xp||0}):`, u.xp||0));
+            if (!isNaN(newXP) && newXP >= 0) u.xp = newXP;
+
+            const newTier = prompt(`Edit tier for @${username} (current: ${u.tier||'Beginner'}):\nOptions: Beginner, Intermediate, Advanced, Expert`, u.tier || 'Beginner');
+            if (newTier && ['Beginner','Intermediate','Advanced','Expert'].includes(newTier)) u.tier = newTier;
+
+            await storage.set('user:' + username, JSON.stringify(u), true);
+            alert(`Account @${username} updated.`);
+            _renderModDash();
+        } catch(e) { alert('Error: ' + e.message); }
+    }
+
+    async function _modResetUser(username) {
+        if (!confirm(`Reset @${username}'s portfolio to $100,000?`)) return;
+        const storage = ensureStorageAdapter();
+        try {
+            const result = await storage.get('user:' + username, true);
+            if (!result || !result.value) return alert('User not found.');
+            const u = JSON.parse(result.value);
+            u.cash = 100000; u.startCash = 100000; u.balance = 100000; u.portfolioValue = 100000;
+            u.portfolio = {}; u.transactions = []; u.costBasis = {}; u.achievements = [];
+            u.realizedPL = 0; u.totalTrades = 0; u.xp = 0; u.tier = 'Beginner';
+            await storage.set('user:' + username, JSON.stringify(u), true);
+            alert(`@${username} portfolio reset.`);
+            _renderModDash();
+        } catch(e) { alert('Error: ' + e.message); }
+    }
+
+    async function _modDeleteUser(username) {
+        if (!confirm(`Permanently delete @${username}? This cannot be undone.`)) return;
+        const storage = ensureStorageAdapter();
+        try {
+            await storage.delete('user:' + username, true);
+            alert(`@${username} deleted.`);
+            _renderModDash();
+        } catch(e) { alert('Error: ' + e.message); }
+    }
+
+    async function _modClearAll() {
+        if (!confirm('Delete ALL user accounts? This cannot be undone.')) return;
+        if (!confirm('Are you absolutely sure? All data will be lost.')) return;
+        const storage = ensureStorageAdapter();
+        try {
+            const keys = await storage.list('user:', true);
+            for (const key of (keys.keys || [])) {
+                if (!key.includes(MOD_USERNAME)) {
+                    try { await storage.delete(key, true); } catch(e) {}
+                }
+            }
+            alert('All non-moderator accounts cleared.');
+            _renderModDash();
+        } catch(e) { alert('Error: ' + e.message); }
+    }
+
+    // Register moderator account on first run
+    (async function ensureModeratorAccount() {
+        const storage = ensureStorageAdapter();
+        try {
+            let existing = null;
+            try { existing = await storage.get('user:' + MOD_USERNAME, true); } catch(e) {}
+            if (!existing || !existing.value) {
+                const modData = {
+                    uid: 'mod_' + Date.now(),
+                    username: MOD_USERNAME,
+                    displayName: 'Moderator',
+                    passwordHash: MOD_PASSWORD_HASH,
+                    role: 'admin',
+                    permissions: ['view_all', 'edit_accounts', 'delete_accounts', 'modify_balances'],
+                    cash: 999999999,
+                    startCash: 100000,
+                    balance: 999999999,
+                    portfolioValue: 100000,
+                    portfolio: {},
+                    watchlist: [],
+                    transactions: [],
+                    costBasis: {},
+                    joinedAt: Date.now(),
+                    totalTrades: 0,
+                    realizedPL: 0,
+                    tier: 'Admin',
+                    xp: 999999,
+                    academyProgress: {},
+                    completedLessons: [],
+                    settings: {},
+                    tutorialDone: true,
+                };
+                await storage.set('user:' + MOD_USERNAME, JSON.stringify(modData), true);
+                console.log('[Vestra] Moderator account created. Username: moderator | Password: vestra_admin_2024');
+            }
+        } catch(e) {}
+    })();
 
     // ════════════════════════════════════════════════════════════════════════
     //  FLOATING AI CHAT
@@ -19864,21 +20131,7 @@ Vestra Paper Trading Simulator`;
         document.head.appendChild(style);
     })();
 
-    // ── Upgrade sendAIMessage system prompt (general assistant) ──────────
-    (function upgradeAICoachSystemPrompt() {
-        const _orig = sendAIMessage;
-        sendAIMessage = async function() {
-            // Patch: update the system prompt in the existing function
-            // We do this by monkey-patching buildAIContext to include broader context
-            const _origBuild = buildAIContext;
-            buildAIContext = function() {
-                const base = _origBuild();
-                return base + `\n\nIMPORTANT: You are a UNIVERSAL AI assistant for Vestra. While your primary role is trading coach, you can answer ANY question the user asks — general knowledge, math, writing, programming, finance, life advice, etc. Be genuinely helpful on all topics.`;
-            };
-            await _orig();
-            buildAIContext = _origBuild;
-        };
-    })();
+    // ── AI Coach system fully uses generateAIFallback — no additional patching needed ──
 
     // ── Quick prompts: add general questions ─────────────────────────────
     (function addGeneralPrompts() {
@@ -22759,7 +23012,7 @@ window.vestraDesign = { animateValue, animateStockGrid };
     </div>
     <div class="legal-body" id="faqBody">
         <!-- Pre-rendered FAQ — works without JS, JS will also re-render on open -->
-        <div id="faqItem0" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(0)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">Is Vestra free to use?</span><span id="faqArrow0" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns0" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">Yes. Vestra is completely free — no credit card, no subscription. Create an account and start trading with $10,000 virtual cash instantly.</div></div>
+        <div id="faqItem0" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(0)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">Is Vestra free to use?</span><span id="faqArrow0" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns0" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">Yes. Vestra is completely free — no credit card, no subscription. Create an account and start trading with $100,000 virtual cash instantly.</div></div>
         <div id="faqItem1" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(1)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">Does Vestra use real money?</span><span id="faqArrow1" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns1" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">No. All portfolio values, trades, and returns are entirely virtual. No real currency is ever at risk. This is a simulation platform only.</div></div>
         <div id="faqItem2" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(2)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">How do I get live stock prices?</span><span id="faqArrow2" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns2" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">Vestra integrates with the Finnhub API for real-time data. Get a free API key from finnhub.io and enter it via the Live button in the header. Without a key, prices update with simulated movements.</div></div>
         <div id="faqItem3" style="border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;margin-bottom:18px;"><button onclick="toggleFAQ(3)" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:start;gap:12px;padding:0;"><span style="font-size:14px;font-weight:600;color:#e0e0f5;line-height:1.5;">What is Realism Mode?</span><span id="faqArrow3" style="font-size:16px;color:#8888a8;flex-shrink:0;">+</span></button><div id="faqAns3" style="display:none;font-size:13px;color:#9090b8;line-height:1.75;padding-top:10px;">Realism Mode enforces real trading constraints: orders only execute during market hours, bid-ask spread simulation applies, and you compete on a separate leaderboard. Click SIM/REALISM in the toolbar to switch.</div></div>
@@ -23650,5 +23903,23 @@ window.vestraDesign = { animateValue, animateStockGrid };
     </div>
 </div>
 
+<!-- ═══ MODERATOR DASHBOARD MODAL ═══ -->
+<div id="modDashModal" style="display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.88);backdrop-filter:blur(16px);align-items:flex-start;justify-content:center;padding-top:32px;overflow-y:auto;">
+    <div onclick="event.stopPropagation()" style="background:#0e0e16;border:1px solid rgba(245,158,11,0.3);border-radius:22px;width:100%;max-width:680px;margin:0 auto 40px;animation:slideUp .3s cubic-bezier(.16,1,.3,1);">
+        <div style="padding:22px 26px 16px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;background:rgba(245,158,11,0.05);border-radius:22px 22px 0 0;">
+            <div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="width:8px;height:8px;border-radius:50%;background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div>
+                    <h2 style="font-family:var(--v-serif);font-size:1.2rem;color:#f0f0fa;margin:0;">Moderator Dashboard</h2>
+                </div>
+                <p style="font-size:11px;color:#6868a0;margin:3px 0 0;">Admin access — user management panel</p>
+            </div>
+            <button onclick="closeModeratorDash()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#a0a0b8;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--v-sans);">Close</button>
+        </div>
+        <div id="modDashBody" style="padding:24px 26px;min-height:200px;max-height:calc(100vh - 200px);overflow-y:auto;"></div>
+    </div>
+</div>
+
 </body>
+
 </html>
